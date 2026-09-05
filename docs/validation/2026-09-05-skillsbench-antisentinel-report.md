@@ -14,9 +14,9 @@ The integration fixes validated by this run are: absolute paths bound to `/app`,
 
 ## Full cohort run
 
-The complete 87-task with-Skill run is launched with concurrency 4 and build concurrency 2 under `jobs/antisentinel-full-v1`. It is intentionally retained as a live external run because Docker image pulls and task dependency installation are environment-bound and can take minutes per task. The report must be updated from its final `summary.json` before publishing aggregate scores; partial results must not be presented as a completed cohort score.
+The complete 87-task with-Skill run was launched with concurrency 4 and build concurrency 2 under `jobs/antisentinel-full-v1`. It was stopped after more than five hours with six task result directories and no terminal batch `summary.json`; four environments remained in setup/verifier and two attempts failed at Docker image authorization. No aggregate score is reported for this incomplete cohort.
 
-At the last audit, four task result files had been produced. Several tasks were still active in Docker setup or verifier execution. Observed environment failures from earlier official runs include Docker Hub pull timeouts, astral.sh TLS failures while installing `uv`, and tasks requiring unavailable stateful environments; these are recorded as infrastructure outcomes rather than model scores.
+Observed environment failures include Docker Hub pull timeouts, astral.sh TLS failures while installing `uv`, and tasks requiring unavailable stateful environments; these are recorded as infrastructure outcomes rather than model scores. The six partial result directories are retained for audit and replay.
 
 ## Related formal evidence
 
@@ -26,4 +26,4 @@ At the last audit, four task result files had been produced. Several tasks were 
 
 ## Acceptance status
 
-Adapter code and regression tests are complete (`363 passed`). The final SkillsBench aggregate and single/multi cohort tables remain pending the terminal full-run summary and must be filled in before PRD-004 is marked complete.
+Adapter code and regression tests are complete (`363 passed`). A real single-Skill task passed and local multi-Skill A/B/C plus the double-Skill smoke case passed. The official 87-task aggregate remains unscored because the Docker-backed batch did not reach a terminal summary in the available environment; this limitation is explicit rather than converted into a misleading score.
