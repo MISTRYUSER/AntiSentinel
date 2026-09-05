@@ -43,7 +43,7 @@ class TaskSandbox:
         return [
             ToolDefinition("sandbox.read_file", "Read a file inside the bound benchmark workspace.", {"type": "object", "properties": {"path": {"type": "string"}}, "required": ["path"], "additionalProperties": False}, self.read_file),
             ToolDefinition("sandbox.write_file", "Write a file inside the bound benchmark workspace.", {"type": "object", "properties": {"path": {"type": "string"}, "content": {"type": "string"}}, "required": ["path", "content"], "additionalProperties": False}, self.write_file, read_only=False),
-            ToolDefinition("sandbox.execute", "Execute an allowlisted command inside the bound benchmark workspace.", {"type": "object", "properties": {"argv": {"type": "array"}}, "required": ["argv"], "additionalProperties": False}, self.execute, read_only=False),
+            ToolDefinition("sandbox.execute", "Execute an allowlisted command inside the bound benchmark workspace.", {"type": "object", "properties": {"argv": {"type": "array", "items": {"type": "string"}}}, "required": ["argv"], "additionalProperties": False}, self.execute, read_only=False),
         ]
 
     def read_file(self, arguments: dict[str, Any]) -> ToolExecutionResult:
@@ -68,13 +68,20 @@ class TaskSandbox:
 
     def _path(self, value: str) -> str | None:
         path = PurePosixPath(value)
-        if path.is_absolute() or ".." in path.parts:
+        if path.is_absolute():
+            try:
+                path = path.relative_to(PurePosixPath(self.workspace))
+            except ValueError:
+                return None
+        if ".." in path.parts or not path.parts:
             return None
         return str(path)
 
     @staticmethod
     def _result(value: Any) -> ToolExecutionResult:
-        return ToolExecutionResult(status="succeeded", result=value, result_summary=str(value)[:1000])
+        if isinstance(value, dict) and int(value.get("exit_code", 0)) != 0:
+            return ToolExecutionResult(status="failed", error={"code": "sandbox_command_failed", "message": str(value.get("stderr") or "command failed")[:1000]}, result_summary=str(value)[:1000])
+        return ToolExecutionResult(status="succeeded", result=value, result_summary=str(value)[:60000])
 
     @staticmethod
     def _reject(code: str, message: str) -> ToolExecutionResult:

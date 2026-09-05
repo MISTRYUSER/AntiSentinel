@@ -44,10 +44,14 @@ class RuntimeConfig:
     max_total_tool_calls: int = 8
 
     def __post_init__(self) -> None:
-        for name in ("max_turns", "max_tasks", "max_tool_calls", "max_total_tool_calls"):
+        for name in ("max_tasks", "max_tool_calls"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 8:
                 raise ValueError(f"{name} must be an integer between 1 and 8")
+        if isinstance(self.max_turns, bool) or not isinstance(self.max_turns, int) or not 1 <= self.max_turns <= 32:
+            raise ValueError("max_turns must be an integer between 1 and 32")
+        if isinstance(self.max_total_tool_calls, bool) or not isinstance(self.max_total_tool_calls, int) or not 1 <= self.max_total_tool_calls <= 64:
+            raise ValueError("max_total_tool_calls must be an integer between 1 and 64")
 
 
 @dataclass(frozen=True)
@@ -134,7 +138,11 @@ class RuntimeLoop:
             metrics.increment("turns")
             turn.start()
             self._publish(runtime_events, self._event("turn.started", incident, session, turn), event_sink)
-            turn_scope = ToolExecutionScope(skill_runtime.visible_tool_names()) if skill_runtime is not None else None
+            turn_scope = (
+                skill_runtime.execution_scope()
+                if skill_runtime is not None and hasattr(skill_runtime, "execution_scope")
+                else ToolExecutionScope(skill_runtime.visible_tool_names()) if skill_runtime is not None else None
+            )
             visible_tools = skill_runtime.manifests(registry) if skill_runtime is not None else registry.manifests()
             request = self.context_builder.build(
                 incident,
@@ -238,6 +246,7 @@ class RuntimeLoop:
                     "status": "succeeded",
                     "summary": task.objective,
                     "evidence_refs": [],
+                    "tool_results": [],
                 }
                 turn.add_task(task.task_id)
                 task.start()
@@ -279,7 +288,7 @@ class RuntimeLoop:
                         result = ToolExecutionResult(
                             status="rejected",
                             error={"code": "duplicate_tool_call", "message": "this tool call already completed in this run"},
-                            result_summary=f"Duplicate tool call. Existing result summary: {cached.get('result_summary') or 'available'}",
+                            result_summary="Duplicate tool call. Reuse the matching result already present in the tool-result history.",
                         )
                     else:
                         turn_had_fresh_tool_call = True
@@ -353,6 +362,13 @@ class RuntimeLoop:
                         if task.status.value == "running":
                             task.fail(error)
                         session_task_summary.update(status="failed", summary=result.result_summary or error["message"])
+                    session_task_summary["tool_results"].append({
+                        "tool_name": planned_call.tool_name,
+                        "arguments": planned_call.arguments,
+                        "status": result.status,
+                        "summary": result.result_summary,
+                        "error": result.error,
+                    })
                     self._publish(runtime_events, self._event("tool.completed", incident, session, turn, task, tool_call), event_sink)
                     self._publish(runtime_events, self._event("tool_call.result_received", incident, session, turn, task, tool_call), event_sink)
                     if result.status != "succeeded":

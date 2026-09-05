@@ -76,6 +76,11 @@ def test_skill_control_tool_names_are_mapped_for_deepseek_and_restored_on_respon
     assert result.tasks[0].tool_calls[0].tool_name == "skill.load"
 
 
+def test_dotted_sandbox_tool_name_is_mapped_and_restored():
+    from antisentinel.adapters.llm.openai_compatible import _provider_tool_name
+    assert _provider_tool_name("sandbox.read_file") == "antisentinel_sandbox_read_file"
+
+
 def test_runtime_system_prompt_explicitly_requires_json_schema():
     from antisentinel.worker.runtime.messages import build_system_message
 

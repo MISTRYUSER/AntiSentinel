@@ -58,11 +58,13 @@ class OpenAICompatibleModelAdapter:
             provider_tool_names = {_provider_tool_name(tool["name"]): tool["name"] for tool in request.tools}
             has_tool_results = any(message.get("role") == "tool" for message in request.messages)
             duplicate_feedback = any("Duplicate tool call" in str(message) for message in request.messages if message.get("role") == "tool")
-            if not request.tools or duplicate_feedback:
+            if not request.tools:
                 payload["response_format"] = {"type": "json_object"}
             if duplicate_feedback:
-                payload["tool_choice"] = "none"
-                payload["messages"].append({"role": "user", "content": "The previous call was already completed. Return ONLY the final JSON schema using the existing result."})
+                payload["messages"].append({
+                    "role": "user",
+                    "content": "The repeated call was already completed. Reuse its result. Make a different tool call if more work is required; return the final JSON only when the task is actually complete.",
+                })
             elif has_tool_results and request.tools:
                 payload["messages"].append({
                     "role": "user",
@@ -179,7 +181,12 @@ def _provider_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _provider_tool_name(name: str) -> str:
-    return {"skill.load": "antisentinel_skill_load", "skill.read_reference": "antisentinel_skill_read_reference"}.get(name, name)
+    aliases = {"skill.load": "antisentinel_skill_load", "skill.read_reference": "antisentinel_skill_read_reference"}
+    if name in aliases:
+        return aliases[name]
+    if all(character.isalnum() or character in "_-" for character in name):
+        return name
+    return "antisentinel_" + "".join(character if character.isalnum() or character in "_-" else "_" for character in name)
 
 
 def _parse_native_tool_calls(tool_calls: object, usage: TokenUsage | None = None, provider_tool_names: dict[str, str] | None = None) -> ModelResponse:
