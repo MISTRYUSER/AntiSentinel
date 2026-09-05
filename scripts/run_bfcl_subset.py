@@ -45,7 +45,8 @@ def main() -> int:
             records.append({"case_id": case["case_id"], "category": case["category"], "status": "unsupported_stateful_multi_turn", "passed": False, "input_tokens": 0, "output_tokens": 0, "elapsed_seconds": 0})
             continue
         aliases = {"bfcl_" + re.sub(r"[^a-zA-Z0-9_-]", "_", fn["name"]): fn["name"] for fn in case["function"]}
-        payload = {"model": os.environ["ANTISENTINEL_MODEL_NAME"], "messages": [message for turn in case["question"] for message in turn], "tools": [{"type": "function", "function": {"name": alias, "description": fn.get("description", ""), "parameters": normalize_schema(fn.get("parameters", {}))}} for alias, fn in zip(aliases, case["function"])], "thinking": {"type": "disabled"}}
+        messages = [{"role": "system", "content": "Call a function only when it directly satisfies the user request. If all available functions are irrelevant, return no function call. Never approximate an unrelated request with a tool call."}, *[message for turn in case["question"] for message in turn]]
+        payload = {"model": os.environ["ANTISENTINEL_MODEL_NAME"], "messages": messages, "tools": [{"type": "function", "function": {"name": alias, "description": fn.get("description", ""), "parameters": normalize_schema(fn.get("parameters", {}))}} for alias, fn in zip(aliases, case["function"])], "thinking": {"type": "disabled"}}
         started = monotonic(); response, body = _complete(client, os.environ["ANTISENTINEL_MODEL_BASE_URL"].rstrip("/") + "/chat/completions", {"Authorization": "Bearer " + os.environ["ANTISENTINEL_MODEL_API_KEY"]}, payload); message=body["choices"][0]["message"]; calls=[]
         for raw in message.get("tool_calls") or []:
             fn=raw["function"]; calls.append({"name":aliases.get(fn["name"], fn["name"]),"arguments":json.loads(fn["arguments"]) if isinstance(fn["arguments"],str) else fn["arguments"]})
