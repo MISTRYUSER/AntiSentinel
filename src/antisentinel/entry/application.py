@@ -51,6 +51,7 @@ class DiagnosisApplicationService:
     conversation_store: Any | None = None
     sqlite_database: Any | None = None
     audit_degraded: list[str] = field(default_factory=list)
+    skill_runtime_factory: Callable[[ToolRegistry, str, str, str | None], object] | None = None
 
     @classmethod
     def default_fake(cls) -> "DiagnosisApplicationService":
@@ -75,6 +76,31 @@ class DiagnosisApplicationService:
             model_mode="fake",
         )
         service._runtime_builder = build_runtime  # type: ignore[attr-defined]
+        from antisentinel.capabilities.loader import SkillLoader
+        from antisentinel.capabilities.package import build_local_package
+        from antisentinel.capabilities.runtime_state import SkillRuntimeState
+        from antisentinel.capabilities.tools import InMemorySkillStateStore, SkillRuntime
+
+        capability_source = Path(__file__).resolve().parents[1] / "capabilities" / "diagnosis"
+
+        def build_skill_runtime(registry, run_id, skill_id, skill_version):
+            capability_release_root = Path(os.getenv("ANTISENTINEL_STORAGE_ROOT", "storage")) / "capability-releases"
+            published_capability = build_local_package(capability_source, capability_release_root)
+            skill = next((item for item in published_capability.plugin.skills if item.skill_id == skill_id), None)
+            if skill is None:
+                raise InvalidInputError("unknown_skill")
+            if skill_version is not None and skill.version != skill_version:
+                raise InvalidInputError("skill_version_not_found")
+            allowed = frozenset(item["name"] for item in registry.manifests())
+            return SkillRuntime(
+                loader=SkillLoader(published_capability),
+                state=SkillRuntimeState(run_id=run_id, release_id=published_capability.release_id),
+                state_store=InMemorySkillStateStore(),
+                allowed_tool_names=allowed,
+                base_tool_names=frozenset(),
+            )
+
+        service.skill_runtime_factory = build_skill_runtime
         return service
 
     @classmethod
@@ -199,7 +225,7 @@ class DiagnosisApplicationService:
             self.application_store.save_incident(incident.to_dict())
         return incident
 
-    def start_session(self, *, incident_id: str, participant_ids: list[str], model_mode: str, api_key: str | None = None, model_name: str | None = None) -> dict[str, object]:
+    def start_session(self, *, incident_id: str, participant_ids: list[str], model_mode: str, api_key: str | None = None, model_name: str | None = None, skill_id: str | None = None, skill_version: str | None = None) -> dict[str, object]:
         incident = self.incidents.get(incident_id)
         if incident is None:
             raise KeyError(incident_id)
@@ -236,16 +262,24 @@ class DiagnosisApplicationService:
                     model = model_factory()
                 registry = self.registry_factory()
             session = Session.create(incident_id=incident.incident_id, participant_ids=participant_ids)
+            session_id = str(session.session_id)
+            skill_runtime = None
+            if skill_id is not None:
+                if self.skill_runtime_factory is None:
+                    raise InvalidInputError("skill_runtime_unavailable")
+                skill_runtime = self.skill_runtime_factory(registry, session_id, skill_id, skill_version)
+                selected = skill_runtime.select(skill_id)
+                if selected.status != "succeeded":
+                    raise InvalidInputError((selected.error or {}).get("code", "skill_load_failed"))
             incident.add_session(session.session_id)
             self.sessions[str(session.session_id)] = session
             if self.application_store is not None:
                 self.application_store.save_incident(incident.to_dict())
                 self.application_store.save_session(session.to_dict())
-            session_id = str(session.session_id)
             self.event_bus.publish(session_id, _lifecycle_event("session.started", incident, session))
             Thread(
                 target=self._run_session,
-                args=(incident, session, model, registry),
+                args=(incident, session, model, registry, skill_runtime),
                 name=f"antisentinel-session-{session_id[:8]}",
                 daemon=True,
             ).start()
@@ -253,7 +287,7 @@ class DiagnosisApplicationService:
         finally:
             self._running_incidents.discard(incident_id)
 
-    def _run_session(self, incident, session, model, registry) -> None:
+    def _run_session(self, incident, session, model, registry, skill_runtime=None) -> None:
         session_id = str(session.session_id)
         try:
             result = self.engine.run(
@@ -261,6 +295,7 @@ class DiagnosisApplicationService:
                 config=RuntimeConfig(),
                 event_sink=lambda event: self.event_bus.publish(session_id, event),
                 observability_metrics=self.memory_metrics,
+                skill_runtime=skill_runtime,
                 memory_context_provider=(
                     (lambda _incident, _session, _turn: self.memory_recorder.recall_context(
                         session_id=session_id,
@@ -371,6 +406,7 @@ def _result_view(result: RuntimeResult, session: Session) -> dict[str, object]:
             "reasoning_tokens": result.token_usage.reasoning_tokens,
             "tool_tokens": result.token_usage.tool_tokens,
         },
+        "skill_usage": result.skill_usage,
     }
 
 

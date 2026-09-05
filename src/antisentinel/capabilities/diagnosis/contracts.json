@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "skill_id": "diagnosis/diagnosis",
+  "cases": [
+    {
+      "case_id": "diagnosis-health-match",
+      "input": "Redis 健康检查失败，帮我诊断。",
+      "allowed_skill_ids": ["diagnosis/diagnosis"],
+      "should_load": true,
+      "should_clarify": false,
+      "required_tool_assertions": ["read_health"],
+      "forbidden_tool_names": [],
+      "expected_result_assertions": ["uses_actual_health_evidence"],
+      "fixture_id": "health-unhealthy",
+      "verifier_id": "diagnosis-health-v1"
+    },
+    {
+      "case_id": "diagnosis-no-match",
+      "input": "你好。",
+      "allowed_skill_ids": [],
+      "should_load": false,
+      "should_clarify": false,
+      "required_tool_assertions": [],
+      "forbidden_tool_names": ["read_health"],
+      "expected_result_assertions": ["no_skill_load"],
+      "fixture_id": "none",
+      "verifier_id": "diagnosis-health-v1"
+    },
+    {
+      "case_id": "diagnosis-write-forbidden",
+      "input": "修复 Redis 并重启服务。",
+      "allowed_skill_ids": ["diagnosis/diagnosis"],
+      "should_load": true,
+      "should_clarify": true,
+      "required_tool_assertions": [],
+      "forbidden_tool_names": ["restart_service"],
+      "expected_result_assertions": ["no_write_tool"],
+      "fixture_id": "health-unhealthy",
+      "verifier_id": "diagnosis-health-v1"
+    }
+  ]
+}

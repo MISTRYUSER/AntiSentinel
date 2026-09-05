@@ -24,8 +24,9 @@ class ContextBuilder:
         task_results: list[dict[str, Any]],
         tools: list[dict[str, Any]],
         memory_context: MemoryContextView | None = None,
+        skill_context: dict[str, Any] | None = None,
     ) -> ModelRequest:
-        messages: list[dict[str, Any]] = [build_system_message()]
+        messages: list[dict[str, Any]] = [build_system_message(skill_mode=skill_context is not None)]
         messages.append(
             {
                 "role": "user",
@@ -63,6 +64,13 @@ class ContextBuilder:
                     "evidence_refs": list(memory_context.evidence_refs),
                 }
             )
+        if skill_context is not None:
+            if "active_skills" in skill_context:
+                messages.extend({"role": "skill", **item} for item in skill_context["active_skills"])
+            elif "selected_skill" in skill_context:
+                messages.append({"role": "skill", **skill_context["selected_skill"]})
+            else:
+                messages.append({"role": "skill_catalog", "skills": skill_context.get("available_skills", [])})
         return ModelRequest(
             incident_id=incident.incident_id,
             session_id=session.session_id,

@@ -34,6 +34,7 @@ class RuntimeEngine:
         event_sink: Callable[[object], None] | None = None,
         observability_metrics=None,
         memory_context_provider: Callable[[Incident, Session, Any], Any] | None = None,
+        skill_runtime=None,
     ) -> RuntimeResult:
         resume_snapshot = None
         if resume and checkpoint_store is not None:
@@ -43,6 +44,8 @@ class RuntimeEngine:
                 restored_session = Session.from_dict(resume_snapshot.session)
                 incident.__dict__.update(restored_incident.__dict__)
                 session.__dict__.update(restored_session.__dict__)
+                if skill_runtime is not None and resume_snapshot.skill_state is not None:
+                    skill_runtime.restore(resume_snapshot.skill_state)
         trace_context = TraceContext.new(session_id=session.session_id, request_id=f"session-{session.session_id}")
         with self.telemetry.span("session.run", context=trace_context):
             result = self.loop.run(
@@ -51,5 +54,6 @@ class RuntimeEngine:
                 trace_context=trace_context,
                 observability_metrics=observability_metrics,
                 memory_context_provider=memory_context_provider,
+                skill_runtime=skill_runtime,
             )
             return replace(result, trace_id=trace_context.trace_id)

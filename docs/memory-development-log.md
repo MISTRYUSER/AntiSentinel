@@ -1136,3 +1136,198 @@ BGE-M3 Recall/Precision/MRR：N/A
 
 - 用户确认：主评测使用 LongMemEval-S；参数冻结后引入 LoCoMo、MemoryAgentBench、LongMemEval-V2 做交叉验证。
 - 纪律：LongMemEval-S 主评测允许调参；分层留出集和外部基准只验证泛化，不参与参数选择。不同基准保留原生指标，同时统一记录来源完整性、安全计数、P50/P95、token 与版本信息。
+
+### 知识管理：Obsidian 调研归档
+
+- 将 `docs/research/embedding-model-and-codex-memory-research.md` 的当前结论收录到 Obsidian Vault：`11.agent learning/antiSentinel/Memory/Embedding 模型与 Codex 长期 Memory 调研.md`。
+- 复用现有 `Memory` 专题目录，未新建重复的项目分支；同步更新 `Memory Index` 与 `AntiSentinel 索引` 两个入口。
+- 本次为知识归档，运行测试数 `N/A`；校验目标为笔记文件 1 个、索引链接 2 个、断链 0 个。
+
+### 知识管理：Embedding 选型 ADR 完整化
+
+- 将 Obsidian 中的 Embedding 调研由 119 行索引摘要补全为独立技术决策记录：问题与约束、方案对比、Qwen Flash 选型原因、Codex 对照、写入/检索链路、数据边界、收益、已验证数字、风险和全量评测恢复条件。
+- 数字严格区分：Qwen 仅完成 12 文档/10 查询的真实 API + SQLite 隔离 Case（P95=8.92ms、scope 泄漏=0），470 Case 指标仍是 lexical/identifier/RRF 基线，未误写为向量质量结论。
+- 本次为文档完善，运行测试数 `N/A`；校验目标为笔记 1 个、两个索引仍有效、技术结论与实现代码/验证报告一致。
+
+### 2026-09-05 PRD-004 设计前基线 Step
+
+- 范围：读取用户 PRD、定向审计、SQLite/Context/Tool/Evidence/Projection/Tracing 接口；尚未修改生产代码。
+- 命令：`pytest -q`；实际 288 passed、0 failed、1 warning、2.61s；历史通过数288→288，变化0（0%），通过率100%，门槛288项全部通过且新增失败0。历史耗时未记录，耗时回归比例 N/A。
+- 命令：`rg --files src -g '*.py' | wc -l`、`rg --files tests -g 'test_*.py' | wc -l`；147个生产Python文件、64个测试文件。HEAD：9d998849cf53b44e48cf745628058a3dde31dead。
+- 原始测试输出摘要：docs/validation/prd004-design-baseline/pytest.txt。
+- 真实Case 0、重试0、生产代码变更0；后台异常/持久化延迟/吞吐 N/A（未启动真实Case）。INSUFFICIENT_DATA：Code Map正确性和性能尚无运行证据。
+- 保留开始时已有的4项文档改动。A1/A2/A3三项审计问题仍待修复；下一步生成候选设计供用户review，不推进实现阶段状态。
+
+### 2026-09-05 PRD-004 候选设计与文档自审 Step
+
+- 新增3个文档产物：docs/superpowers/specs/2026-09-05-prd004-code-map-design.md、docs/research/prd004-code-map-research.md、docs/validation/prd004-design-baseline/pytest.txt；另追加本日志1个文件，生产/测试文件改动0。
+- 自审命令：Python读取设计文档，正则 `^\| (\d+) ` 计数验收行、`\b(?:TODO|TBD|FIXME)\b` 扫描占位符；实际11行/阈值11，0占位符/阈值0；`git diff --name-only -- src tests`输出0项；`git diff --check`退出0，无输出。
+- 候选方案0→3（目标3，100%）；验收映射0→11（目标11，100%）；研究来源4类（目标4，100%）。新增文档产物0→3；相对增长因初值0不定义。
+- 测试仍引用本轮刚执行基线288/288、失败0、2.61s、警告1，未重复运行。真实Case0、重试0；后台异常与异步完成延迟N/A。总调研耗时未计时，N/A，不用估算代替。
+- 2项剩余设计风险：关系全量重算耗时、源码BLOB增长；3项审计前置问题A1/A2/A3仍未修复。设计没有宣称性能或质量达标。
+- 下一步：用户选择A/B/C并review草案后定稿/生成计划。Case尚未确认，未启动外部服务，未写入项目storage，不推进实现状态。
+### 2026-09-05 PRD-004 Skill / Plugin 基线 Step（本轮）
+
+- 当前输入为用户粘贴的 Skill / Plugin Integration PRD；旧 Code Map 草案不作为本轮范围。
+- `pytest -q`：288/288 passed，0 failed，1 warning，2.86s；对历史288项通过数变化0（0%），阈值288项全部通过，通过率100%。历史单次耗时2.61s→2.86s，增加0.25s（9.58%）；非同环境重复性能实验，不能声称耗时回归门槛达标。
+- `rg --files src -g '*.py' | wc -l`=147；`rg --files tests -g 'test_*.py' | wc -l`=64；HEAD=9d998849cf53b44e48cf745628058a3dde31dead。
+- 证据：docs/validation/prd004-skill-design-baseline/pytest.txt；本Step新增证据1份、修改日志1份、生产及测试代码改动0、真实Case0、重试0。
+- 后台异常、持久化耗时、吞吐、Skill加载延迟均N/A（没有执行真实Case）；INSUFFICIENT_DATA：Skill接入与质量尚未验证。
+- 发现3处接入约束：messages要求一次工具后final；工具回灌只保留摘要；重复缓存调用导致non_convergent。后续设计须明确修改边界；下一步候选设计，尚不推进阶段状态。
+
+### 2026-09-05 PRD-004 Skill / Plugin 候选设计及自审 Step
+
+- 新增3份产物：docs/superpowers/specs/2026-09-05-prd004-skill-plugin-design.md、docs/research/prd004-skill-plugin-research.md、docs/validation/prd004-skill-design-baseline/pytest.txt；另修改开发日志1份。源代码/测试变更0；未覆盖已有Code Map草案及用户PRD文档。
+- 自审命令：Python读取设计并以正则计数 `^\| [ABC](?: |：)`、`^## \d+\. 4\.[1-5] `、`^\| \d+ \|`；扫描 TODO/TBD/FIXME；`git diff --name-only -- src tests`；`git diff --check`。
+- 实际输出：options=3、stages=5、acceptance_rows=15、placeholders=0、production_test_diff_files=0；design_structure_check=passed；git diff --check退出0。候选3/3、阶段5/5、验收映射15/15，三项达标率100%；占位符0/阈值0；生产及测试差异0/阈值0。设计产物从0增至3，相对变化因分母0不定义。
+- 本轮测试总数288、通过288、失败0、警告1、测试耗时2.86s，见上述原始输出；真实Case数0、重试0、产物3、新增文件3、修改文件1、未解决主要设计风险3。后台异常N/A（未启动真实Case），总调研墙钟耗时N/A（没有完整计时），持久化/加载性能N/A。INSUFFICIENT_DATA：尚无Skill真实运行与效果数据。
+- 自审修正边界：本轮Vt冻结、缓存前授权、运行指令块每请求仅1份、控制调用不进偏好提取、运行绑定不可变版本、OTel父子链须实际验证。
+- 当前只提交候选草案供review，不推进实施阶段状态。下一步用户选择A/B/C；推荐A本地不可变版本包，需确认部署升级语义。Case runner仅约定接口，尚未实现或运行；设计确认后生成实施计划，具体Case准备好并确认后才运行。
+
+### 2026-09-05 PRD-004 Skill版本兼容设计补充
+
+- 根据用户要求补齐版本控制：多版本并存、ReleaseLock、旧运行和checkpoint精确恢复、工具/运行时契约校验、发布失败保留原release、回滚不改变已有绑定。本期不提供自动删除历史产物功能。
+- 修改3份文档：Skill设计、Skill研究和本日志；生产/测试代码变更0；新文件0；真实Case0；重试0。测试未重跑（仅文档），此前288/288仅作历史基线；耗时/后台异常/兼容运行成功率N/A，INSUFFICIENT_DATA。
+- 自审命令：Python正则统计设计中的V1/V2/V3规则及数字验收行，扫描占位符，并运行git diff --name-only -- src tests。实际compatibility_rules=3、acceptance_rows=18、placeholders=0、production_test_diff_files=0；目标3/18/0/0全部达到，结构检查达标率100%。兼容专项规则0→3，验收映射15→18，增加3（20%）；这不是运行验收通过。
+- 剩余风险1项：工具行为兼容不能仅靠版本或schema证明，须旧Skill契约Case和可保留的执行实现。下一步继续设计review，尚未生成实施计划或启动真实Case。
+
+### Stage4.1 工作树基线
+
+- 路径：/Users/xuewentao/.codex/worktrees/antisentinel-prd004；branch=codex/prd004-skills。首次命令python因PATH缺失退出127，使用既有miniconda绝对路径重试1次。
+- 命令：/Users/xuewentao/miniconda3/bin/python -m pytest -q；输出：288 passed, 1 warning in 2.85s；原始证据docs/validation/prd004-skill-stage41/baseline.txt。真实Case0；尚未调用模型或外部服务。
+
+### Stage4.1 失败测试Step
+
+- 新增test_skill_catalog.py和test_skill_cli.py，验证错误包排除、无正文读取、显式工具导出、不可变索引与可用性。
+- 命令：python -m pytest tests/test_skill_catalog.py tests/test_skill_cli.py -q；1 error in 0.12s；预期catalog/CLI缺失断言失败，生产代码仍0改动。证据docs/validation/prd004-skill-stage41/red.txt；下一步最小实现；真实Case0。
+
+- 失败测试更正：首次出现测试辅助导入路径错误（1 collection error），不算有效RED；改为tests.test_skill_catalog后复跑：29 failed in 0.21s；本次才作为缺少接口的RED证据。重试1。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.1 实现与回归
+
+- 范围：本地 `plugin.json` 严格校验、元数据发现、可信显式工具导出、可用性过滤、不可变Catalog视图、`validate/inspect` CLI，以及隔离Case runner。正文/资料按需读取、ReleaseLock、Runtime接入、真实模型和评测均未进入本阶段。
+- 新增生产文件6个：`capabilities/manifest.py`、`registry.py`、`availability.py`、`bootstrap.py`、`cli.py`、`scripts/validate_skill_integration.py`；新增测试2个文件。生产代码与测试新增合计8个文件；验证产物3个（baseline、targeted-tests、full-tests），开发日志修改1个文件。
+- 先失败测试：有效RED为29 failed，0 passed，0.21s；首次导入路径collection error未计入产品失败，已在第1次重试修正。新增嵌套资源路径测试先失败1项，修复后通过。
+- 针对性命令：`/Users/xuewentao/miniconda3/bin/python -m pytest tests/test_skill_catalog.py tests/test_skill_cli.py tests/test_tools.py -q`；实际45/45 passed、0 failed、0.41s，证据`docs/validation/prd004-skill-stage41/targeted-tests.txt`。
+- 累计命令：`/Users/xuewentao/miniconda3/bin/python -m pytest -q`；实际319/319 passed、0 failed、1 warning、3.22s，证据`docs/validation/prd004-skill-stage41/full-tests.txt`。工作树开始值288/288、2.85s→319/319、3.22s：通过数增加31，失败数0→0；耗时增加0.37s（12.98%），测试数增长后不作为无Skill性能回归证据，性能指标仍INSUFFICIENT_DATA。
+- 4.1成功指标：合法Skill登记2/2（100%）、错误包诊断6/6（100%）、注册正文读取0/0（100%）、错误包工具泄漏0/0（100%）、路径逃逸/符号链接误接受0/0（100%）。失败指标：未捕获后台异常0；本阶段无后台worker。回归指标：既有288测试通过数288/288，新增失败0。
+- 已准备但未执行真实Case：`/Users/xuewentao/miniconda3/bin/python scripts/validate_skill_integration.py --stage 4.1 --output /tmp/antisentinel-prd004-stage41-<unique-run-id>`。输出目录必须不存在；只创建该目录下fixture和3个JSON产物；不启动服务、不使用模型、不写项目storage。待用户确认Case后运行，最多重试2次；当前Case数0、真实产物0、持久化数量N/A、业务/持久化完成时间N/A、后台异常N/A、case_pass未判定。
+- 当前阶段状态：回归通过（证据为上述pytest命令）；真实运行通过与用户review通过均未达到。下一步仅等待Case确认，不进入4.2。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.1 真实运行 Case
+
+- Case：本地能力包登记与错误包隔离；范围4.1。输入：1个合法本地包（2个Skill）和6个错误包（缺工具、缺资源、父路径、绝对路径、非法字段、非法reference）；运行：`/Users/xuewentao/miniconda3/bin/python scripts/validate_skill_integration.py --stage 4.1 --output /tmp/antisentinel-prd004-stage41-20260905-r1`。输出目录在运行前不存在，未访问项目storage、Redis、HTTP或模型。
+- 运行状态：exit_code=0，业务完成0.20s；持久化状态：3个报告JSON写入成功，业务完成与持久化完成由同一同步进程完成，精确t2-t1=N/A（runner未记录两个独立时钟，不能伪造）；后台异常0。真实产物：`/tmp/antisentinel-prd004-stage41-20260905-r1/catalog.json`、`diagnostics.json`、`report.json`，另有21个fixture源文件，物理文件总数24。
+- 关键数量／关联：合法Skill 2/2；错误诊断6/6，分别带package_root、field和reason；正文读取0；错误包工具泄漏0；catalog工具数0；snapshot_id长度64。独立进程恢复读回命令：`python -c '...json.loads...'`，实际3/3 JSON可解析，读回skill_count=2、diagnostic_count=6、case_pass=true。异步持久化N/A（本Case无worker）。
+- 量化结果：输入包7，输入Skill声明14，运行0.20s，输出报告3，持久化报告3，关联校验8（2合法Skill+6诊断），后台异常0，恢复读回3/3，重试0。Case输出：`case_pass=true`。
+
+| 指标 | 基线 | 实际值 | 阈值 | 差值/比例 | 证据命令 | 结果 |
+|---|---:|---:|---:|---|---|---|
+| 合法Skill登记 | 0 | 2 | 2 | +2，100% | stage 4.1 runner | 通过 |
+| 错误诊断 | 0 | 6 | 6 | +6，100% | stage 4.1 runner | 通过 |
+| 注册正文读取 | 0 | 0 | 0 | 0，0% | stage 4.1 runner body-read guard | 通过 |
+| 错误包工具泄漏 | 0 | 0 | 0 | 0，0% | stage 4.1 runner | 通过 |
+| 报告产物读回 | 0/3 | 3/3 | 3/3 | +3，100% | 独立JSON readback | 通过 |
+| 后台异常 | N/A | 0 | 0 | N/A，无后台worker | runner exit/output | 通过 |
+| 既有回归 | 288/288 | 319/319 | 288/288且失败0 | +31测试，失败变化0 | `pytest -q` | 通过 |
+
+- 阶段数值：新增/修改生产文件6，新增测试文件2，新增验证脚本1，文档/日志/验证文件至少5；测试总数319、通过319、失败0、Case数1、测试+Case可观测耗时3.63s（3.22+0.41，未含shell开销）、Case重试0、报告产物3、后台异常0、未解决实施风险2（4.2版本锁和4.3运行授权尚未实现）。状态：真实运行通过；回归通过证据保留；用户review通过未达到。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.2 实现与回归
+
+- 范围：不可变本地版本包、release lock、内容hash、同版本内容冲突拒绝、显式按需正文/资料读取、16MiB LRU内容缓存、运行专属原子激活/资料披露状态、瞬时I/O最多2次重试、CLI `pack`与显式release inspect，以及累计4.1–4.2 Case runner。未接入RuntimeLoop、ToolExecutor、模型、API或真实外部服务。
+- 新增生产文件3个：`capabilities/package.py`、`loader.py`、`runtime_state.py`；修改CLI和Case runner各1个；新增测试3个文件并扩展CLI测试。4.2新增测试16项（Release 4、Loader 7、Activation 4、CLI 1）；累计Skill针对性测试61项。
+- 有效RED：发布/加载/激活模块缺失时12 failed；CLI pack缺失及瞬时重试/4.2 runner缺失时2 failed；累计4.2 runner包含4.1子Case的测试先失败1项。最小实现后均转绿。单元测试重试0；真实Case重试0（尚未执行）。
+- 针对性命令：`/Users/xuewentao/miniconda3/bin/python -m pytest tests/test_skill_catalog.py tests/test_skill_cli.py tests/test_skill_release.py tests/test_skill_loader.py tests/test_skill_activation.py tests/test_tools.py -q`；实际61/61 passed、0 failed、0.67s，证据`docs/validation/prd004-skill-stage41/stage42-targeted-tests.txt`。
+- 累计命令：`/Users/xuewentao/miniconda3/bin/python -m pytest -q`；实际335/335 passed、0 failed、1 warning、2.93s，证据`docs/validation/prd004-skill-stage41/stage42-full-tests.txt`。上阶段319/319、3.22s→335/335、2.93s：通过数增加16，失败0→0；耗时减少0.29s（9.01%），不同单次运行且测试集合增加，不作为性能改善结论。
+- 4.2成功指标：两次相同pack release_id一致100%（1/1）、同版本异内容拒绝100%（1/1）、旧release未披露资料读取正确100%（unit 1/1）、篡改资源拒绝100%（1/1）、激活或reference持久化失败半状态0/0（2个失败点）、瞬时读取重试次数2/最大2。失败指标：错误激活0、越界资源读取0；回归：既有288测试288/288、累计335/335通过。
+- 已准备但未执行累计真实Case：`/Users/xuewentao/miniconda3/bin/python scripts/validate_skill_integration.py --stage 4.2 --output /tmp/antisentinel-prd004-stage42-20260905-r1`。它在独立目录先运行4.1子Case，再生成v1/v2两个release、在v2发布后读取v1此前未披露reference、注入checkpoint写失败并写入`releases.json`、`state.json`、`report.json`。不启动服务、模型或网络，不写项目storage；默认120秒、最多2次重试。真实Case计数0、持久化数量N/A、后台异常N/A、case_pass未判定。
+- 当前阶段状态：回归通过；真实运行通过和用户review通过未达到。下一步仅等待4.2 Case确认，不进入4.3。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.2 真实运行 Case
+
+- 用户首次从`~`执行相对脚本路径，系统在打开脚本前报`[Errno 2]`，未创建输出目录、未执行Case；随后从工作树`/Users/xuewentao/.codex/worktrees/antisentinel-prd004`以相同参数重跑。Case：累计4.1登记验证、v1/v2发布、旧release未披露reference读取和checkpoint失败原子性；命令：`/Users/xuewentao/miniconda3/bin/python scripts/validate_skill_integration.py --stage 4.2 --output /tmp/antisentinel-prd004-stage42-20260905-r1`。
+- 运行状态：exit_code=0，业务完成0.27s；持久化状态：`releases.json`、`state.json`、`report.json`及`stage41/`子Case报告写入成功。同步runner未记录独立t1/t2，t2-t1=N/A；后台异常0。真实产物根：`/tmp/antisentinel-prd004-stage42-20260905-r1`，物理文件43个；本阶段报告4个（顶层3+stage41/report），其余为release和fixture文件。
+- 关键数量／关联：release数2，release ID不同；旧运行`release_id=18682…b61c2f`、selected_skill=`source/diagnosis@1.0.0`、state revision=2；披露reference 1个，hash=`f92ec7…957411`，内容为v1的`version one reference`；v2未改变旧状态。checkpoint失败实例selected_skill_id为空，半激活状态0。4.1子Case仍为合法Skill2、诊断6、正文读取0、工具泄漏0。
+- 恢复校验：独立进程读取顶层`releases.json`、`state.json`、`report.json`和`stage41/report.json`共4/4，断言两个case_pass均true、state revision=2、selected_skill一致，实际通过。异步持久化N/A（无worker）。
+
+| 指标 | 基线 | 实际值 | 阈值 | 差值/比例 | 证据命令 | 结果 |
+|---|---:|---:|---:|---|---|---|
+| 累计4.1子Case | 0 | 1 | 1 | +1，100% | stage 4.2 runner | 通过 |
+| 并存release | 0 | 2 | 2 | +2，100% | `releases.json` | 通过 |
+| 旧release未读资料 | N/A | v1内容1份 | 精确v1内容 | N/A，内容一致 | `report.json` | 通过 |
+| 旧运行版本漂移 | 0 | 0 | 0 | 0，0% | `state.json` | 通过 |
+| checkpoint半激活 | 0 | 0 | 0 | 0，0% | stage 4.2 runner | 通过 |
+| 产物独立读回 | 0/4 | 4/4 | 4/4 | +4，100% | 独立JSON readback | 通过 |
+| 后台异常 | N/A | 0 | 0 | N/A，无后台worker | runner exit/output | 通过 |
+| 累计回归 | 319/319 | 335/335 | 既有288/288且失败0 | +16测试，失败变化0 | `pytest -q` | 通过 |
+
+- 阶段数值：新增/修改生产文件5（package、loader、runtime state、CLI、runner），新增测试文件3并扩展1个，测试总数335、通过335、失败0、Case数1、可观测测试+Case耗时3.60s（2.93+0.67，未含shell开销）、Case重试0、顶层报告产物3、独立读回产物4、后台异常0、未解决实施风险1（4.3尚未把状态接入RuntimeLoop/ToolExecutor）。状态：真实运行通过；回归通过证据保留；用户review通过未达到。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.3 运行时接入 Step（进行中）
+
+- 已接入：运行专属`SkillRuntime`把4.2 loader/state映射成`skill.load`与`skill.read_reference`；每回合在模型调用前冻结可见工具集合；ContextBuilder按未激活目录/激活指令/已读资料构建来源明确的上下文；ToolExecutor在缓存查询前校验当前回合scope、只读和审批策略；RuntimeSnapshot持久化当前Skill身份。
+- DeepSeek适配修正：普通工具结果仍强制final JSON；当请求含skill或skill_catalog上下文时，不再在skill控制结果后发送`tool_choice=none`，让下一回合能调用新披露工具；自定义skill角色转换为兼容的user角色。该行为有MockTransport契约测试，不把网络响应伪造为真实DeepSeek Case。
+- 有效RED：SkillRuntime/ToolExecutionScope缺失时5 failed；checkpoint skill_state缺失时1 failed；DeepSeek控制结果仍被强制final时1 failed。实现后转绿。针对性命令：`pytest tests/test_skill_runtime.py tests/test_deepseek_compatibility.py tests/test_runtime_loop.py tests/test_runtime_context.py tests/test_checkpoint.py tests/test_tools.py -q`，实际46/46 passed、0 failed、0.68s，证据`docs/validation/prd004-skill-stage41/stage43-targeted-tests.txt`。
+- 累计命令：`pytest -q`，实际342/342 passed、0 failed、1 warning、3.45s，证据`docs/validation/prd004-skill-stage41/stage43-full-tests.txt`。上阶段335→342，增加7项；失败0→0；单次耗时2.93s→3.45s，增加0.52s（17.75%），测试集合不同且不是5次同fixture性能试验，性能结论INSUFFICIENT_DATA。
+- 真实DeepSeek Case未运行：读取环境变量名结果为空，只有`.env.example`，未读取或输出任何密钥。真实调用、输入/输出Token、模型调用数、P50/P95、后台异常、持久化延迟均N/A；Case数0、重试0、case_pass未判定。需要将`ANTISENTINEL_MODEL_MODE=real`、`ANTISENTINEL_MODEL_BASE_URL=https://api.deepseek.com`、`ANTISENTINEL_MODEL_NAME`和`ANTISENTINEL_MODEL_API_KEY`配置到运行脚本所在进程后再提交具体真实Case。
+- 当前状态：4.3离线回归通过；真实运行通过与用户review通过未达到。未进入4.4。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.3 真实 DeepSeek Case
+
+- 使用原始工作区`.env.local`在子进程中配置真实DeepSeek；不读取或记录密钥。第1次HTTP 400（工具名含`.`），第2次读回安全错误摘要确认DeepSeek仅接受`^[a-zA-Z0-9_-]+$`工具名，第3次已调用业务工具但模型重复缓存调用，Loop返回`model_non_convergent`。修复内部名称映射和“仅Skill控制结果允许后续工具”后，第4次同一Case通过；重试预算由2提升至4，理由为前三次均定位到并修复了提供方协议/回合控制根因。
+- 通过命令：从工作树加载原始`.env.local`后运行`python scripts/validate_skill_integration.py --stage 4.3 --output /tmp/antisentinel-prd004-stage43-20260905-r4`；实际exit_code=0、耗时1.96s、模型调用2、输入Token1398、输出Token64、工具调用1、read_health调用1、selected_skill=source/diagnosis、后台异常0、case_pass=true。
+- 真实产物：`/tmp/antisentinel-prd004-stage43-20260905-r4/report.json`、`runtime-result.json`；独立进程读回2/2，status=completed且case_pass=true。持久化数量2，关联校验2（Skill身份和工具结果），异步t2-t1=N/A（无worker）。
+- 阶段状态：真实运行通过；回归通过。用户review通过未达到，未进入4.4。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.4 diagnosis契约 Step（进行中）
+
+- 新增diagnosis本地包清单、指令、健康资料和3条契约（明确匹配、无匹配、写操作禁止）；新增确定性`verify_contract`。有效RED：verifier模块缺失时2 failed；最小实现后`pytest tests/test_diagnosis_skill.py -q`为3/3 passed、0 failed、0.02s。
+- 验证：加载Skill但无health_evidence失败1/1；健康证据+read_health通过1/1；restart_service触发禁止工具和no_write_tool两个失败断言2/2。真实DeepSeek/API/页面Case未重复运行；持久化、Trace和页面展示仍未实现，Case数0，状态仍为回归通过。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.4 真实运行 Case
+
+- 变更：Runtime写入skill.loaded/skill.reference_read/skill.load_failed Event与Span；结果、API和Dashboard显示release、Skill版本和资料hash数量；应用Session接受skill_id/skill_version并在持久化前完成选择。正文不进入Trace、Result或页面。
+- 回归：`pytest -q`实际348/348 passed、0 failed、1 warning、3.23s，证据`docs/validation/prd004-skill-stage41/stage44-full-tests.txt`。此前348→348，失败0→0；耗时4.10s→3.23s，减少0.87s（21.22%），测试集合相同但仅单次，不作为性能改善结论。
+- 真实Case：加载原始`.env.local`后，隔离目录`/tmp/antisentinel-prd004-stage44-r2`，真实DeepSeek + 本地Redis read_health + FastAPI TestClient + SQLite。运行completed，3.944s，输入2687 token、输出193 token、工具调用2、Skill Span1、持久化报告3、后台异常0、重试0；Dashboard HTTP=200；重建服务读回skill_usage一致；独立读回report/session/observability 3/3。case_pass=true。
+- 实际Skill：diagnosis/diagnosis@1.0.0，release_id=3fe6952d…e8876464，reference_hashes=0。指标：Skill身份一致1/1、持久化读回1/1、Dashboard200/200、Span≥1实际1、正文Trace泄漏0、既有回归288/288。阶段状态：真实运行通过、回归通过；用户review通过待确认。
+
+### 2026-09-05 PRD-004 Skill / Plugin Stage 4.5 本地 A/B/C DeepSeek Step
+
+- 冻结本地工程烟测7类各1条，共7条；本次只运行`skill-execution-01`一个适用Case，A无Skill、B显式预载、C自主发现，各3次，共9 trial。命令：加载原始`.env.local`后运行`python scripts/run_skill_abc_evaluation.py /tmp/antisentinel-prd004-skill-abc-r1`；总墙钟22.25s，业务trial累计21.616s，重试0，后台异常0。
+- A：3/3成功，read_health 3次，选择Skill 0次，输入3088、输出235 token，P50 1.560s、P95 1.563s。B：3/3成功，选择3/3，read_health 3次，输入4240、输出404，P50 2.165s、P95 2.956s。C：3/3成功，选择3/3，read_health 3次，输入6665、输出425，P50 3.291s、P95 3.340s。
+- B−A成功率0个百分点；输入+1152（+37.31%），输出+169（+71.91%），累计耗时+2.548s（+54.63%）。C−B成功率0个百分点；输入+2425（+57.19%），输出+21（+5.20%），累计耗时+2.528s（+35.05%），P95+0.384s（+12.99%）。单Case结果只证明链路可执行，不证明Skill提升任务成功率。
+- 产物：`/tmp/antisentinel-prd004-skill-abc-r1/trials.jsonl`9行和`report.json`1份；独立读回2/2，trial 9/9、trace_id 9/9、失败/超时/基础设施错误0、case_pass=true。全量`pytest -q`为350/350 passed、0 failed、1 warning、4.30s，证据`docs/validation/prd004-skill-stage41/stage45-full-tests.txt`。
+- 阶段状态：本地Case真实运行通过、回归通过。SkillsBench/BFCL固定子集、来源commit/license及适配器尚未交付，因此4.5整体仍待验证，不能声称PRD-004全部完成。
+
+### 2026-09-05 PRD-004 Obsidian 设计与实现归档
+
+- 在Vault `11.agent learning/antiSentinel/runtime 层开发/Skill 与 Plugin 集成设计与实现.md` 新增1份162行主笔记，记录范围、架构、版本控制、渐进披露、工具权限、已完成实现、4.1–4.4真实Case、DeepSeek A/B/C、SkillsBench和后续Plan边界。
+- 更新2个索引：`AntiSentinel 索引.md`与`AntiSentinel Index.md`，两者均含`[[Skill 与 Plugin 集成设计与实现]]`。校验命令`test -f`、`rg -l`、`rg -n`、`wc -l`；实际主笔记1/1、索引链接2/2、关键数字5类命中、断链0，达标率100%。
+- 范围决定：PRD-004保持单Agent单Skill；64个SkillsBench多Skill任务及多Skill架构交给Plan，不作为PRD-004完成门槛。测试N/A（知识归档未改生产代码）；新增Vault文件1、修改Vault索引2、后台异常N/A、重试0。
+
+### 2026-09-05 PRD-004 多 Skill Runtime 扩展 Step
+
+- 用户将范围扩展为单Agent多Skill。状态从单值selected_skill升级为有序active_skills；同Skill重复加载幂等，第二个不同Skill原子激活；reference key使用`skill_id:reference_id`防同名冲突；Context按激活顺序注入多份指令，工具集合取required_tools并集。
+- 同时修复自适应Loop：业务工具结果后允许不同工具调用，运行级`max_total_tool_calls`、每回合预算、缓存和连续两回合重复检测共同收敛。重复调用首次返回`duplicate_tool_call`和既有摘要，允许模型最终结论；第二个纯重复回合才`model_non_convergent`。
+- 新增/更新测试：多Skill状态与Context、重复后final、总工具预算；针对性10/10通过。全量命令`pytest -q`实际355/355 passed、0 failed、1 warning、3.32s，证据`docs/validation/prd004-skill-stage41/multiskill-full-tests-2.txt`。
+- 真实DeepSeek多Skill Case：`/tmp/antisentinel-multiskill-r2/report.json`，两个Skill顺序`multi/diagnosis → multi/runbook`，共享read_health调用1，completed，2.732s，输入1961、输出83 token，后台异常0、重试1（首次重复调用策略失败后修复），case_pass=true。
+- 未完成：checkpoint恢复重建所有ActiveSkill、多Skill正式A/B/C与SkillsBench任务环境适配。当前状态：真实运行通过、回归通过；用户review通过待确认。
+
+### 2026-09-05 PRD-004 多 Skill A/B/C 正式 DeepSeek Case
+
+- 运行`/tmp/antisentinel-multiskill-abc-r3`：固定两个Skill（multi/diagnosis、multi/runbook）、同一健康工具、A无Skill/B显式两Skill/C自主两Skill，各3 trial，共9条。case_pass=true、9/9通过、后台异常0、重试1（前次重复调用策略失败后修复）。
+- A：3/3、输入3879、输出225、累计5.258s。B：3/3、输入8024、输出353、累计8.379s。C：3/3、输入11035、输出724、累计13.460s。B−A成功率0pp、输入+4145（106.86%）；C−B成功率0pp、输入+3011（37.53%），累计耗时+5.081s（60.64%）。结果证明多Skill链路和自主双选择可运行，不证明收益。
+- 机制：重复调用首次回灌duplicate_tool_call；若后续请求仍带重复反馈，Provider强制final，避免死循环。全量`pytest -q`=356/356 passed、0 failed、1 warning、4.62s，证据`docs/validation/prd004-skill-stage41/multiskill-abc-full-tests.txt`。
+
+### 2026-09-05 PRD-004 BFCL 派生子集 Step
+
+- 安装`bfcl-eval==2026.3.23`，补充其遗漏的soundfile依赖。冻结simple_python、irrelevance、multi_turn_base各5条，共15条；每条保留case ID、源行hash、原问题、函数定义和ground truth，选择规则为每个类别源文件前5条。
+- DeepSeek正式派生运行产物`docs/validation/bfcl-deepseek-report`：15条记录、10条可评分、7条通过、70.00%；输入3566、输出1109、模型耗时10.898s、基础设施错误0。5条multi_turn_base因缺有状态文件工具环境标记unsupported，不计入10条准确率分母。另一轮9/10仅记录模型波动，不替换正式结果。
+- 协议映射：BFCL schema `dict/float/list/tuple/bool`归一为JSON Schema；非法Provider函数名映射为可逆alias。测试`tests/test_bfcl_adapter.py`=2/2通过。未完成：有状态多轮环境和官方BFCL leaderboard对齐，当前报告明确标为派生评测。
+
+### 2026-09-05 PRD-004 多 Skill恢复与自适应Loop收口
+
+- 根据审阅反馈，业务工具结果不再被Provider层强制final；允许不同工具继续调用。新增运行级max_total_tool_calls，重复调用首次回灌duplicate_tool_call和既有摘要，给模型一次最终结论/换工具机会，连续第二个纯重复回合才model_non_convergent。重复后final和持续重复终止测试通过。
+- 多Skill恢复：checkpoint记录active_skills和`skill_id:reference_id`；resume逐项读取并核验release/version/instruction/reference hash，恢复后Context按顺序注入全部Skill。针对性9/9通过；全量`pytest -q`实际356/356 passed、0 failed、1 warning、3.10s，证据`docs/validation/prd004-skill-stage41/multiskill-restore-full-tests.txt`。
+- 用户要求多Skill实现后，设计、计划和Obsidian已同步：ActiveSkill集合归Skill Runtime，Plan选择能力，DAG调度依赖。真实双Skill DeepSeek Case仍为`/tmp/antisentinel-multiskill-r2/report.json`：completed、2.732s、输入1961、输出83、共享工具1、case_pass=true。多Skill正式A/B/C与SkillsBench沙箱工具适配仍待执行。

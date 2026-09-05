@@ -27,6 +27,7 @@ class RuntimeSnapshot:
     last_error: dict[str, Any] | None
     pending_results: list[dict[str, Any]] = field(default_factory=list)
     completed_invocations: dict[str, dict[str, Any]] = field(default_factory=dict)
+    skill_state: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         require_non_empty(self.session_id, "session_id")
@@ -70,6 +71,7 @@ class RuntimeSnapshot:
             last_error=deepcopy(value["last_error"]),
             pending_results=deepcopy(value["pending_results"]),
             completed_invocations=deepcopy(value["completed_invocations"]),
+            skill_state=deepcopy(value.get("skill_state")),
         )
 
 

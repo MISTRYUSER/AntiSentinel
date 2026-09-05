@@ -208,3 +208,17 @@ def test_executor_normalizes_success_and_handler_failure():
     failed = ToolExecutor(failed_registry).execute("read_health", {"service": "api"})
     assert failed.status == "failed"
     assert failed.error == {"code": "tool_execution_failed", "message": "backend unavailable"}
+
+
+def test_executor_rejects_tool_outside_frozen_visible_scope_before_handler_and_cache():
+    from antisentinel.worker.execution.tool_executor import ToolExecutionScope
+
+    calls = []
+    registry = ToolRegistry()
+    registry.register(make_tool(lambda value: calls.append(value) or {"ok": True}))
+
+    result = ToolExecutor(registry).execute("read_health", {"service": "api"}, scope=ToolExecutionScope(frozenset()))
+
+    assert result.status == "rejected"
+    assert result.error["code"] == "tool_not_disclosed"
+    assert calls == []

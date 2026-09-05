@@ -28,6 +28,8 @@ class StartSessionRequest(BaseModel):
     model_mode: str = "fake"
     api_key: str | None = Field(default=None, min_length=1)
     model_name: str | None = Field(default=None, min_length=1)
+    skill_id: str | None = Field(default=None, min_length=1)
+    skill_version: str | None = Field(default=None, min_length=1)
 
 
 class SendMessageRequest(BaseModel):
@@ -98,6 +100,8 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
                 model_mode=payload.model_mode,
                 api_key=payload.api_key,
                 model_name=payload.model_name,
+                skill_id=payload.skill_id,
+                skill_version=payload.skill_version,
             )
         except KeyError as exc:
             raise HTTPException(status_code=404, detail={"code": "incident_not_found", "id": str(exc)}) from exc
@@ -198,7 +202,7 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         telemetry = getattr(app.state.service.engine, "telemetry", None)
         spans = [{"name": span.name, "request_id": span.attributes.get("request_id"), "turn_id": span.attributes.get("turn_id"), "parent_request_id": span.attributes.get("parent_request_id")} for span in telemetry.finished_spans if span.attributes.get("session_id") == session_id] if telemetry is not None else []
         groups = {"context": [item for item in spans if item["name"].startswith("context.")], "memory": [item for item in spans if item["name"].startswith("memory.")], "rag": [item for item in spans if item["name"].startswith("rag.") or item["name"].startswith("retrieval.")], "model": [item for item in spans if item["name"] == "model.complete"], "tools": [item for item in spans if item["name"].startswith("tool_call.") or item["name"].startswith("attempt.")], "worker": [item for item in spans if item["name"].startswith("worker.")]}
-        return {"session_id": session_id, "incident_id": runtime.incident_id, "status": runtime.status, "trace_id": runtime.trace_id, "event_count": len(runtime.events), "evidence_ref_count": len(runtime.evidence_refs), "token_usage": {"input_tokens": runtime.token_usage.input_tokens, "output_tokens": runtime.token_usage.output_tokens, "cached_input_tokens": runtime.token_usage.cached_input_tokens, "reasoning_tokens": runtime.token_usage.reasoning_tokens, "tool_tokens": runtime.token_usage.tool_tokens}, "trace": {"spans": spans, "groups": groups}}
+        return {"session_id": session_id, "incident_id": runtime.incident_id, "status": runtime.status, "trace_id": runtime.trace_id, "event_count": len(runtime.events), "evidence_ref_count": len(runtime.evidence_refs), "skill_usage": runtime.skill_usage, "token_usage": {"input_tokens": runtime.token_usage.input_tokens, "output_tokens": runtime.token_usage.output_tokens, "cached_input_tokens": runtime.token_usage.cached_input_tokens, "reasoning_tokens": runtime.token_usage.reasoning_tokens, "tool_tokens": runtime.token_usage.tool_tokens}, "trace": {"spans": spans, "groups": groups}}
 
     @app.get("/api/sessions/{session_id}/events")
     def session_events(session_id: str, last_event_id: str | None = Header(default=None)):
