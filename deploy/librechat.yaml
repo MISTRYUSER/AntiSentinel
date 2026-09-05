@@ -1,0 +1,23 @@
+version: 1.2.1
+
+interface:
+  customWelcome: "欢迎使用 AntiSentinel。这里的项目背景会作为长期上下文，每个新对话对应一次独立的日常会话。"
+  modelSelect: false
+  contextUsage: true
+  contextCost: false
+  memories: true
+  multiConvo: true
+  webSearch: false
+  fileSearch: false
+
+endpoints:
+  custom:
+    - name: AntiSentinel
+      apiKey: antisentinel-server-managed
+      baseURL: http://host.docker.internal:8765/v1
+      models:
+        default:
+          - deepseek-v4-flash
+      modelDisplayLabel: AntiSentinel · DeepSeek（中文）
+      titleConvo: true
+      summarize: false

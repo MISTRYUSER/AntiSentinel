@@ -1,0 +1,2 @@
+"""Planning application module skeleton."""
+

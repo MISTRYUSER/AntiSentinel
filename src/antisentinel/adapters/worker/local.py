@@ -1,0 +1,1 @@
+"""In-process LocalWorkerAdapter skeleton."""

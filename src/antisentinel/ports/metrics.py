@@ -1,0 +1,2 @@
+"""Metrics query Interface skeleton."""
+

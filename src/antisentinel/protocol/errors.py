@@ -1,0 +1,2 @@
+"""Protocol error types skeleton."""
+

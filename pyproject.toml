@@ -1,0 +1,25 @@
+[project]
+name = "antisentinel"
+version = "0.1.0"
+description = "Code-aware incident diagnosis and runbook execution platform"
+requires-python = ">=3.11,<4"
+dependencies = [
+    "fastapi>=0.100",
+    "httpx>=0.27",
+    "uvicorn>=0.30",
+    "redis>=5.0",
+    "opentelemetry-api>=1.39",
+    "opentelemetry-sdk>=1.39",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.39",
+    "prometheus-client>=0.22",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]

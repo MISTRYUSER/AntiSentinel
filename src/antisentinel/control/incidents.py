@@ -1,0 +1,2 @@
+"""Incident application module skeleton."""
+

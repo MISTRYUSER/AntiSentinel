@@ -1,0 +1,2 @@
+"""ExecutionReceipt skeleton."""
+

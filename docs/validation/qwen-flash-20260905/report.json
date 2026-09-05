@@ -1,0 +1,17 @@
+{
+  "model": "qwen3.7-text-embedding-flash",
+  "dimension": 1024,
+  "input_characters": 44,
+  "document_vectors": 3,
+  "query_result_count": 3,
+  "persisted_vectors": 3,
+  "valid_version_links": 3,
+  "persist_ms": 340.95,
+  "total_ms": 432.02,
+  "quick_check": "ok",
+  "foreign_scope_hits": 0,
+  "background_workers": 0,
+  "background_exceptions": 0,
+  "retries": 0,
+  "case_pass": true
+}

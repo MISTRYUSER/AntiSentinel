@@ -1,0 +1,2 @@
+"""Unified retrieval facade skeleton."""
+

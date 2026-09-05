@@ -1,0 +1,2 @@
+"""Graph retrieval strategy skeleton."""
+

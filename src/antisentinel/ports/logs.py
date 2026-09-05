@@ -1,0 +1,2 @@
+"""Log query Interface skeleton."""
+

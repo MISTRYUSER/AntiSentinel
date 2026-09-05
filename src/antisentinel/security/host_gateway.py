@@ -1,0 +1,2 @@
+"""Physical host gateway skeleton."""
+

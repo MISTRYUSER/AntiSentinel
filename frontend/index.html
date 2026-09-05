@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AntiSentinel</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .conversation, .inspector { min-height: 0; }
+      .conversation-scroll, .inspector-content { min-height: 0; }
+      .credential-row { display: flex; align-items: end; gap: 10px; border-top: 1px solid #373737; padding-top: 11px; margin-top: 8px; }
+      .credential-row .compact-field { flex: 1; }
+      .credential-row .compact-field input { width: 100%; font-family: ui-monospace, SFMono-Regular, monospace; }
+      .credential-note { color: #666; font-size: 10px; padding-bottom: 5px; }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand"><span class="brand-icon">A</span><span>AntiSentinel</span><span class="down">⌄</span></div>
+          <button id="new-incident" class="new-chat" type="button"><span class="pencil">✎</span> 新项目 <span class="shortcut">⌘ K</span></button>
+          <button id="new-session" class="new-chat secondary" type="button"><span class="pencil">✎</span> 新对话</button>
+          <nav class="primary-nav"><a href="#" class="nav-item"><span>⌕</span> 搜索</a><a href="#" class="nav-item"><span>◷</span> 历史记录</a><a href="#" class="nav-item"><span>⊞</span> 工具</a></nav>
+          <div class="nav-label">项目</div>
+          <div class="project-item"><span class="project-dot purple"></span><span>AntiSentinel</span><span class="more">•••</span></div>
+          <div class="project-item"><span class="project-dot blue"></span><span>运行时测试</span></div>
+          <div class="nav-label">最近诊断</div>
+          <div id="history-list" class="history-list"><div class="history-item empty-history">暂无 Incident</div></div>
+        </div>
+        <div class="sidebar-bottom"><div class="usage"><span class="status-dot"></span><span>Local runtime</span><span class="usage-count">P0</span></div><div class="profile"><span class="profile-avatar">X</span><span>Operator workspace</span><span class="more">•••</span></div></div>
+      </aside>
+
+      <main class="conversation">
+        <header class="conversation-header"><div class="header-title"><span class="folder">▱</span><strong>prd2a runtime smoke</strong><span class="muted">•••</span></div><div class="header-actions"><span class="provider-label">DETECTING PROVIDER</span><button class="icon-button" aria-label="分享">⌁</button><button class="icon-button" aria-label="更多">•••</button></div></header>
+        <div class="conversation-scroll">
+          <section class="welcome"><div class="welcome-kicker">RUNTIME DIAGNOSIS</div><h1>What are we investigating?</h1><p>Run an auditable diagnosis against your incident context and read-only tools.</p></section>
+          <form id="diagnosis-form" class="composer-card">
+            <div class="composer-head"><span class="composer-badge">Bug report</span><span id="provider-hint" class="composer-hint">Detecting provider…</span></div>
+            <input id="title" name="title" required placeholder="输入项目背景…" autocomplete="off" />
+            <textarea id="summary" name="summary" rows="3" placeholder="项目背景补充（可选）"></textarea>
+            <div class="credential-row"><label class="compact-field">Token <input id="api-token" name="api_key" type="password" placeholder="仅本次使用" autocomplete="off" /></label><span class="credential-note">不保存到浏览器</span></div><div class="composer-footer"><div class="composer-meta"><label class="compact-field">Source <input id="source" name="source" value="operator" required /></label><label class="compact-field">Operator <input id="participant" name="participant" value="operator-1" required /></label><label class="compact-field">Provider <select id="model-mode" name="model_mode"><option value="fake">Fake</option><option value="openrouter">OpenRouter</option><option value="deepseek">DeepSeek</option></select></label><label class="compact-field">Model <input id="model-name" name="model_name" value="openrouter/free" autocomplete="off" /></label></div><button id="start-button" class="send-button" type="submit" aria-label="开始诊断">↑</button></div>
+          </form>
+          <div id="error-banner" class="error-banner hidden"></div>
+          <section id="result-panel" class="result-panel hidden"><div class="assistant-label"><span class="assistant-orb">✦</span><span>AntiSentinel</span><span class="muted">刚刚</span></div><div id="diagnosis-card" class="diagnosis-card"></div><div id="conversation-messages" class="conversation-messages"></div><button id="send-message" class="secondary-action" type="button">发送到当前对话</button><div id="timeline" class="timeline"></div></section>
+        </div>
+      </main>
+
+      <aside class="inspector"><div class="inspector-header"><strong>运行详情</strong><button class="icon-button" aria-label="关闭详情">×</button></div><div class="inspector-content"><div class="inspector-state"><span class="state-ring"></span><div><div class="eyebrow">SESSION STATUS</div><strong id="inspector-status">待运行</strong></div></div><div class="detail-section"><div class="detail-label">SESSION</div><div class="detail-row"><span>ID</span><code id="session-id">—</code></div><div class="detail-row"><span>Turns</span><strong id="turn-count">0</strong></div></div><div class="detail-section"><div class="detail-label">EXECUTION</div><div id="execution-tree" class="execution-tree"><div class="empty-detail">运行诊断后显示执行链路</div></div></div><div class="detail-section"><div class="detail-label">EVIDENCE</div><div id="inspector-evidence" class="evidence-stack"><div class="empty-detail">暂无 EvidenceRef</div></div></div></div></aside>
+    </div>
+    <script src="app.js?v=conversation-persistence-3"></script>
+  </body>
+</html>

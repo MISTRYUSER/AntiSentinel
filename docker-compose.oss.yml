@@ -1,0 +1,83 @@
+services:
+  librechat:
+    image: registry.librechat.ai/danny-avila/librechat:latest
+    container_name: antisentinel-librechat
+    restart: unless-stopped
+    ports:
+      - "${LIBRECHAT_PORT:-3080}:3080"
+    depends_on:
+      - librechat-mongodb
+      - librechat-meilisearch
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3080
+      MONGO_URI: mongodb://librechat-mongodb:27017/LibreChat
+      MEILI_HOST: http://librechat-meilisearch:7700
+      DOMAIN_CLIENT: http://localhost:${LIBRECHAT_PORT:-3080}
+      DOMAIN_SERVER: http://localhost:${LIBRECHAT_PORT:-3080}
+      APP_TITLE: AntiSentinel
+      CUSTOM_FOOTER: AntiSentinel · 记忆 / RAG / 工具调用 / 追踪
+      # Local single-user deployment: keep account creation available while
+      # LibreChat remains responsible for durable chat history.
+      ALLOW_REGISTRATION: "true"
+      JWT_SECRET: ${JWT_SECRET:-antisentinel-local-jwt-secret-change-me}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-antisentinel-local-refresh-secret-change-me}
+      CREDS_KEY: ${CREDS_KEY:-antisentinel-local-creds-key-32-chars-000}
+      CREDS_IV: ${CREDS_IV:-antisentinel-local-creds-iv-16ch}
+    volumes:
+      - ./deploy/librechat.yaml:/app/librechat.yaml:ro
+      - librechat_uploads:/app/uploads
+      - librechat_logs:/app/logs
+
+  librechat-mongodb:
+    image: mongo:8
+    container_name: antisentinel-librechat-mongodb
+    restart: unless-stopped
+    command: mongod --noauth
+    volumes:
+      - librechat_mongodb:/data/db
+
+  librechat-meilisearch:
+    image: getmeili/meilisearch:v1.35.1
+    container_name: antisentinel-librechat-meilisearch
+    restart: unless-stopped
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-change-this-local-key}
+    volumes:
+      - librechat_meili:/meili_data
+
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    container_name: antisentinel-phoenix
+    restart: unless-stopped
+    depends_on:
+      - phoenix-db
+    ports:
+      - "${PHOENIX_PORT:-6006}:6006"
+      - "${PHOENIX_OTLP_GRPC_PORT:-4317}:4317"
+    environment:
+      PHOENIX_SQL_DATABASE_URL: postgresql://postgres:postgres@phoenix-db:5432/postgres
+      # Keep Phoenix focused on the provider used by this project.
+      PHOENIX_ALLOWED_PROVIDERS: DeepSeek
+      PHOENIX_DEFAULT_RETENTION_POLICY_DAYS: "30"
+
+  phoenix-db:
+    image: postgres:16
+    container_name: antisentinel-phoenix-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - phoenix_db:/var/lib/postgresql/data
+
+volumes:
+  librechat_uploads:
+  librechat_logs:
+  librechat_mongodb:
+  librechat_meili:
+  phoenix_db:

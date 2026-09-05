@@ -1,0 +1,41 @@
+services:
+  antisentinel:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${ANTISENTINEL_PORT:-8765}:8765"
+    environment:
+      ANTISENTINEL_MODEL_MODE: ${ANTISENTINEL_MODEL_MODE:-fake}
+      ANTISENTINEL_MODEL_BASE_URL: ${ANTISENTINEL_MODEL_BASE_URL:-https://api.openai.com/v1}
+      ANTISENTINEL_MODEL_NAME: ${ANTISENTINEL_MODEL_NAME:-gpt-4o-mini}
+      ANTISENTINEL_MODEL_API_KEY: ${ANTISENTINEL_MODEL_API_KEY:-}
+      ANTISENTINEL_MEMORY_MODEL_BASE_URL: ${ANTISENTINEL_MEMORY_MODEL_BASE_URL:-${ANTISENTINEL_MODEL_BASE_URL:-https://api.openai.com/v1}}
+      ANTISENTINEL_MEMORY_MODEL_NAME: ${ANTISENTINEL_MEMORY_MODEL_NAME:-${ANTISENTINEL_MODEL_NAME:-gpt-4o-mini}}
+      ANTISENTINEL_MEMORY_MODEL_API_KEY: ${ANTISENTINEL_MEMORY_MODEL_API_KEY:-${ANTISENTINEL_MODEL_API_KEY:-}}
+      ANTISENTINEL_STORAGE_ROOT: /app/storage
+      ANTISENTINEL_SQLITE_PATH: /app/storage/antisentinel.db
+      ANTISENTINEL_PERSISTENCE_MODE: sqlite
+      ANTISENTINEL_REDIS_URL: redis://redis:6379/0
+      ANTISENTINEL_MEMORY_VECTOR_ENABLED: ${ANTISENTINEL_MEMORY_VECTOR_ENABLED:-0}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      ANTISENTINEL_EMBEDDING_BASE_URL: ${ANTISENTINEL_EMBEDDING_BASE_URL:-}
+      ANTISENTINEL_EMBEDDING_DIMENSION: ${ANTISENTINEL_EMBEDDING_DIMENSION:-1024}
+    volumes:
+      - antisentinel_data:/app/storage
+    depends_on:
+      redis:
+        condition: service_healthy
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+volumes:
+  antisentinel_data:
+  redis_data:

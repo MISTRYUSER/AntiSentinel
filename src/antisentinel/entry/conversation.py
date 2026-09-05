@@ -1,0 +1,2 @@
+"""Conversation input entrypoint skeleton."""
+

@@ -1,0 +1,2 @@
+"""Agentic retrieval strategy skeleton."""
+

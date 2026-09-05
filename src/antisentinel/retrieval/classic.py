@@ -1,0 +1,2 @@
+"""Classic retrieval strategy skeleton."""
+

@@ -1,0 +1,26 @@
+{
+  "candidate_id": {
+    "inputs": 2,
+    "unique_ids": 1,
+    "expected_unique": 2
+  },
+  "text": {
+    "input_chars": 2,
+    "output_chars": 0,
+    "expected_output_chars": 2
+  },
+  "provenance": {
+    "session_ids_promoted_to_evidence": 1,
+    "expected": 0
+  },
+  "validity": {
+    "future_records_selected": 1,
+    "expected": 0
+  },
+  "budget": {
+    "requested_tokens": 20,
+    "digest_chars": 121,
+    "estimate_using_assembler_formula": 61,
+    "expected_max_estimate": 20
+  }
+}

@@ -1,0 +1,2 @@
+"""Task application module skeleton."""
+
