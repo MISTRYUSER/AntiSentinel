@@ -1,0 +1,791 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFF                                            [100%]
+=================================== FAILURES ===================================
+___________________ test_valid_catalog_does_not_read_bodies ____________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_valid_catalog_does_not_re0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10602f820>
+
+    def test_valid_catalog_does_not_read_bodies(tmp_path, monkeypatch):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[missing_tool-missing_tool_dependency] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_0')
+problem = 'missing_tool', code = 'missing_tool_dependency'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[missing_resource-resource_missing] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_1')
+problem = 'missing_resource', code = 'resource_missing'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[parent_path-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_2')
+problem = 'parent_path', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[absolute_path-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_3')
+problem = 'absolute_path', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[extra_field-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_4')
+problem = 'extra_field', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_version-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_5')
+problem = 'invalid_version', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_id-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_6')
+problem = 'invalid_id', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[duplicate_skill-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_7')
+problem = 'duplicate_skill', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[boolean_schema-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_8')
+problem = 'boolean_schema', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[too_large-resource_too_large] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_9')
+problem = 'too_large', code = 'resource_too_large'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_ test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_reference-invalid_manifest] _
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_optional_package_10')
+problem = 'invalid_reference', code = 'invalid_manifest'
+
+    @pytest.mark.parametrize("problem,code", [
+        ("missing_tool", "missing_tool_dependency"), ("missing_resource", "resource_missing"),
+        ("parent_path", "invalid_manifest"), ("absolute_path", "invalid_manifest"),
+        ("extra_field", "invalid_manifest"), ("invalid_version", "invalid_manifest"),
+        ("invalid_id", "invalid_manifest"), ("duplicate_skill", "invalid_manifest"),
+        ("boolean_schema", "invalid_manifest"), ("too_large", "resource_too_large"),
+        ("invalid_reference", "invalid_manifest"),
+    ])
+    def test_invalid_optional_package_is_excluded_with_specific_diagnostic(tmp_path, problem, code):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_____________ test_required_error_blocks_startup_with_diagnostics ______________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_required_error_blocks_sta0')
+
+    def test_required_error_blocks_startup_with_diagnostics(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+___________________ test_symbolic_link_resource_is_rejected ____________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_symbolic_link_resource_is0')
+
+    def test_symbolic_link_resource_is_rejected(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+___ test_duplicate_plugin_conflicts_reject_both_independent_of_order[False] ____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_duplicate_plugin_conflict0')
+different_version = False
+
+    @pytest.mark.parametrize("different_version", [False, True])
+    def test_duplicate_plugin_conflicts_reject_both_independent_of_order(tmp_path, different_version):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____ test_duplicate_plugin_conflicts_reject_both_independent_of_order[True] ____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_duplicate_plugin_conflict1')
+different_version = True
+
+    @pytest.mark.parametrize("different_version", [False, True])
+    def test_duplicate_plugin_conflicts_reject_both_independent_of_order(tmp_path, different_version):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+_________________ test_bad_plugin_does_not_leak_exported_tools _________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_bad_plugin_does_not_leak_0')
+
+    def test_bad_plugin_does_not_leak_exported_tools(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:140: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____________________ test_untrusted_module_is_not_imported _____________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_untrusted_module_is_not_i0')
+
+    def test_untrusted_module_is_not_imported(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+__________ test_explicit_tools_and_decorated_exports_reuse_discovery ___________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_explicit_tools_and_decora0')
+
+    def test_explicit_tools_and_decorated_exports_reuse_discovery(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+______________________ test_catalog_is_defensively_frozen ______________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_catalog_is_defensively_fr0')
+
+    def test_catalog_is_defensively_frozen(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+________________ test_snapshot_is_independent_of_package_order _________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_snapshot_is_independent_o0')
+
+    def test_snapshot_is_independent_of_package_order(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____________________ test_duplicate_json_keys_are_rejected _____________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_duplicate_json_keys_are_r0')
+
+    def test_duplicate_json_keys_are_rejected(tmp_path):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____ test_availability_filters_run_catalog[True-False-True-False-expected0] ____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_availability_filters_run_0')
+read_only = True, approval = False, allowed = True, disabled = False
+expected = ()
+
+    @pytest.mark.parametrize("read_only,approval,allowed,disabled,expected", [
+        (True, False, True, False, ()),
+        (True, False, False, False, ("tool_not_allowed",)),
+        (False, False, True, False, ("read_only_required",)),
+        (True, True, True, False, ("approval_not_allowed",)),
+        (True, False, True, True, ("skill_disabled",)),
+    ])
+    def test_availability_filters_run_catalog(tmp_path, read_only, approval, allowed, disabled, expected):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+___ test_availability_filters_run_catalog[True-False-False-False-expected1] ____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_availability_filters_run_1')
+read_only = True, approval = False, allowed = False, disabled = False
+expected = ('tool_not_allowed',)
+
+    @pytest.mark.parametrize("read_only,approval,allowed,disabled,expected", [
+        (True, False, True, False, ()),
+        (True, False, False, False, ("tool_not_allowed",)),
+        (False, False, True, False, ("read_only_required",)),
+        (True, True, True, False, ("approval_not_allowed",)),
+        (True, False, True, True, ("skill_disabled",)),
+    ])
+    def test_availability_filters_run_catalog(tmp_path, read_only, approval, allowed, disabled, expected):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+___ test_availability_filters_run_catalog[False-False-True-False-expected2] ____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_availability_filters_run_2')
+read_only = False, approval = False, allowed = True, disabled = False
+expected = ('read_only_required',)
+
+    @pytest.mark.parametrize("read_only,approval,allowed,disabled,expected", [
+        (True, False, True, False, ()),
+        (True, False, False, False, ("tool_not_allowed",)),
+        (False, False, True, False, ("read_only_required",)),
+        (True, True, True, False, ("approval_not_allowed",)),
+        (True, False, True, True, ("skill_disabled",)),
+    ])
+    def test_availability_filters_run_catalog(tmp_path, read_only, approval, allowed, disabled, expected):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____ test_availability_filters_run_catalog[True-True-True-False-expected3] _____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_availability_filters_run_3')
+read_only = True, approval = True, allowed = True, disabled = False
+expected = ('approval_not_allowed',)
+
+    @pytest.mark.parametrize("read_only,approval,allowed,disabled,expected", [
+        (True, False, True, False, ()),
+        (True, False, False, False, ("tool_not_allowed",)),
+        (False, False, True, False, ("read_only_required",)),
+        (True, True, True, False, ("approval_not_allowed",)),
+        (True, False, True, True, ("skill_disabled",)),
+    ])
+    def test_availability_filters_run_catalog(tmp_path, read_only, approval, allowed, disabled, expected):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+____ test_availability_filters_run_catalog[True-False-True-True-expected4] _____
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_availability_filters_run_4')
+read_only = True, approval = False, allowed = True, disabled = True
+expected = ('skill_disabled',)
+
+    @pytest.mark.parametrize("read_only,approval,allowed,disabled,expected", [
+        (True, False, True, False, ()),
+        (True, False, False, False, ("tool_not_allowed",)),
+        (False, False, True, False, ("read_only_required",)),
+        (True, True, True, False, ("approval_not_allowed",)),
+        (True, False, True, True, ("skill_disabled",)),
+    ])
+    def test_availability_filters_run_catalog(tmp_path, read_only, approval, allowed, disabled, expected):
+>       a = api()
+            ^^^^^
+
+tests/test_skill_catalog.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def api():
+        name = "antisentinel.capabilities.bootstrap"
+>       assert importlib.util.find_spec(name) is not None, "skill catalog assembly is missing"
+E       AssertionError: skill catalog assembly is missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.bootstrap')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_catalog.py:16: AssertionError
+______________________ test_validate_and_inspect_metadata ______________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_validate_and_inspect_meta0')
+capsys = <_pytest.capture.CaptureFixture object at 0x1066e9010>
+
+    def test_validate_and_inspect_metadata(tmp_path, capsys):
+>       main = cli()
+               ^^^^^
+
+tests/test_skill_cli.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cli():
+>       assert importlib.util.find_spec("antisentinel.capabilities.cli") is not None, "skill CLI missing"
+E       AssertionError: skill CLI missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.cli')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_cli.py:8: AssertionError
+_______________ test_invalid_cli_input_returns_structured_error ________________
+
+tmp_path = PosixPath('/private/var/folders/82/x2z0kfxd1cl4vxwz40r4dbrw0000gn/T/pytest-of-xuewentao/pytest-57/test_invalid_cli_input_returns0')
+capsys = <_pytest.capture.CaptureFixture object at 0x1060d3110>
+
+    def test_invalid_cli_input_returns_structured_error(tmp_path, capsys):
+>       main = cli()
+               ^^^^^
+
+tests/test_skill_cli.py:26: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cli():
+>       assert importlib.util.find_spec("antisentinel.capabilities.cli") is not None, "skill CLI missing"
+E       AssertionError: skill CLI missing
+E       assert None is not None
+E        +  where None = <function find_spec at 0x104c0ee80>('antisentinel.capabilities.cli')
+E        +    where <function find_spec at 0x104c0ee80> = <module 'importlib.util' (frozen)>.find_spec
+E        +      where <module 'importlib.util' (frozen)> = importlib.util
+
+tests/test_skill_cli.py:8: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_skill_catalog.py::test_valid_catalog_does_not_read_bodies
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[missing_tool-missing_tool_dependency]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[missing_resource-resource_missing]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[parent_path-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[absolute_path-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[extra_field-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_version-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_id-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[duplicate_skill-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[boolean_schema-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[too_large-resource_too_large]
+FAILED tests/test_skill_catalog.py::test_invalid_optional_package_is_excluded_with_specific_diagnostic[invalid_reference-invalid_manifest]
+FAILED tests/test_skill_catalog.py::test_required_error_blocks_startup_with_diagnostics
+FAILED tests/test_skill_catalog.py::test_symbolic_link_resource_is_rejected
+FAILED tests/test_skill_catalog.py::test_duplicate_plugin_conflicts_reject_both_independent_of_order[False]
+FAILED tests/test_skill_catalog.py::test_duplicate_plugin_conflicts_reject_both_independent_of_order[True]
+FAILED tests/test_skill_catalog.py::test_bad_plugin_does_not_leak_exported_tools
+FAILED tests/test_skill_catalog.py::test_untrusted_module_is_not_imported - A...
+FAILED tests/test_skill_catalog.py::test_explicit_tools_and_decorated_exports_reuse_discovery
+FAILED tests/test_skill_catalog.py::test_catalog_is_defensively_frozen - Asse...
+FAILED tests/test_skill_catalog.py::test_snapshot_is_independent_of_package_order
+FAILED tests/test_skill_catalog.py::test_duplicate_json_keys_are_rejected - A...
+FAILED tests/test_skill_catalog.py::test_availability_filters_run_catalog[True-False-True-False-expected0]
+FAILED tests/test_skill_catalog.py::test_availability_filters_run_catalog[True-False-False-False-expected1]
+FAILED tests/test_skill_catalog.py::test_availability_filters_run_catalog[False-False-True-False-expected2]
+FAILED tests/test_skill_catalog.py::test_availability_filters_run_catalog[True-True-True-False-expected3]
+FAILED tests/test_skill_catalog.py::test_availability_filters_run_catalog[True-False-True-True-expected4]
+FAILED tests/test_skill_cli.py::test_validate_and_inspect_metadata - Assertio...
+FAILED tests/test_skill_cli.py::test_invalid_cli_input_returns_structured_error
+29 failed in 0.21s

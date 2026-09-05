@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import json
 from time import monotonic
 from typing import Any, Callable, Literal
+from contextvars import ContextVar
 
 from antisentinel.domain.attempt import Attempt
 from antisentinel.domain.event import Event
@@ -26,10 +27,13 @@ from antisentinel.ports.model import (
 )
 from antisentinel.tools.registry import ToolRegistry
 from antisentinel.worker.execution.tool_executor import ToolExecutor
+from antisentinel.worker.execution.tool_executor import ToolExecutionScope
 
 from .context import ContextBuilder
 from .checkpoint import CheckpointStore, RuntimeSnapshot
 from antisentinel.tracing.telemetry import Telemetry, TraceContext
+
+_current_skill_runtime: ContextVar[Any | None] = ContextVar("antisentinel_skill_runtime", default=None)
 
 
 @dataclass(frozen=True)
@@ -37,12 +41,17 @@ class RuntimeConfig:
     max_turns: int = 8
     max_tasks: int = 8
     max_tool_calls: int = 8
+    max_total_tool_calls: int = 8
 
     def __post_init__(self) -> None:
-        for name in ("max_turns", "max_tasks", "max_tool_calls"):
+        for name in ("max_tasks", "max_tool_calls"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 8:
                 raise ValueError(f"{name} must be an integer between 1 and 8")
+        if isinstance(self.max_turns, bool) or not isinstance(self.max_turns, int) or not 1 <= self.max_turns <= 32:
+            raise ValueError("max_turns must be an integer between 1 and 32")
+        if isinstance(self.max_total_tool_calls, bool) or not isinstance(self.max_total_tool_calls, int) or not 1 <= self.max_total_tool_calls <= 64:
+            raise ValueError("max_total_tool_calls must be an integer between 1 and 64")
 
 
 @dataclass(frozen=True)
@@ -63,6 +72,7 @@ class RuntimeResult:
     evidences: tuple[Any, ...] = ()
     trace_id: str | None = None
     token_usage: TokenUsage = TokenUsage()
+    skill_usage: dict[str, Any] | None = None
 
 
 @dataclass
@@ -97,8 +107,12 @@ class RuntimeLoop:
         trace_context: TraceContext | None = None,
         observability_metrics=None,
         memory_context_provider: Callable[[Incident, Session, Turn], Any] | None = None,
+        skill_runtime=None,
     ) -> RuntimeResult:
         metrics = metrics or RuntimeMetrics()
+        _current_skill_runtime.set(skill_runtime)
+        if skill_runtime is not None:
+            registry = skill_runtime.bind_registry(registry)
         executor = ToolExecutor(registry)
         turns: list[Turn] = [Turn.from_dict(item) for item in resume_snapshot.turns] if resume_snapshot else []
         tasks: list[Task] = [Task.from_dict(item) for item in resume_snapshot.tasks] if resume_snapshot else []
@@ -112,6 +126,7 @@ class RuntimeLoop:
         final: FinalDiagnosis | None = None
         pending_results: list[dict[str, Any]] = list(resume_snapshot.pending_results) if resume_snapshot else []
         completed_invocations = dict(resume_snapshot.completed_invocations) if resume_snapshot else {}
+        duplicate_only_turns = 0
 
         for turn_number in range(1, config.max_turns + 1):
             turn_had_tool_call = False
@@ -123,14 +138,21 @@ class RuntimeLoop:
             metrics.increment("turns")
             turn.start()
             self._publish(runtime_events, self._event("turn.started", incident, session, turn), event_sink)
+            turn_scope = (
+                skill_runtime.execution_scope()
+                if skill_runtime is not None and hasattr(skill_runtime, "execution_scope")
+                else ToolExecutionScope(skill_runtime.visible_tool_names()) if skill_runtime is not None else None
+            )
+            visible_tools = skill_runtime.manifests(registry) if skill_runtime is not None else registry.manifests()
             request = self.context_builder.build(
                 incident,
                 session,
                 turn,
                 prior_turns=turns[:-1],
                 task_results=pending_results,
-                tools=registry.manifests(),
+                tools=visible_tools,
                 memory_context=memory_context_provider(incident, session, turn) if memory_context_provider else None,
+                skill_context=skill_runtime.context_payload() if skill_runtime is not None else None,
             )
             self._publish(runtime_events, self._event("model.started", incident, session, turn), event_sink)
             self._publish(runtime_events, self._event("model.called", incident, session, turn), event_sink)
@@ -216,6 +238,7 @@ class RuntimeLoop:
                     task_summaries, evidence_refs,
                 )
             turn_results: list[dict[str, Any]] = []
+            successful_tool_names: list[str] = []
             for task_plan in response.tasks:
                 task = Task.create(turn_id=turn.turn_id, task_id=task_plan.task_id, objective=task_plan.objective)
                 session_task_summary: dict[str, Any] = {
@@ -223,6 +246,7 @@ class RuntimeLoop:
                     "status": "succeeded",
                     "summary": task.objective,
                     "evidence_refs": [],
+                    "tool_results": [],
                 }
                 turn.add_task(task.task_id)
                 task.start()
@@ -235,6 +259,12 @@ class RuntimeLoop:
                         task_summaries, evidence_refs,
                     )
                 for planned_call in task_plan.tool_calls:
+                    if len(tool_calls) >= config.max_total_tool_calls:
+                        return self._fail(
+                            incident, session, turn, turns, tasks, tool_calls, attempts, runtime_events,
+                            {"code": "max_total_tool_calls_exceeded", "message": "session reached total tool call budget"},
+                            task_summaries, evidence_refs, token_usage=token_usage,
+                        )
                     turn_had_tool_call = True
                     tool_call = ToolCall.create(
                         task_id=task.task_id,
@@ -246,26 +276,49 @@ class RuntimeLoop:
                     tool_calls.append(tool_call)
                     tool_call.start()
                     metrics.increment("tool_calls")
-                    invocation_key = _invocation_key(planned_call.tool_name, planned_call.arguments)
+                    invocation_key = _invocation_key(planned_call.tool_name, planned_call.arguments, planned_call.target_ref)
                     tool_started = monotonic()
-                    cached = completed_invocations.get(invocation_key)
-                    if cached is not None:
+                    rejected = executor.preflight(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
+                    cached = completed_invocations.get(invocation_key) if rejected is None else None
+                    if rejected is not None:
+                        result = rejected
+                    elif cached is not None:
                         from antisentinel.tools.manifest import ToolExecutionResult
 
                         result = ToolExecutionResult(
-                            status="succeeded",
-                            result=cached.get("result"),
-                            result_summary=cached.get("result_summary"),
+                            status="rejected",
+                            error={"code": "duplicate_tool_call", "message": "this tool call already completed in this run"},
+                            result_summary="Duplicate tool call. Reuse the matching result already present in the tool-result history.",
                         )
                     else:
                         turn_had_fresh_tool_call = True
                         tool_context = turn_context.child(request_id=f"tool-{tool_call.tool_call_id}") if turn_context else None
                         if tool_context:
                             with self.telemetry.span("tool_call.execute", context=tool_context, tool_name=planned_call.tool_name):
-                                result = executor.execute(planned_call.tool_name, planned_call.arguments)
+                                result = executor.execute(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
                         else:
-                            result = executor.execute(planned_call.tool_name, planned_call.arguments)
+                            result = executor.execute(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
                     metrics.observe("tool_latency_ms", (monotonic() - tool_started) * 1000)
+                    if skill_runtime is not None and planned_call.tool_name in {"skill.load", "skill.read_reference"}:
+                        if planned_call.tool_name == "skill.load":
+                            skill_event = "skill.loaded" if result.status == "succeeded" else "skill.load_failed"
+                        else:
+                            skill_event = "skill.reference_read" if result.status == "succeeded" else "skill.load_failed"
+                        usage = skill_runtime.usage()
+                        attributes = {
+                            "skill_id": usage.get("selected_skill_id") or str(planned_call.arguments.get("skill_id", "")),
+                            "skill_version": usage.get("selected_skill_version") or "",
+                            "release_id": usage.get("release_id") or "",
+                            "reference_id": str(planned_call.arguments.get("reference_id", "")),
+                            "success": result.status == "succeeded",
+                        }
+                        with self.telemetry.span(skill_event, context=turn_context, **attributes):
+                            pass
+                        self._publish(
+                            runtime_events,
+                            self._event(skill_event, incident, session, turn, task, tool_call, extra=attributes),
+                            event_sink,
+                        )
                     if result.status == "waiting_approval":
                         tool_call.deny("approval_required")
                         task.wait_for_approval()
@@ -282,6 +335,7 @@ class RuntimeLoop:
                     attempt.start()
                     attempts.append(attempt)
                     if result.status == "succeeded":
+                        successful_tool_names.append(planned_call.tool_name)
                         metrics.increment("tool_successes")
                         for evidence in [result.evidence] if result.evidence else []:
                             from antisentinel.domain.evidence import EvidenceRef
@@ -305,8 +359,16 @@ class RuntimeLoop:
                         error = result.error or {"code": "tool_failed", "message": "tool execution failed"}
                         attempt.fail(error)
                         tool_call.fail(error)
-                        task.fail(error)
+                        if task.status.value == "running":
+                            task.fail(error)
                         session_task_summary.update(status="failed", summary=result.result_summary or error["message"])
+                    session_task_summary["tool_results"].append({
+                        "tool_name": planned_call.tool_name,
+                        "arguments": planned_call.arguments,
+                        "status": result.status,
+                        "summary": result.result_summary,
+                        "error": result.error,
+                    })
                     self._publish(runtime_events, self._event("tool.completed", incident, session, turn, task, tool_call), event_sink)
                     self._publish(runtime_events, self._event("tool_call.result_received", incident, session, turn, task, tool_call), event_sink)
                     if result.status != "succeeded":
@@ -316,15 +378,21 @@ class RuntimeLoop:
                     self._publish(runtime_events, self._event("task.completed", incident, session, turn, task), event_sink)
                 task_summaries.append(session_task_summary)
                 turn_results.append(task_summaries[-1])
-            if turn_had_tool_call and not turn_had_fresh_tool_call and (resume_snapshot is None or turn_number > 1):
-                return self._fail(
-                    incident, session, turn, turns, tasks, tool_calls, attempts, runtime_events,
-                    {"code": "model_non_convergent", "message": "model repeated only cached tool calls"},
-                    task_summaries, evidence_refs, failure_event="runtime.non_convergent",
-                    token_usage=token_usage,
-                )
+            if turn_had_tool_call and not turn_had_fresh_tool_call:
+                duplicate_only_turns += 1
+                if duplicate_only_turns >= 2:
+                    return self._fail(
+                        incident, session, turn, turns, tasks, tool_calls, attempts, runtime_events,
+                        {"code": "model_non_convergent", "message": "model repeated only duplicate tool calls"},
+                        task_summaries, evidence_refs, failure_event="runtime.non_convergent",
+                        token_usage=token_usage,
+                    )
+            else:
+                duplicate_only_turns = 0
             turn.complete(ModelOutputKind.TOOL_CALL, "tool calls completed")
             pending_results = turn_results
+            if skill_runtime is not None:
+                skill_runtime.note_turn_results(successful_tool_names)
             if checkpoint_store is not None:
                 checkpoint_store.save(RuntimeSnapshot(
                     session_id=session.session_id,
@@ -344,6 +412,7 @@ class RuntimeLoop:
                     last_error=None,
                     pending_results=pending_results,
                     completed_invocations=completed_invocations,
+                    skill_state=skill_runtime.snapshot() if skill_runtime is not None else None,
                 ))
 
         metrics.increment("max_turn_failures")
@@ -358,7 +427,7 @@ class RuntimeLoop:
         if event_sink is not None:
             event_sink(event)
 
-    def _event(self, event_type, incident, session, turn, task=None, tool_call=None) -> Event:
+    def _event(self, event_type, incident, session, turn, task=None, tool_call=None, extra=None) -> Event:
         related = {"incident_id": str(incident.incident_id), "session_id": str(session.session_id), "turn_id": str(turn.turn_id)}
         if task is not None:
             related["task_id"] = str(task.task_id)
@@ -370,7 +439,7 @@ class RuntimeLoop:
             aggregate_id=session.session_id,
             correlation_id=session.session_id,
             occurred_at=turn.updated_at,
-            payload=related,
+            payload={**related, **(extra or {})},
             related_ids=related,
         )
 
@@ -409,9 +478,10 @@ class RuntimeLoop:
             attempts=tuple(attempts),
             evidences=tuple(evidences or ()),
             token_usage=token_usage or TokenUsage(),
+            skill_usage=_current_skill_runtime.get().usage() if _current_skill_runtime.get() is not None else None,
         )
 
 
-def _invocation_key(tool_name: str, arguments: dict[str, Any]) -> str:
+def _invocation_key(tool_name: str, arguments: dict[str, Any], target_ref: str | None = None) -> str:
     encoded = json.dumps(arguments, sort_keys=True, separators=(",", ":"))
-    return f"{tool_name}:{encoded}"
+    return f"{tool_name}:{target_ref or ''}:{encoded}"

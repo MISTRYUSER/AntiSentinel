@@ -1,0 +1,738 @@
+{
+  "case_count": 15,
+  "cases": [
+    {
+      "case_id": "simple_python_0",
+      "category": "simple_python",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Calculate the area of a triangle given its base and height.",
+          "name": "calculate_triangle_area",
+          "parameters": {
+            "properties": {
+              "base": {
+                "description": "The base of the triangle.",
+                "type": "integer"
+              },
+              "height": {
+                "description": "The height of the triangle.",
+                "type": "integer"
+              },
+              "unit": {
+                "description": "The unit of measure (defaults to 'units' if not specified)",
+                "type": "string"
+              }
+            },
+            "required": [
+              "base",
+              "height"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": [
+        {
+          "calculate_triangle_area": {
+            "base": [
+              10
+            ],
+            "height": [
+              5
+            ],
+            "unit": [
+              "units",
+              ""
+            ]
+          }
+        }
+      ],
+      "question": [
+        [
+          {
+            "content": "Find the area of a triangle with a base of 10 units and height of 5 units.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_simple_python.json",
+      "source_hash": "d2de2d69860415abdde2ad303938b99aac87b1d70f1bc23383ad6c21f3b868bb"
+    },
+    {
+      "case_id": "simple_python_1",
+      "category": "simple_python",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Calculate the factorial of a given number.",
+          "name": "math.factorial",
+          "parameters": {
+            "properties": {
+              "number": {
+                "description": "The number for which factorial needs to be calculated.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "number"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": [
+        {
+          "math.factorial": {
+            "number": [
+              5
+            ]
+          }
+        }
+      ],
+      "question": [
+        [
+          {
+            "content": "Calculate the factorial of 5 using math functions.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_simple_python.json",
+      "source_hash": "6509376330f5752a13b60ee3e3492d1f2571078a3a7a84331cbed857f47f386a"
+    },
+    {
+      "case_id": "simple_python_2",
+      "category": "simple_python",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Calculate the Euclidean norm, sqrt(sum(squares)), the length of the vector from the origin to point (x, y) which is the hypotenuse of the right triangle.",
+          "name": "math.hypot",
+          "parameters": {
+            "properties": {
+              "x": {
+                "description": "The x-coordinate value.",
+                "type": "integer"
+              },
+              "y": {
+                "description": "The y-coordinate value.",
+                "type": "integer"
+              },
+              "z": {
+                "description": "Optional. The z-coordinate value. Default is 0.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": [
+        {
+          "math.hypot": {
+            "x": [
+              4
+            ],
+            "y": [
+              5
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "question": [
+        [
+          {
+            "content": "Calculate the hypotenuse of a right triangle given the lengths of the other two sides as 4 and 5.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_simple_python.json",
+      "source_hash": "8670a3a619a15476f1414e3d64fe0a32d0c0ed40c56a25ffc5bb8c70634e31a5"
+    },
+    {
+      "case_id": "simple_python_3",
+      "category": "simple_python",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Find the roots of a quadratic equation ax^2 + bx + c = 0.",
+          "name": "algebra.quadratic_roots",
+          "parameters": {
+            "properties": {
+              "a": {
+                "description": "Coefficient of x^2.",
+                "type": "integer"
+              },
+              "b": {
+                "description": "Coefficient of x.",
+                "type": "integer"
+              },
+              "c": {
+                "description": "Constant term.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "a",
+              "b",
+              "c"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": [
+        {
+          "algebra.quadratic_roots": {
+            "a": [
+              1
+            ],
+            "b": [
+              -3
+            ],
+            "c": [
+              2
+            ]
+          }
+        }
+      ],
+      "question": [
+        [
+          {
+            "content": "Find the roots of a quadratic equation with coefficients a=1, b=-3, c=2.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_simple_python.json",
+      "source_hash": "8956a4b8fc6f0edfc392131ac96a49aa29d5cbfd0ec80f0af52f612c336f8485"
+    },
+    {
+      "case_id": "simple_python_4",
+      "category": "simple_python",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Function solves the quadratic equation and returns its roots.",
+          "name": "solve_quadratic_equation",
+          "parameters": {
+            "properties": {
+              "a": {
+                "description": "Coefficient of x squared",
+                "type": "integer"
+              },
+              "b": {
+                "description": "Coefficient of x",
+                "type": "integer"
+              },
+              "c": {
+                "description": "Constant term in the quadratic equation.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "a",
+              "b",
+              "c"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": [
+        {
+          "solve_quadratic_equation": {
+            "a": [
+              2
+            ],
+            "b": [
+              6
+            ],
+            "c": [
+              5
+            ]
+          }
+        }
+      ],
+      "question": [
+        [
+          {
+            "content": "Solve a quadratic equation where a=2, b=6, and c=5",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_simple_python.json",
+      "source_hash": "a35e0ffe0c84c35b4f3ddefacca17a36f951adfc91b8ca99a2555ca168c59668"
+    },
+    {
+      "case_id": "irrelevance_0",
+      "category": "irrelevance",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Calculate body mass index given weight and height.",
+          "name": "determine_body_mass_index",
+          "parameters": {
+            "properties": {
+              "height": {
+                "description": "Height of the individual in meters.",
+                "type": "float"
+              },
+              "weight": {
+                "description": "Weight of the individual in kilograms.",
+                "type": "float"
+              }
+            },
+            "required": [
+              "weight",
+              "height"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": null,
+      "question": [
+        [
+          {
+            "content": "Calculate the area of a triangle given the base is 10 meters and height is 5 meters.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_irrelevance.json",
+      "source_hash": "ec9739308763114feef050b57884cab0a71a3bc32d2b88fbc81fbbee39437fab"
+    },
+    {
+      "case_id": "irrelevance_1",
+      "category": "irrelevance",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Compute the sum of all numbers in a list.",
+          "name": "math.sum",
+          "parameters": {
+            "properties": {
+              "decimal_places": {
+                "description": "The number of decimal places to round to. Default is 2.",
+                "type": "integer"
+              },
+              "numbers": {
+                "description": "The list of numbers to be added up.",
+                "items": {
+                  "type": "float"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "numbers"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": null,
+      "question": [
+        [
+          {
+            "content": "Solve the quadratic equation with coefficients a = 1, b = 2, and c = 3.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_irrelevance.json",
+      "source_hash": "d8256c8af7abaaaeda06f1c55e23ced238883344be610c786765dc315c58bd2c"
+    },
+    {
+      "case_id": "irrelevance_2",
+      "category": "irrelevance",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Calculate the distance between two geographical coordinates.",
+          "name": "distance_calculator.calculate",
+          "parameters": {
+            "properties": {
+              "coordinate_1": {
+                "description": "The first coordinate, a pair of latitude and longitude.",
+                "items": {
+                  "type": "float"
+                },
+                "type": "array"
+              },
+              "coordinate_2": {
+                "description": "The second coordinate, a pair of latitude and longitude.",
+                "items": {
+                  "type": "float"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "coordinate_1",
+              "coordinate_2"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": null,
+      "question": [
+        [
+          {
+            "content": "Solve for the roots of the equation 3x^2 - 2x - 5.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_irrelevance.json",
+      "source_hash": "5dc9199c6fe7deb0eab3fe8b98793dee17b04fc117d9231e7b05b9b50d84dd9f"
+    },
+    {
+      "case_id": "irrelevance_3",
+      "category": "irrelevance",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Finds the critical points of the function.",
+          "name": "find_critical_points",
+          "parameters": {
+            "properties": {
+              "function": {
+                "description": "The function to find the critical points for.",
+                "type": "string"
+              },
+              "range": {
+                "description": "The range to consider for finding critical points. Optional. Default is [0.0, 3.4].",
+                "items": {
+                  "type": "float"
+                },
+                "type": "array"
+              },
+              "variable": {
+                "description": "The variable in the function.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "function",
+              "variable"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": null,
+      "question": [
+        [
+          {
+            "content": "What is the slope of the line which is perpendicular to the line with the equation y = 3x + 2?",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_irrelevance.json",
+      "source_hash": "d7dde0c87053e5d533d474caedc0add21e4179cc71df8e07fed1c356adb25d4c"
+    },
+    {
+      "case_id": "irrelevance_4",
+      "category": "irrelevance",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [
+        {
+          "description": "Find the roots of a quadratic equation ax^2 + bx + c = 0.",
+          "name": "find_roots",
+          "parameters": {
+            "properties": {
+              "a": {
+                "description": "Coefficient of x^2.",
+                "type": "float"
+              },
+              "b": {
+                "description": "Coefficient of x.",
+                "type": "float"
+              },
+              "c": {
+                "description": "Constant term.",
+                "type": "float"
+              }
+            },
+            "required": [
+              "a",
+              "b",
+              "c"
+            ],
+            "type": "dict"
+          }
+        }
+      ],
+      "ground_truth": null,
+      "question": [
+        [
+          {
+            "content": "What is the roots of linear equation bx + c = 0?",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_irrelevance.json",
+      "source_hash": "e303297d9af3fd2d424554bd0bbbe83d43595544f18e8e96b41c928f8a31bb63"
+    },
+    {
+      "case_id": "multi_turn_base_0",
+      "category": "multi_turn_base",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [],
+      "ground_truth": [
+        [
+          "cd(folder='document')",
+          "mkdir(dir_name='temp')",
+          "mv(source='final_report.pdf', destination='temp')"
+        ],
+        [
+          "cd(folder='temp')",
+          "grep(file_name='final_report.pdf',pattern='budget analysis')"
+        ],
+        [
+          "sort('final_report.pdf')"
+        ],
+        [
+          "cd(folder='..')",
+          "mv(source='previous_report.pdf',destination='temp')",
+          "cd(folder='temp')",
+          "diff(file_name1='final_report.pdf',file_name2='previous_report.pdf')"
+        ]
+      ],
+      "question": [
+        [
+          {
+            "content": "Move 'final_report.pdf' within document directory to 'temp' directory in document. Make sure to create the directory",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Perform a detailed search using grep to identify sections in the file pertaining to 'budget analysis'.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Upon identifying the requisite 'budget analysis' content, sort the 'final_report.pdf' by line for improved clarity and comprehension.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Move 'previous_report.pdf' in document directory to temp as well and having final report also there, proceed to juxtapose it with 'previous_report.pdf' to detect any critical alterations.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_multi_turn_base.json",
+      "source_hash": "f07f5590eb7021e89790bff2b3a985ec551575face3e126b60b78abea48eb0ca"
+    },
+    {
+      "case_id": "multi_turn_base_1",
+      "category": "multi_turn_base",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [],
+      "ground_truth": [
+        [
+          "ls(a=True)"
+        ],
+        [
+          "cd(folder='workspace')",
+          "mv(source='log.txt',destination='archive')"
+        ],
+        [
+          "cd(folder='archive')",
+          "grep(file_name='log.txt',pattern='Error')"
+        ],
+        [
+          "tail(file_name='log.txt',lines=20)"
+        ]
+      ],
+      "question": [
+        [
+          {
+            "content": "I am alex. Check if the current directory is under my name and list all the visible and hidden contents in the current directory now, please.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Go to workspace directory and move one of the 'log.txt' files into a new directory 'archive'.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Investigate within 'log.txt' for the occurrence of the keyword 'Error'.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Finally, show the last 20 lines the file.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_multi_turn_base.json",
+      "source_hash": "adbf36cd8ecb38eab1413c434b841f741af6a951903a191b7a940a90cf7ce346"
+    },
+    {
+      "case_id": "multi_turn_base_2",
+      "category": "multi_turn_base",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [],
+      "ground_truth": [
+        [
+          "cd(folder='documents')",
+          "touch(file_name='TeamNotes.txt')"
+        ],
+        [
+          "echo(content='Collaboration leads to success. Innovation ignites growth.',file_name='TeamNotes.txt')"
+        ],
+        [
+          "diff(file_name1='ideas.txt', file_name2='TeamNotes.txt')"
+        ],
+        [
+          "cp(source='TeamNotes.txt',destination='Archived')",
+          "cd(folder='Archived')",
+          "mv(source='TeamNotes.txt',destination='IdeasArchive.txt')"
+        ],
+        [
+          "cat(file_name='IdeasArchive.txt')"
+        ]
+      ],
+      "question": [
+        [
+          {
+            "content": "Go into document folder and Could you draft up a create a document titled 'TeamNotes.txt' for keeping track of all the fresh ideas?",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "We've gathered a couple of wise insights from Simona, so could you jot down 'Collaboration leads to success. Innovation ignites growth.' into the previous file?",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "There seems to be some differences noted by Simona between the 'ideas.txt' file and our 'TeamNotes.txt'. Could you delve into these files to identify and explain the line-by-line distinctions for her?",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Simona thinks it's a smart move to secure 'TeamNotes.txt'. How about we copy it over to the archive directory under the name IdeasArchive.txt while keeping the original intact? Make sure the Archived directory exists in document folder. I remembered I put it there.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "Before Simona signs off for the day, she'd like to take a peek at what's been stored in 'IdeasArchive.txt'. Could you arrange for her to view its contents?",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_multi_turn_base.json",
+      "source_hash": "2a74faeba39ff618853e655694c9ddac91a37c0d1395d2eeb13dbfaef3d4ee84"
+    },
+    {
+      "case_id": "multi_turn_base_3",
+      "category": "multi_turn_base",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [],
+      "ground_truth": [
+        [
+          "find(path='.',name='test')"
+        ],
+        [
+          "cd(folder='projects')",
+          "cd(folder='photography')",
+          "cp(source='test_image1.jpg',destination='backup_tests')",
+          "cp(source='test_document.txt',destination='backup_tests')"
+        ]
+      ],
+      "question": [
+        [
+          {
+            "content": "As part of my latest photography project, I need to gather files that have 'test' in their name from any folder in my current directory. Could you help me locate those?",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "After identifying them, the next step is to ensure the images and text files are safely copied into a 'backup_tests' folder right within the same directory. Could that be arranged?",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_multi_turn_base.json",
+      "source_hash": "cf8d3c3e9bf4c6857f3f4c13b31e96b5a5eb6e8d9f1cd8e80d0e42f118249785"
+    },
+    {
+      "case_id": "multi_turn_base_4",
+      "category": "multi_turn_base",
+      "derived_protocol": "AntiSentinel Task/ToolCall v1",
+      "function": [],
+      "ground_truth": [
+        [
+          "ls(a=True)"
+        ],
+        [
+          "sort(file_name='report.txt')"
+        ],
+        [
+          "post_tweet(content='Initial report content More unsorted data Unsorted data', mentions=['@Julia'], tags=['#currenttechtrend'])"
+        ]
+      ],
+      "question": [
+        [
+          {
+            "content": "Could you kindly show me the list of files in tmp directory in my file system including the hidden one?",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "There is a report in my current directory. I have noticed the report appears somewhat cluttered; it could benefit from having its lines sorted.",
+            "role": "user"
+          }
+        ],
+        [
+          {
+            "content": "I would appreciate it if you could share the sorted result as the message body on social media, ensuring to tag 'currenttechtrend' and mention Julia, our insightful team.",
+            "role": "user"
+          }
+        ]
+      ],
+      "source_file": "BFCL_v4_multi_turn_base.json",
+      "source_hash": "46cefba45e493392a8f0bf47308725cca0248072855f6d7c496c2801d3c50400"
+    }
+  ],
+  "categories": [
+    "simple_python",
+    "irrelevance",
+    "multi_turn_base"
+  ],
+  "package": "bfcl-eval",
+  "package_version": "2026.3.23",
+  "selection_rule": "first 5 source-order cases per category; no score-based selection"
+}

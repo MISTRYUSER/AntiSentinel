@@ -21,3 +21,13 @@ def test_dashboard_and_observability_tree_expose_session_hierarchy():
     assert tree.json()[0]["sessions"][0]["session_id"] == started["session_id"]
     assert detail.json()["token_usage"] is not None
     assert detail.json()["trace"]["spans"]
+    assert "skill_usage" in detail.json()
+
+
+def test_dashboard_script_renders_skill_identity():
+    from pathlib import Path
+
+    script = (Path(__file__).parents[1] / "frontend" / "dashboard.js").read_text()
+    assert "selected_skill_id" in script
+    assert "selected_skill_version" in script
+    assert "reference_hashes" in script

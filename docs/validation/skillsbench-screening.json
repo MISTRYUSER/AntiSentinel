@@ -1,0 +1,1890 @@
+{
+  "antisentinel_directly_executable": 0,
+  "multi_skill_tasks": 64,
+  "official_local_candidates": 87,
+  "records": [
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "mesh-analysis"
+      ],
+      "task_id": "3d-scan-calc",
+      "task_sha256": "99d7ef3e5ebe2785cd936f269be6d8f179831f6fd788f484146ffffa6fad91b8",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 2400.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "ada-plan-view-accessibility",
+        "architectural-dxf-extraction",
+        "geometric-layout-repair"
+      ],
+      "task_id": "ada-bathroom-plan-repair",
+      "task_sha256": "b68a30f4ca0d8fa45a3ff58208d5d0aac1e2d31b04c760abfcd74f1c1f9ae6e9",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "csv-processing",
+        "pid-controller",
+        "simulation-metrics",
+        "vehicle-dynamics",
+        "yaml-config"
+      ],
+      "task_id": "adaptive-cruise-control",
+      "task_sha256": "facc7bde3820837e58f1739176272249e4923170a5031f240e3f8a20b3238e46",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "azure-bgp"
+      ],
+      "task_id": "azure-bgp-oscillation-route-leak",
+      "task_sha256": "928f6d33162bb994b7a0e4ee858383d307585df097c4e5efac312716f7beab27",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "no-network",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "geospatial-routing-data",
+        "logistics-rules-to-optimization",
+        "routing-subtour-elimination",
+        "scip-opt"
+      ],
+      "task_id": "bike-rebalance",
+      "task_sha256": "f03115b34093cbb29c2424fb29a7c96a90257b4a57f7e4adad9d7caec15bf87f",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "citation-management"
+      ],
+      "task_id": "citation-check",
+      "task_sha256": "8699c59d1ae337f72d137be07381eabb7450ec2835cd1b0693183b2fef7b2eb1",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "civ6lib",
+        "hex-grid-spatial",
+        "map-optimization-strategy",
+        "sqlite-map-parser"
+      ],
+      "task_id": "civ6-adjacency-optimizer",
+      "task_sha256": "ad2f61b362a2953179c59cc325eb4270e7a061b9e688b3a3bab5938b119ba558",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "pdf"
+      ],
+      "task_id": "court-form-filling",
+      "task_sha256": "a1040cb3564a91e9e3a7d8e7351f014637b42ba4854666617a456edc2d96f5cb",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pymatgen",
+        "sympy"
+      ],
+      "task_id": "crystallographic-wyckoff-position-analysis",
+      "task_sha256": "654663a5bde548cb6965379ec553f963749de5fc352ce5bcab0d83e1197f32fe",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pcap-analysis",
+        "threat-detection"
+      ],
+      "task_id": "dapt-intrusion-detection",
+      "task_sha256": "22833fe635378943177105589b4ce1ef03f248b245a7f496b9e40e293b2a6abb",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "d3-visualization"
+      ],
+      "task_id": "data-to-d3",
+      "task_sha256": "af1f8fcb233292d078ce5171ba3a980f5210b359d6677054cc70047e1f2c94df",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "grpo",
+        "rl-post-training",
+        "trl"
+      ],
+      "task_id": "debug-trl-grpo",
+      "task_sha256": "ae20c68633deca5953986606beb01f2f2db3ccdc074e9b1fefcecfe6f3724f0c",
+      "verifier_timeout_sec": 120.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "dialogue-graph"
+      ],
+      "task_id": "dialogue-parser",
+      "task_sha256": "f96d2d4f1332d6bb55d699e654f05a81334db8015b875af44f6f473565b8a390",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 6,
+      "skill_names": [
+        "attitude-controller-planner",
+        "flight-plan-parser",
+        "motor-model-dynamics",
+        "plot-quadrotor",
+        "position-controller-trajectory-planner",
+        "stepinfo-3d"
+      ],
+      "task_id": "drone-planning-control",
+      "task_sha256": "0f872a982f7e785a8fbf9e1c545fe9815650505654a2880cf842b84976bf932d",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "dyn-object-masks",
+        "egomotion-estimation",
+        "output-validation",
+        "sampling-and-indexing"
+      ],
+      "task_id": "dynamic-object-aware-egomotion",
+      "task_sha256": "83e6093c4ea969e48089297f20c7c85d396dbee22a82e39756cf1c7c16e600e5",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "gamma-phase-associator",
+        "licenses",
+        "obspy-data-api",
+        "seisbench-model-api",
+        "seismic-picker-selection"
+      ],
+      "task_id": "earthquake-phase-association",
+      "task_sha256": "a8a647a4a676fd2cd8304d09f37e4dd5cac465640a080f9b3eabd50d2df65e08",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "geospatial-analysis"
+      ],
+      "task_id": "earthquake-plate-calculation",
+      "task_sha256": "7e74700780429be4ca3e2722749224ce761c2e864a3aed97e96fce7f4b2c9d88",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "timeseries-detrending"
+      ],
+      "task_id": "econ-detrending-correlation",
+      "task_sha256": "7956e369eb1bce4db2000e3fad9f7d564269505061ccb5c28d21f90ef51a47a4",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pdf-editing",
+        "text-parser"
+      ],
+      "task_id": "edit-pdf",
+      "task_sha256": "26b3084faaf8c1674ee67c5c1e8baeb1186e0f5ca466f57d2a803a80bf59ed29",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "ac-branch-pi-model",
+        "casadi-ipopt-nlp",
+        "power-flow-data"
+      ],
+      "task_id": "energy-ac-optimal-power-flow",
+      "task_sha256": "19cda3fb55a79bbc8bb07f7cfec4a2dbf6dc8ffe67c4ca940cd432f556f8e79b",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "dc-power-flow",
+        "economic-dispatch",
+        "locational-marginal-prices",
+        "power-flow-data"
+      ],
+      "task_id": "energy-market-pricing",
+      "task_sha256": "42b51ce40b3e09bf7db1b4b4fd5e335686b8608dad80591336491c033f640e5f",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "milp-solver-workflow",
+        "unit-commitment-data-modeling",
+        "unit-commitment-operating-rules"
+      ],
+      "task_id": "energy-unit-commitment",
+      "task_sha256": "9060ce077a80d9a31482c0dd2a37a72e363b1dadc27bbc3bb9cb4ceb9eca736d",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "enterprise-artifact-search"
+      ],
+      "task_id": "enterprise-information-search",
+      "task_sha256": "c5331e604c2dcf021d5fd43c7c1cb90ae0869008f12f74c900dc852d59f467ac",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1500.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "mip-solver-and-solution-audit",
+        "ordered-window-sequencing-mip"
+      ],
+      "task_id": "exam-block-sequencing",
+      "task_sha256": "f038ac85fcb442ea35607d529f729be9a66833fc7436096b3420f8495e825059",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pptx",
+        "xlsx"
+      ],
+      "task_id": "exceltable-in-ppt",
+      "task_sha256": "4056e2263dc15e48730a523ce6400312a075a62b2e5fba2b953ed2ea426e8ae2",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "box-least-squares",
+        "exoplanet-workflows",
+        "light-curve-preprocessing",
+        "lomb-scargle-periodogram",
+        "transit-least-squares"
+      ],
+      "task_id": "exoplanet-detection-period",
+      "task_sha256": "b3b69d1f037c04b3c3c9ec3be564774d256b2c24e992b7de82a4979ac95935e4",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pdf",
+        "xlsx"
+      ],
+      "task_id": "financial-modeling-qa",
+      "task_sha256": "690ceaa6ef695d75e36fa61e57f8bf57d2aa27012f360c1381dda5883f57c463",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 7200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "analyze-ci",
+        "temporal-python-testing",
+        "testing-python",
+        "uv-package-manager"
+      ],
+      "task_id": "fix-build-agentops",
+      "task_sha256": "f1826ae6d9b1a0bdd3740368027b110d1307accb03c4fc0913e9b12f075a5308",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "maven-build-lifecycle",
+        "maven-dependency-management",
+        "maven-plugin-configuration"
+      ],
+      "task_id": "fix-build-google-auto",
+      "task_sha256": "6eeb316a41f60ef49e381328f32f6544a5809794c5292254601ddbad3f31067c",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "jackson-security",
+        "senior-java"
+      ],
+      "task_id": "fix-druid-loophole-cve",
+      "task_sha256": "865deb321230927877d3a50b64954905967e31ffc2966739e9040c5e792e3c06",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 6,
+      "skill_names": [
+        "erlang-concurrency",
+        "erlang-distribution",
+        "erlang-otp-behaviors",
+        "find-bugs",
+        "senior-security",
+        "ssh-penetration-testing"
+      ],
+      "task_id": "fix-erlang-ssh-cve",
+      "task_sha256": "8d998c0d8d66ebe29b383a82bc3784b313c1553053494b9340236d552341f21e",
+      "verifier_timeout_sec": 1200.0
+    },
+    {
+      "agent_timeout_sec": 3000.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "browser-testing",
+        "react-best-practices",
+        "web-interface-guidelines"
+      ],
+      "task_id": "fix-visual-stability",
+      "task_sha256": "24e11b934500784d0aba3cb2134f4e9a4ae2ddd23568cf081588ac12cb7a4f79",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pdf",
+        "senior-data-engineer"
+      ],
+      "task_id": "flink-query",
+      "task_sha256": "4b1296d9a0d2d06b0646a26885cf896bc24a13b81b99a63aa119da1a28dff3a7",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 7200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "flood-detection",
+        "nws-flood-thresholds",
+        "usgs-data-download"
+      ],
+      "task_id": "flood-risk-analysis",
+      "task_sha256": "d2008e9045067d83d359e50f67f55a39117fbc97ea8ccc722e23777c74828713",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "simulation-tool"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "glm-basics",
+        "glm-calibration",
+        "glm-output"
+      ],
+      "task_id": "glm-lake-mendota",
+      "task_sha256": "d115cffe42dce0833f2b888c576736c99ed595cac9c772c01d6a6d8081e889f1",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "conditioning",
+        "matched-filtering"
+      ],
+      "task_id": "gravitational-wave-detection",
+      "task_sha256": "9809601c659888f40f6ae3d97703f016a08e440da1b97ab5ff7914a40f22a9dd",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "dc-power-flow",
+        "economic-dispatch",
+        "power-flow-data"
+      ],
+      "task_id": "grid-dispatch-operator",
+      "task_sha256": "9ab0e8f76e05f655417929f24b45a04efe472944627ba3f311dfd125a23a0573",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "excitation-signal-design",
+        "first-order-model-fitting",
+        "imc-tuning-rules",
+        "safety-interlocks",
+        "scipy-curve-fit"
+      ],
+      "task_id": "hvac-control",
+      "task_sha256": "2387a314e831ccf6e3c9eb8ce28881a504f38e18560bb5a885edd646560a7f85",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "fuzzy-match",
+        "pdf",
+        "xlsx"
+      ],
+      "task_id": "invoice-fraud-detection",
+      "task_sha256": "f37803e2c0221b47fe2cd206ea1c995a4c320de3d4ece97cf36d6f3ef88fc44b",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "jax-skills"
+      ],
+      "task_id": "jax-computing-basics",
+      "task_sha256": "fc9f4e9cf8b3c97d88dd3b7e563910d6050a51afe37c2bb5d8380bea151ab66b",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "image-ocr",
+        "openai-vision",
+        "pdf",
+        "video-frame-extraction",
+        "xlsx"
+      ],
+      "task_id": "jpg-ocr-stat",
+      "task_sha256": "00b1e8f22790db41e2d0026c24a194da285adf93da87ca27a99ed2ca213b8be2",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "lab-unit-harmonization"
+      ],
+      "task_id": "lab-unit-harmonization",
+      "task_sha256": "404f728e536a6351cf18caa593abb7d446479f295c8b37455f7fda4d047a9731",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 300.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "contribution-analysis",
+        "meteorology-driver-classification",
+        "pca-decomposition",
+        "trend-analysis"
+      ],
+      "task_id": "lake-warming-attribution",
+      "task_sha256": "39e13eda873d3793847ae87a1629f18e660c5b402e011094422f1ffbbdf24b32",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "marker",
+        "pdf"
+      ],
+      "task_id": "latex-formula-extraction",
+      "task_sha256": "ca601e918a6404b8f7286bdbce7cc0067e00c57a7fe02e5798e9c632a884897d",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "formal-prover"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "lean4-memories",
+        "lean4-theorem-proving"
+      ],
+      "task_id": "lean4-proof",
+      "task_sha256": "2ab16bc3d8cd559ea27c06542cdbd850800d2303262eddc5af5a4c129372e096",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "cache-policy-comparison",
+        "prefix-cache-replay"
+      ],
+      "task_id": "llm-prefix-cache-replay",
+      "task_sha256": "58ccdd143fa2f59440c9d37ad171b44df61adf9541434e8b48255a998acdcfe8",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "manufacturing-failure-reason-codebook-normalization"
+      ],
+      "task_id": "manufacturing-codebook-normalization",
+      "task_sha256": "6554e3e0172bb3ae9ace14b4728a194e0be0cea1fe5e3c726c5b8759d3b4ee62",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "reflow-machine-maintenance-guidance",
+        "reflow-profile-compliance-toolkit"
+      ],
+      "task_id": "manufacturing-equipment-maintenance",
+      "task_sha256": "ac23030507203692094cf245bee71c6690bc4a8b6970d7778b9e627b18206638",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "fjsp-baseline-repair-with-downtime-and-policy"
+      ],
+      "task_id": "manufacturing-fjsp-optimization",
+      "task_sha256": "4803646a11b8dd33037c0bef8ac8f36ddf82843ef9204c5ab6dff8dc95f50ffd",
+      "verifier_timeout_sec": 450.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "ffmpeg-keyframe-extraction",
+        "image-editing",
+        "object-counter"
+      ],
+      "task_id": "mario-coin-counting",
+      "task_sha256": "4f42df3f7bca987090b5574c9649a57d01571ae8bf2fcf6f77493dab133b4ba7",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "custom-distance-metrics",
+        "parallel-processing",
+        "pareto-optimization"
+      ],
+      "task_id": "mars-clouds-clustering",
+      "task_sha256": "c806cdf66f204868a99acd2ff378e4433efd10e31de1b4b40598eb55139ebf3f",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 2700.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 6,
+      "skill_names": [
+        "ffmpeg-audio-processing",
+        "ffmpeg-format-conversion",
+        "ffmpeg-media-info",
+        "ffmpeg-video-editing",
+        "ffmpeg-video-filters",
+        "text-to-speech"
+      ],
+      "task_id": "multilingual-video-dubbing",
+      "task_sha256": "906c66aa6abcd2d38285a2b8fe3adb1bacfe04cb5ac292470c4a6cf35f7fda13",
+      "verifier_timeout_sec": 1350.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "docx"
+      ],
+      "task_id": "offer-letter-generator",
+      "task_sha256": "a3ce086d3b605fcb45cfe553b31ce45071d95047ba839c6a67add358a40cb772",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "docx",
+        "file-organizer",
+        "pdf",
+        "planning-with-files",
+        "pptx"
+      ],
+      "task_id": "organize-messy-files",
+      "task_sha256": "013833bacf27d1e907faa4d0a4e8964784d4f9e2fd21f6ee7b039a6d02666dc8",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1000.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "academic-pdf-redaction",
+        "pdf"
+      ],
+      "task_id": "paper-anonymizer",
+      "task_sha256": "92bf98a8a8980959ee726b4e3d2c5dd4f94d34d89ff6b2d471b42a7dde0c8710",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "memory-optimization",
+        "python-parallelization",
+        "workload-balancing"
+      ],
+      "task_id": "parallel-tfidf-search",
+      "task_sha256": "003f37c9066f268bb7d8dd695f7474b04a6987375956868d0e8562a3c7c54c6a",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "ortools-pickup-delivery-routing",
+        "ortools-routing-modeling"
+      ],
+      "task_id": "paratransit-routing",
+      "task_sha256": "ac16bc8b7fba81f3e15099339e3989316eb84df771b4c8f6f43b92b1a56e4149",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "pddl-skills"
+      ],
+      "task_id": "pddl-airport-planning",
+      "task_sha256": "267e092388b4a42a1ec8f6b1d9d950dac70b7dbc6fb59280e83e478cb7fec3bd",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "pddl-skills"
+      ],
+      "task_id": "pddl-tpp-planning",
+      "task_sha256": "1b8c398fa95fd900410f177f79dfc5379396da774fee7c3625e2f93517a031f6",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pdf",
+        "xlsx"
+      ],
+      "task_id": "pdf-excel-diff",
+      "task_sha256": "625db911a5491cdc6c87e14b405537faa2e67f92793a9519958c465d98e6e39d",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "powerlifting",
+        "senior-data-scientist",
+        "xlsx"
+      ],
+      "task_id": "powerlifting-coef-calc",
+      "task_sha256": "41be2fd6f1fd35d3f501cfe92a7bdc58c1bb1eb03910f89e5d12a70bfab20c67",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "pptx"
+      ],
+      "task_id": "pptx-reference-formatting",
+      "task_sha256": "320a93c2bfe866153137801ef19ec604f56f212612e3a8ffaa0b9e6ba38e54ac",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "xlsx"
+      ],
+      "task_id": "protein-expression-analysis",
+      "task_sha256": "52407120f9c01d53dcfff15fdc92f11310bbaaef7871b9be246991335304374f",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 6,
+      "skill_names": [
+        "python-scala-collections",
+        "python-scala-functional",
+        "python-scala-idioms",
+        "python-scala-libraries",
+        "python-scala-oop",
+        "python-scala-syntax-mapping"
+      ],
+      "task_id": "python-scala-translation",
+      "task_sha256": "ea195f201626627f9f93e4e315243ea754a71bdaba5a0910706935e9d0ffc698",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 7200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "qutip"
+      ],
+      "task_id": "quantum-numerical-simulation",
+      "task_sha256": "a625ebc90663ac32498251664811f0ded635647ad76b7e6864d28cf3d1c1c19b",
+      "verifier_timeout_sec": 1800.0
+    },
+    {
+      "agent_timeout_sec": 1200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python",
+        "simulation-tool"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 4,
+      "skill_names": [
+        "finite-horizon-lqr",
+        "integral-action-design",
+        "mpc-horizon-tuning",
+        "state-space-linearization"
+      ],
+      "task_id": "r2r-mpc-control",
+      "task_sha256": "0d63d1cc65751d4f4b90f746dd404cd46c43a7c7dd71ca29b209aa69c51b9082",
+      "verifier_timeout_sec": 1200.0
+    },
+    {
+      "agent_timeout_sec": 1200.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "radar-signal-processing",
+        "radar-vital-signs",
+        "vital-sign-extraction"
+      ],
+      "task_id": "radar-vital-signs",
+      "task_sha256": "d5da2965cfafa62274b8a2d0755aef090ffe8144e5f5b54262e45f1af06e67f3",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "browser-testing",
+        "react-best-practices"
+      ],
+      "task_id": "react-performance-debugging",
+      "task_sha256": "c6851c3f2cb91b4b04a1ef27ed5a3bffe459374bfb72b5329d787018222f1bd2",
+      "verifier_timeout_sec": 400.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "xlsx"
+      ],
+      "task_id": "reserves-at-risk-calc",
+      "task_sha256": "6a16211f48b23e175f8be81c56f7d45d9a725fa949ec004cbec8a888a144a932",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "pdf",
+        "xlsx"
+      ],
+      "task_id": "sales-pivot-analysis",
+      "task_sha256": "aed27c7a62b1307a6d3dbdc89abacd373150fffd5f02e5e6df30c7ad84ee3232",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "13f-analyzer",
+        "fuzzy-name-search"
+      ],
+      "task_id": "sec-financial-report",
+      "task_sha256": "e3578ad5d7c671490acd28ac9b2452156968841963ae6103f132c053f4a12c6c",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "licenses",
+        "obspy-data-api",
+        "obspy-datacenter-client",
+        "seisbench-model-api",
+        "seismic-picker-selection"
+      ],
+      "task_id": "seismic-phase-picking",
+      "task_sha256": "43d677698df1c43d68263c05f711a931b739e67f85d417c6dd1a20eafc119c17",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "discover-important-function",
+        "fuzzing-python",
+        "setup-env"
+      ],
+      "task_id": "setup-fuzzing-py",
+      "task_sha256": "cb8fe424a97eb61e05207407d399f55a5e9a94ba3b62d2a8c07907e8e85c468b",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "xlsx"
+      ],
+      "task_id": "shock-analysis-demand",
+      "task_sha256": "a4451cdb101f4575e4edb75c64a6211a72aab1fa77a3d70e8445b1eee25d1ec9",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 2700.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app",
+        "browser"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "xlsx"
+      ],
+      "task_id": "shock-analysis-supply",
+      "task_sha256": "00c1e21b7a8e794e93ad2150cef6c9df31f37d7c0390ee0bb7bd5979510c6cd0",
+      "verifier_timeout_sec": 1350.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "nlp-research-repo-package-installment",
+        "pdf"
+      ],
+      "task_id": "simpo-code-reproduction",
+      "task_sha256": "53666dc932ba08495963f937c062565fdc26f7fe331ced36e8c4ba7dd67a1b45",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "cvss-score-extraction",
+        "trivy-offline-vulnerability-scanning",
+        "vulnerability-csv-reporting"
+      ],
+      "task_id": "software-dependency-audit",
+      "task_sha256": "37e4052173bedf8a8c05e744c18841a6874289bab77daddc9730093537c9937e",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 5,
+      "skill_names": [
+        "hibernate-upgrade",
+        "jakarta-namespace",
+        "restclient-migration",
+        "spring-boot-migration",
+        "spring-security-6"
+      ],
+      "task_id": "spring-boot-jakarta-migration",
+      "task_sha256": "0757faa3f3e8d02f3ac6fb0b7ef637f93c12f482721f42777c10b8b69a7cfd31",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "pcap-triage-tshark",
+        "suricata-offline-evejson",
+        "suricata-rules-basics"
+      ],
+      "task_id": "suricata-custom-exfil",
+      "task_sha256": "892824294e1e088c4ccb08aac2269573188c7db991200dfe11ce09e81fa12e0f",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 1400.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "compiler-toolchain"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "syz-extract-constants",
+        "syzkaller-build-loop",
+        "syzlang-ioctl-basics"
+      ],
+      "task_id": "syzkaller-ppdev-syzlang",
+      "task_sha256": "9fa8b16fc212f42de3601c478d47e7558137bf550c2e168b7f44d86a7076294d",
+      "verifier_timeout_sec": 1200.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "obj-exporter",
+        "threejs"
+      ],
+      "task_id": "threejs-structure-parser",
+      "task_sha256": "ecd5bb26740662db050464fd6b4553d65e8d5c6c3d0b048215bbe6d042680145",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 300.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "obj-exporter",
+        "threejs"
+      ],
+      "task_id": "threejs-to-obj",
+      "task_sha256": "7fd36dcddabb1509f4c6ad2d9aa51a5e124c9ad617f06a2ffafc24c7283ae9b7",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 1800.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 3,
+      "skill_names": [
+        "transaction-concurrency-control-foundations",
+        "transaction-protocol-reasoning",
+        "transaction-trace-analysis"
+      ],
+      "task_id": "tictoc-unnecessary-abort-detection",
+      "task_sha256": "614716c469108598a526ab532009d9012b0624ed0f8ce45281839ff06ec8f126",
+      "verifier_timeout_sec": 600.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 6,
+      "skill_names": [
+        "search-accommodations",
+        "search-attractions",
+        "search-cities",
+        "search-driving-distance",
+        "search-flights",
+        "search-restaurants"
+      ],
+      "task_id": "travel-planning",
+      "task_sha256": "91644100404d0ead95d1ee6f7725a4c944c7610d31f8d927bd22b83e7388ab93",
+      "verifier_timeout_sec": 300.0
+    },
+    {
+      "agent_timeout_sec": 3600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 7,
+      "skill_names": [
+        "audio-extractor",
+        "energy-calculator",
+        "pause-detector",
+        "report-generator",
+        "segment-combiner",
+        "silence-detector",
+        "video-processor"
+      ],
+      "task_id": "video-silence-remover",
+      "task_sha256": "f200dfe10873a88cea005f043853cc4aec680e0211f592bcbdb9811f9ea488a8",
+      "verifier_timeout_sec": 240.0
+    },
+    {
+      "agent_timeout_sec": 900.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "single",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "spreadsheet-app"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 1,
+      "skill_names": [
+        "xlsx"
+      ],
+      "task_id": "weighted-gdp-calc",
+      "task_sha256": "9eebfad48cbbd71113906e0ff0bbe35bb82711077f513a7c24adfc1706ad5a30",
+      "verifier_timeout_sec": 900.0
+    },
+    {
+      "agent_timeout_sec": 600.0,
+      "antisentinel_status": "unsupported_missing_task_environment_adapter",
+      "cohort": "multi",
+      "credential_markers": [],
+      "gpus": 0,
+      "interfaces": [
+        "terminal",
+        "python"
+      ],
+      "network_mode": "public",
+      "official_local_candidate": true,
+      "skill_count": 2,
+      "skill_names": [
+        "data-reconciliation",
+        "xlsx"
+      ],
+      "task_id": "xlsx-recover-data",
+      "task_sha256": "1fa882f4c2ccee0356c5e1798b6fd65a6b9bf1a7a40ddf8f97ca9618e1120fec",
+      "verifier_timeout_sec": 600.0
+    }
+  ],
+  "single_skill_tasks": 23,
+  "source": "benchflow-ai/skillsbench main ZIP supplied by user",
+  "source_sha256": "2717a281b7c8a6ddc3450d24441071b59790c12f7e875a7a67b4a0151320b8a7",
+  "task_count": 87
+}

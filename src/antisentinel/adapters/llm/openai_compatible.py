@@ -55,14 +55,20 @@ class OpenAICompatibleModelAdapter:
                 "messages": _provider_messages(request.messages),
                 "tools": [_provider_tool(tool) for tool in request.tools],
             }
+            provider_tool_names = {_provider_tool_name(tool["name"]): tool["name"] for tool in request.tools}
             has_tool_results = any(message.get("role") == "tool" for message in request.messages)
-            if not request.tools or has_tool_results:
+            duplicate_feedback = any("Duplicate tool call" in str(message) for message in request.messages if message.get("role") == "tool")
+            if not request.tools:
                 payload["response_format"] = {"type": "json_object"}
-            if has_tool_results:
-                payload["tool_choice"] = "none"
+            if duplicate_feedback:
                 payload["messages"].append({
                     "role": "user",
-                    "content": "Tool results are complete. Return ONLY one JSON object in the final schema with summary, diagnosis, confidence, and evidence_refs. Do not call tools and do not add commentary.",
+                    "content": "The repeated call was already completed. Reuse its result. Make a different tool call if more work is required; return the final JSON only when the task is actually complete.",
+                })
+            elif has_tool_results and request.tools:
+                payload["messages"].append({
+                    "role": "user",
+                    "content": "Review the tool results. If another distinct tool call is necessary, return the tasks schema; otherwise return ONLY the final JSON schema. Never repeat the same tool and arguments.",
                 })
             if "deepseek" in self.base_url.lower():
                 payload["thinking"] = {"type": "disabled"}
@@ -78,7 +84,7 @@ class OpenAICompatibleModelAdapter:
             raise ModelError(f"model request failed: {type(exc).__name__}") from exc
 
         if response.status_code >= 400:
-            raise ModelError(f"provider_http_{response.status_code}")
+            raise ModelError(_provider_http_error(response))
         try:
             body = response.json()
             message = body["choices"][0]["message"]
@@ -88,7 +94,7 @@ class OpenAICompatibleModelAdapter:
             logger.info("provider_response_shape", extra={"response_keys": sorted(message.keys()), "has_tool_calls": True, "content_length": len(message.get("content") or "")})
             usage = _parse_usage(body.get("usage"))
             _set_usage_attributes(current, usage)
-            return _parse_native_tool_calls(message["tool_calls"], usage)
+            return _parse_native_tool_calls(message["tool_calls"], usage, provider_tool_names)
         content = message.get("content")
         if content is None:
             raise ModelError("invalid_provider_response")
@@ -122,7 +128,7 @@ class OpenAICompatibleModelAdapter:
         }
         response = self.client.post(self._completion_url(), headers={"Authorization": f"Bearer {self.api_key}"}, json=payload, timeout=self.timeout)
         if response.status_code >= 400:
-            raise ModelError(f"provider_http_{response.status_code}")
+            raise ModelError(_provider_http_error(response))
         body = response.json(); raw = body["choices"][0]["message"].get("content")
         return parse_model_response(_parse_json_content(raw)), _parse_usage(body.get("usage"))
 
@@ -152,7 +158,7 @@ def _provider_tool(tool: dict[str, Any]) -> dict[str, Any]:
     return {
         "type": "function",
         "function": {
-            "name": tool["name"],
+            "name": _provider_tool_name(tool["name"]),
             "description": tool.get("description", ""),
             "parameters": tool.get("argument_schema", {"type": "object", "properties": {}}),
         },
@@ -169,11 +175,21 @@ def _provider_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
             continue
         structured = {key: value for key, value in message.items() if key != "role"}
         prefix = "[AntiSentinel tool results]\n" if role == "tool" else "[AntiSentinel context]\n"
-        result.append({"role": "user" if role == "tool" else role, "content": prefix + json.dumps(structured, ensure_ascii=False)})
+        provider_role = role if role in {"system", "assistant", "user"} else "user"
+        result.append({"role": provider_role, "content": prefix + json.dumps(structured, ensure_ascii=False)})
     return result
 
 
-def _parse_native_tool_calls(tool_calls: object, usage: TokenUsage | None = None) -> ModelResponse:
+def _provider_tool_name(name: str) -> str:
+    aliases = {"skill.load": "antisentinel_skill_load", "skill.read_reference": "antisentinel_skill_read_reference"}
+    if name in aliases:
+        return aliases[name]
+    if all(character.isalnum() or character in "_-" for character in name):
+        return name
+    return "antisentinel_" + "".join(character if character.isalnum() or character in "_-" else "_" for character in name)
+
+
+def _parse_native_tool_calls(tool_calls: object, usage: TokenUsage | None = None, provider_tool_names: dict[str, str] | None = None) -> ModelResponse:
     if not isinstance(tool_calls, list) or not tool_calls:
         raise ModelError("invalid_provider_tool_calls")
     planned_calls = []
@@ -188,7 +204,7 @@ def _parse_native_tool_calls(tool_calls: object, usage: TokenUsage | None = None
             if isinstance(arguments, str):
                 arguments = json.loads(arguments)
             planned_calls.append({
-                "tool_name": function["name"],
+                "tool_name": (provider_tool_names or {}).get(function["name"], function["name"]),
                 "arguments": arguments,
                 "target_ref": None,
             })
@@ -239,3 +255,9 @@ def _parse_json_content(content: str) -> object:
             raise ValueError("unsupported fenced provider output")
         candidate = "\n".join(lines[1:-1]).strip()
     return json.loads(candidate)
+
+
+def _provider_http_error(response: httpx.Response) -> str:
+    """Keep provider diagnostics bounded and never include request credentials."""
+    detail = response.text.replace("\n", " ").strip()[:500]
+    return f"provider_http_{response.status_code}: {detail}" if detail else f"provider_http_{response.status_code}"

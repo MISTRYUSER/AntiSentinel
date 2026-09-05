@@ -182,6 +182,30 @@ def test_repeated_cached_tool_calls_stop_as_non_convergent():
     assert result.error["code"] == "model_non_convergent"
 
 
+def test_duplicate_tool_call_is_returned_once_then_model_can_finalize():
+    incident, session = make_session()
+    calls = []
+    plan = {"tasks": [{"task_id": "task-1", "objective": "inspect", "tool_calls": [{"tool_name": "read_health", "arguments": {"service": "api"}}]}]}
+    model = FakeModel([plan, plan, {"final": {"summary": "done", "diagnosis": "healthy", "confidence": 0.8, "evidence_refs": []}}])
+    result = RuntimeEngine().run(incident, session, model, registry=registry_for(lambda arguments: calls.append(arguments) or {"ok": True}), config=RuntimeConfig(max_turns=4))
+    assert result.status == "completed"
+    assert len(calls) == 1
+    assert any(attempt.error and attempt.error["code"] == "duplicate_tool_call" for attempt in result.attempts)
+
+
+def test_total_tool_call_budget_stops_distinct_followup_calls():
+    incident, session = make_session()
+    calls = []
+    model = FakeModel([
+        {"tasks": [{"task_id": "one", "objective": "first", "tool_calls": [{"tool_name": "read_health", "arguments": {"service": "api"}}]}]},
+        {"tasks": [{"task_id": "two", "objective": "second", "tool_calls": [{"tool_name": "read_health", "arguments": {"service": "worker"}}]}]},
+    ])
+    result = RuntimeEngine().run(incident, session, model, registry=registry_for(lambda args: calls.append(args) or {"ok": True}), config=RuntimeConfig(max_total_tool_calls=1))
+    assert result.status == "failed"
+    assert result.error["code"] == "max_total_tool_calls_exceeded"
+    assert len(calls) == 1
+
+
 def test_model_timeout_fails_session():
     incident, session = make_session()
     model = FakeModel([ModelTimeoutError("timed out")])

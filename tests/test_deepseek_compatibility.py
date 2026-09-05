@@ -3,7 +3,7 @@ import json
 import httpx
 
 
-def test_tool_result_request_forces_final_json_without_more_tool_calls():
+def test_tool_result_request_keeps_distinct_followup_tools_available():
     from antisentinel.adapters.llm.openai_compatible import OpenAICompatibleModelAdapter
     from antisentinel.ports.model import ModelRequest
 
@@ -16,8 +16,9 @@ def test_tool_result_request_forces_final_json_without_more_tool_calls():
 
     adapter.complete(ModelRequest("incident-1", "session-1", "turn-2", [{"role": "tool", "task_results": [{"summary": "checked"}]}], [{"name": "read_log", "argument_schema": {"type": "object"}}]))
 
-    assert seen["tool_choice"] == "none"
-    assert seen["response_format"] == {"type": "json_object"}
+    assert "tool_choice" not in seen
+    assert "response_format" not in seen
+    assert seen["tools"][0]["function"]["name"] == "read_log"
 
 
 def test_deepseek_requests_disable_thinking_for_deterministic_tool_json_handoff():
@@ -31,6 +32,53 @@ def test_deepseek_requests_disable_thinking_for_deterministic_tool_json_handoff(
     adapter = OpenAICompatibleModelAdapter(base_url="https://api.deepseek.com", api_key="secret", model="deepseek-v4-flash", client=httpx.Client(transport=httpx.MockTransport(lambda request: (seen.update(json.loads(request.content)) or response))))
     adapter.complete(ModelRequest("i", "s", "t", [{"role":"tool","task_results":[]}], []))
     assert seen["thinking"] == {"type": "disabled"}
+
+
+def test_skill_context_keeps_tools_available_after_skill_control_result():
+    from antisentinel.adapters.llm.openai_compatible import OpenAICompatibleModelAdapter
+    from antisentinel.ports.model import ModelRequest
+
+    seen = {}
+    response = httpx.Response(200, json={"choices": [{"message": {"content": json.dumps({"final": {"summary": "done", "diagnosis": "healthy", "confidence": 0.9, "evidence_refs": []}})}}], "usage": {}})
+    adapter = OpenAICompatibleModelAdapter(
+        base_url="https://api.deepseek.com", api_key="server-secret", model="deepseek-v4-flash",
+        client=httpx.Client(transport=httpx.MockTransport(lambda request: (seen.update(json.loads(request.content)) or response))),
+    )
+
+    adapter.complete(ModelRequest("incident-1", "session-1", "turn-2", [
+        {"role": "system", "content": "skill runtime"},
+        {"role": "skill", "skill_id": "local/diagnosis", "instructions": "inspect evidence", "allow_followup_tools": True},
+        {"role": "tool", "task_results": [{"summary": "loaded skill local/diagnosis"}]},
+    ], [{"name": "read_health", "argument_schema": {"type": "object"}}]))
+
+    assert "tool_choice" not in seen
+    assert seen["tools"][0]["function"]["name"] == "read_health"
+    assert {message["role"] for message in seen["messages"]} <= {"system", "user", "assistant"}
+
+
+def test_skill_control_tool_names_are_mapped_for_deepseek_and_restored_on_response():
+    from antisentinel.adapters.llm.openai_compatible import OpenAICompatibleModelAdapter
+    from antisentinel.ports.model import ModelRequest
+
+    seen = {}
+    response = httpx.Response(200, json={"choices": [{"message": {"tool_calls": [{"function": {"name": "antisentinel_skill_load", "arguments": "{\"skill_id\":\"local/diagnosis\"}"}}]}}], "usage": {}})
+    adapter = OpenAICompatibleModelAdapter(
+        base_url="https://api.deepseek.com", api_key="server-secret", model="deepseek-chat",
+        client=httpx.Client(transport=httpx.MockTransport(lambda request: (seen.update(json.loads(request.content)) or response))),
+    )
+
+    result = adapter.complete(ModelRequest("i", "s", "t", [{"role": "system", "content": "x"}], [
+        {"name": "skill.load", "argument_schema": {"type": "object"}},
+        {"name": "read_health", "argument_schema": {"type": "object"}},
+    ]))
+
+    assert [item["function"]["name"] for item in seen["tools"]] == ["antisentinel_skill_load", "read_health"]
+    assert result.tasks[0].tool_calls[0].tool_name == "skill.load"
+
+
+def test_dotted_sandbox_tool_name_is_mapped_and_restored():
+    from antisentinel.adapters.llm.openai_compatible import _provider_tool_name
+    assert _provider_tool_name("sandbox.read_file") == "antisentinel_sandbox_read_file"
 
 
 def test_runtime_system_prompt_explicitly_requires_json_schema():

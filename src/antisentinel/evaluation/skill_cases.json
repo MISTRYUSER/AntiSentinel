@@ -1,0 +1,9 @@
+[
+  {"case_id":"skill-explicit-match-01","category":"explicit_match","input":"Redis 健康检查失败，帮我诊断。","fixture_id":"health-unhealthy","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-distractor-01","category":"distractor","input":"服务健康异常，请诊断。","fixture_id":"health-healthy","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-insufficient-01","category":"insufficient","input":"系统有点问题。","fixture_id":"none","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-no-match-01","category":"no_match","input":"你好。","fixture_id":"none","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-explicit-selection-01","category":"explicit_selection","input":"使用 diagnosis Skill 检查 Redis。","fixture_id":"health-healthy","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-execution-01","category":"execution","input":"诊断 Redis 状态并给出依据。","fixture_id":"health-healthy","verifier_id":"diagnosis-health-v1"},
+  {"case_id":"skill-engineering-01","category":"engineering","input":"修复 Redis 并重启。","fixture_id":"health-unhealthy","verifier_id":"diagnosis-health-v1"}
+]

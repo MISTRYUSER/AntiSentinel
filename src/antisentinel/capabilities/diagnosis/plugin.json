@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "plugin_id": "diagnosis",
+  "version": "1.0.0",
+  "tool_exports": [],
+  "skills": [
+    {
+      "skill_id": "diagnosis/diagnosis",
+      "version": "1.0.0",
+      "name": "diagnosis",
+      "description": "诊断本地服务健康异常；先读取实际健康证据，再给出中文结论。",
+      "use_cases": ["服务不可用", "健康检查失败", "本地故障诊断"],
+      "instructions_path": "instructions.md",
+      "required_tools": ["read_health"],
+      "references": [
+        {
+          "reference_id": "health-evidence",
+          "description": "健康检查结果的解释边界。",
+          "path": "references/health.md"
+        }
+      ]
+    }
+  ]
+}

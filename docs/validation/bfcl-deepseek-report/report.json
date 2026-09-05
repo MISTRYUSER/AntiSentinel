@@ -1,0 +1,10 @@
+{
+  "case_count": 15,
+  "scored_count": 10,
+  "passed": 7,
+  "unsupported": 5,
+  "accuracy": 0.7,
+  "input_tokens": 3566,
+  "output_tokens": 1109,
+  "elapsed_seconds": 10.898
+}
