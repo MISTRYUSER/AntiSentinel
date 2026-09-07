@@ -54,7 +54,7 @@ def main(argv=None):
     integrity = store.database.query("PRAGMA foreign_key_check")
     report = {
         "case": "real-local", "repository": str(args.repository), "commit": args.commit,
-        "case_pass": result.ok and ready is not None and not integrity and ready.file_count > 0,
+        "case_pass": result.ok and ready is not None and not integrity and ready.file_count > 0 and not ready.failed_files,
         "input_files": len(included_entries), "input_bytes": sum(entry.byte_count for entry in supported_python_files),
         "supported_python_files": len(supported_python_files),
         "supported_multilang_files": len(supported_multilang_files), "unsupported_files": len(unsupported_files),
