@@ -29,6 +29,16 @@ class MultiLanguageParser:
         import hashlib
         by_name={n.qualified_name:n for p in parsed_files for n in p.symbols}
         out=[]
+        # lexical inheritance edges for Go embedding and TypeScript extends/implements
+        for p in parsed_files:
+            text=p.data.decode(p.encoding,errors="replace")
+            for i,line in enumerate(text.splitlines(),1):
+                m=re.search(r"\bclass\s+(\w+)\s+extends\s+(\w+)", line) or re.search(r"\btype\s+(\w+)\s+struct\s*\{([^}]*)", line)
+                if not m: continue
+                child=by_name.get(m.group(1)); parent_name=(m.group(2) if m.lastindex==2 and m.group(2) else "")
+                if child and parent_name:
+                    parent=by_name.get(parent_name); eid=hashlib.sha256(f"{child.node_id}|inherits|{parent.node_id if parent else parent_name}|{i}".encode()).hexdigest()
+                    out.append(CodeEdge(eid,snapshot_id,child.node_id,"inherits",parent.node_id if parent else None,parent_name if not parent else None,i,i,"resolved" if parent else "unresolved","text"))
         for p in parsed_files:
             text=p.data.decode(p.encoding,errors='replace')
             for i,line in enumerate(text.splitlines(),1):
