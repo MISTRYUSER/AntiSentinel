@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from .python_parser import ParsedFile
 from .identity import content_hash, node_id_for
-from .models import CodeNode
+from .models import CodeNode, CodeChunk
 
 class MultiLanguageParser:
     extensions = {'.go': 'go', '.ts': 'typescript', '.tsx': 'typescript', '.java': 'java', '.kt': 'kotlin', '.rs': 'rust', '.cpp': 'cpp', '.cc': 'cpp', '.h': 'cpp'}
@@ -29,7 +29,9 @@ class MultiLanguageParser:
                     name=m.group(1); q=name; nid=node_id_for(node_scope,path,kind,q,i,i)
                     nodes.append(CodeNode(nid,node_scope,'unbound','unbound',kind,q,path,i,i,content_hash(line.encode()),0,len(line.encode())))
                     break
-        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),(),{})
+        lines=text.splitlines(True)
+        chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(lines[n.start_line-1].encode()), commit_sha="unbound") for n in nodes)
+        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,{})
     def contains_edges(self, parsed_files, snapshot_id): return ()
     def resolve_edges(self, parsed_files, snapshot_id):
         from .models import CodeEdge
