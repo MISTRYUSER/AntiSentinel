@@ -36,6 +36,10 @@ class RelationResolver:
                         target = symbols.get(node.func.id) or aliases[node.func.id]
                         basis = "same_module" if node.func.id in symbols else "explicit_import_alias"
                         edges.append(_edge(snapshot_id, source.node_id, "calls", target.node_id, None, "resolved", basis))
+                        if node.func.id in aliases:
+                            edges.append(_edge(snapshot_id, source.node_id, "imports", target.node_id, None, "resolved", "explicit_import_alias"))
+                        if parsed.path.rsplit("/", 1)[-1].startswith("test_"):
+                            edges.append(_edge(snapshot_id, target.node_id, "tested_by", source.node_id, None, "resolved", "static_test_call"))
                     else:
                         edges.append(_edge(snapshot_id, source.node_id, "calls", None, ast.unparse(node.func), "unresolved", "dynamic_or_unknown"))
         return tuple(edges)

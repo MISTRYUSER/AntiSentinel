@@ -39,3 +39,17 @@ def test_relation_resolver_resolves_explicit_import_alias_across_files():
     symbols = {symbol.qualified_name: symbol.node_id for parsed in (dependency, caller) for symbol in parsed.symbols}
 
     assert any(edge.relation == "calls" and edge.source_node_id == symbols["caller"] and edge.target_node_id == symbols["target"] and edge.resolution == "resolved" for edge in edges)
+
+
+def test_relation_resolver_marks_test_call_and_import_evidence():
+    from antisentinel.code_map.python_parser import PythonAstParser
+    from antisentinel.code_map.relations import RelationResolver
+
+    parser = PythonAstParser("python-ast-v1")
+    implementation = parser.parse_file("service.py", b"def target():\n    return 1\n", "snapshot-a")
+    test_file = parser.parse_file("test_service.py", b"from service import target\n\ndef test_target():\n    assert target() == 1\n", "snapshot-a")
+    edges = RelationResolver().resolve((implementation, test_file), "snapshot-a")
+    symbols = {symbol.qualified_name: symbol.node_id for parsed in (implementation, test_file) for symbol in parsed.symbols}
+
+    assert any(edge.relation == "imports" and edge.source_node_id == symbols["test_target"] and edge.target_node_id == symbols["target"] for edge in edges)
+    assert any(edge.relation == "tested_by" and edge.source_node_id == symbols["target"] and edge.target_node_id == symbols["test_target"] for edge in edges)
