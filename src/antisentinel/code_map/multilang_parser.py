@@ -22,17 +22,31 @@ class MultiLanguageParser:
             "typescript": [(r"^\s*(?:export\s+)?(?:abstract\s+)?class\s+(\w+)", "class"), (r"^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)", "function"), (r"^\s*(?:export\s+)?(?:const|let)\s+(\w+)\s*=", "function")],
         }[lang]
         nodes=[]
+        parents={}
+        module_name=path.rsplit('/',1)[-1].rsplit('.',1)[0]
+        module_id=node_id_for(node_scope,path,"module",module_name,1,max(1,len(text.splitlines())))
+        module=CodeNode(module_id,node_scope,"unbound","unbound","module",module_name,path,1,max(1,len(text.splitlines())),content_hash(data),0,0)
+        nodes.append(module)
         for i,line in enumerate(text.splitlines(),1):
             for pat,kind in pats:
                 m=re.search(pat,line)
                 if m:
                     name=m.group(1); q=name; nid=node_id_for(node_scope,path,kind,q,i,i)
                     nodes.append(CodeNode(nid,node_scope,'unbound','unbound',kind,q,path,i,i,content_hash(line.encode()),0,len(line.encode())))
+                    parents[nid]=module_id
                     break
         lines=text.splitlines(True)
         chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(lines[n.start_line-1].encode()), commit_sha="unbound") for n in nodes)
-        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,{})
-    def contains_edges(self, parsed_files, snapshot_id): return ()
+        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents)
+    def contains_edges(self, parsed_files, snapshot_id):
+        from .models import CodeEdge
+        import hashlib
+        out=[]
+        for parsed in parsed_files:
+            for child,parent in parsed.parents.items():
+                eid=hashlib.sha256(f"{parent}|contains|{child}".encode()).hexdigest()
+                out.append(CodeEdge(eid,snapshot_id,parent,"contains",child,None,None,None,"resolved","syntax"))
+        return tuple(out)
     def resolve_edges(self, parsed_files, snapshot_id):
         from .models import CodeEdge
         import hashlib

@@ -72,7 +72,8 @@ class SnapshotBuilder:
             ))
         nodes = tuple(symbol for parsed in parsed_files for symbol in parsed.symbols)
         chunks = tuple(chunk for parsed in parsed_files for chunk in parsed.chunks)
-        edges = parser.contains_edges(tuple(parsed_files), snapshot_id)
+        edge_parser = parser if all(parsed.tree is not None for parsed in parsed_files) else MultiLanguageParser(lease.parser_revision)
+        edges = edge_parser.contains_edges(tuple(parsed_files), snapshot_id)
         if all(parsed.tree is not None for parsed in parsed_files):
             edges += RelationResolver().resolve(tuple(parsed_files), snapshot_id)
         elif parsed_files:
