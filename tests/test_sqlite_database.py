@@ -29,6 +29,18 @@ EXPECTED_TABLES = {
     "tool_calls",
     "traces",
     "turns",
+    "code_map_repositories",
+    "code_map_scan_jobs",
+    "code_map_job_attempts",
+    "code_map_worker_slots",
+    "code_map_snapshots",
+    "code_map_blobs",
+    "code_map_files",
+    "code_map_nodes",
+    "code_map_edges",
+    "code_map_chunks",
+    "code_map_deployments",
+    "code_map_diagnosis_bindings",
 }
 
 
@@ -47,7 +59,7 @@ def test_sqlite_database_initializes_schema_and_pragmas_idempotently(tmp_path):
     assert db.query("PRAGMA journal_mode")[0][0].lower() == "wal"
     assert db.query("PRAGMA foreign_keys")[0][0] == 1
     assert db.query("PRAGMA busy_timeout")[0][0] == 5000
-    assert [row["version"] for row in db.query("SELECT version FROM schema_migrations")] == [1]
+    assert [row["version"] for row in db.query("SELECT version FROM schema_migrations")] == [1, 2, 3, 4]
 
 
 def test_sqlite_database_transaction_rolls_back_on_error(tmp_path):

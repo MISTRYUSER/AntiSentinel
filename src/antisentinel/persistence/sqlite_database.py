@@ -8,7 +8,7 @@ from pathlib import Path
 import sqlite3
 
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 4
 
 SCHEMA_V1 = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -270,6 +270,209 @@ CREATE TABLE IF NOT EXISTS import_ledger (
 """
 
 
+MIGRATIONS: dict[int, tuple[str, ...]] = {
+    2: (
+        """
+        CREATE TABLE IF NOT EXISTS code_map_repositories (
+            repository_id TEXT PRIMARY KEY,
+            remote_url TEXT NOT NULL,
+            credential_ref TEXT NOT NULL,
+            tracked_ref TEXT NOT NULL,
+            min_interval INTEGER NOT NULL,
+            max_interval INTEGER NOT NULL,
+            current_interval INTEGER,
+            last_check_completed_at TEXT,
+            last_change_observed_at TEXT,
+            next_check_at TEXT,
+            last_check_at TEXT,
+            last_sync_at TEXT,
+            observed_commit TEXT,
+            rules_json TEXT NOT NULL DEFAULT '{}',
+            budget_json TEXT NOT NULL DEFAULT '{}',
+            enabled INTEGER NOT NULL DEFAULT 1,
+            blocked INTEGER NOT NULL DEFAULT 0,
+            blocked_reason TEXT,
+            check_token TEXT,
+            check_expires_at TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_scan_jobs (
+            job_id TEXT PRIMARY KEY,
+            repository_id TEXT NOT NULL REFERENCES code_map_repositories(repository_id),
+            commit_sha TEXT NOT NULL,
+            parser_revision TEXT NOT NULL,
+            rules_digest TEXT NOT NULL,
+            trigger TEXT NOT NULL,
+            status TEXT NOT NULL,
+            attempt INTEGER NOT NULL DEFAULT 0,
+            next_attempt_at TEXT,
+            lease_owner TEXT,
+            lease_token TEXT,
+            lease_expires_at TEXT,
+            trace_context_json TEXT NOT NULL DEFAULT '{}',
+            error_code TEXT,
+            error_message TEXT,
+            created_at TEXT NOT NULL,
+            started_at TEXT,
+            completed_at TEXT,
+            UNIQUE(repository_id, commit_sha, parser_revision, rules_digest)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_job_attempts (
+            attempt_id TEXT PRIMARY KEY,
+            job_id TEXT NOT NULL REFERENCES code_map_scan_jobs(job_id),
+            attempt INTEGER NOT NULL,
+            status TEXT NOT NULL,
+            trace_context_json TEXT NOT NULL DEFAULT '{}',
+            error_code TEXT,
+            error_message TEXT,
+            started_at TEXT NOT NULL,
+            completed_at TEXT,
+            UNIQUE(job_id, attempt)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_worker_slots (
+            slot_name TEXT PRIMARY KEY,
+            owner TEXT,
+            lease_token TEXT,
+            lease_expires_at TEXT
+        )
+        """,
+        "CREATE INDEX IF NOT EXISTS idx_code_map_scan_jobs_claim ON code_map_scan_jobs(status, next_attempt_at, created_at)",
+        "CREATE INDEX IF NOT EXISTS idx_code_map_scan_jobs_repository ON code_map_scan_jobs(repository_id, commit_sha)",
+    ),
+    3: (
+        """
+        CREATE TABLE IF NOT EXISTS code_map_snapshots (
+            snapshot_id TEXT PRIMARY KEY,
+            repository_id TEXT NOT NULL REFERENCES code_map_repositories(repository_id),
+            commit_sha TEXT NOT NULL,
+            parser_revision TEXT NOT NULL,
+            rules_digest TEXT NOT NULL,
+            status TEXT NOT NULL,
+            generation INTEGER NOT NULL DEFAULT 1,
+            published_generation INTEGER,
+            file_count INTEGER NOT NULL DEFAULT 0,
+            node_count INTEGER NOT NULL DEFAULT 0,
+            edge_count INTEGER NOT NULL DEFAULT 0,
+            chunk_count INTEGER NOT NULL DEFAULT 0,
+            failed_files_json TEXT NOT NULL DEFAULT '[]',
+            excluded_files_json TEXT NOT NULL DEFAULT '[]',
+            logical_bytes INTEGER NOT NULL DEFAULT 0,
+            created_at TEXT NOT NULL,
+            published_at TEXT,
+            UNIQUE(repository_id, commit_sha, parser_revision, rules_digest)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_blobs (
+            content_hash TEXT PRIMARY KEY,
+            git_object_id TEXT NOT NULL,
+            byte_count INTEGER NOT NULL,
+            encoding TEXT,
+            content BLOB NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_files (
+            file_id TEXT PRIMARY KEY,
+            snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id),
+            path TEXT NOT NULL,
+            git_object_id TEXT NOT NULL,
+            content_hash TEXT,
+            byte_count INTEGER NOT NULL DEFAULT 0,
+            status TEXT NOT NULL,
+            error_code TEXT,
+            UNIQUE(snapshot_id, path)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_nodes (
+            node_id TEXT PRIMARY KEY,
+            snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id),
+            repository_id TEXT NOT NULL,
+            commit_sha TEXT NOT NULL,
+            kind TEXT NOT NULL,
+            qualified_name TEXT NOT NULL,
+            path TEXT NOT NULL,
+            start_line INTEGER NOT NULL,
+            end_line INTEGER NOT NULL,
+            start_col INTEGER,
+            end_col INTEGER,
+            content_hash TEXT,
+            UNIQUE(snapshot_id, path, kind, qualified_name, start_line, end_line)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_edges (
+            edge_id TEXT PRIMARY KEY,
+            snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id),
+            source_node_id TEXT NOT NULL REFERENCES code_map_nodes(node_id),
+            relation TEXT NOT NULL,
+            target_node_id TEXT REFERENCES code_map_nodes(node_id),
+            unresolved_expression TEXT,
+            call_start_line INTEGER,
+            call_end_line INTEGER,
+            resolution TEXT NOT NULL,
+            basis TEXT NOT NULL
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_chunks (
+            chunk_id TEXT PRIMARY KEY,
+            node_id TEXT NOT NULL REFERENCES code_map_nodes(node_id),
+            snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id),
+            path TEXT NOT NULL,
+            start_line INTEGER NOT NULL,
+            end_line INTEGER NOT NULL,
+            byte_start INTEGER NOT NULL,
+            byte_end INTEGER NOT NULL,
+            content_hash TEXT NOT NULL,
+            commit_sha TEXT NOT NULL,
+            encoding TEXT NOT NULL,
+            truncated INTEGER NOT NULL DEFAULT 0,
+            partial_line INTEGER NOT NULL DEFAULT 0
+        )
+        """,
+        "CREATE INDEX IF NOT EXISTS idx_code_map_nodes_lookup ON code_map_nodes(snapshot_id, qualified_name, path)",
+        "CREATE INDEX IF NOT EXISTS idx_code_map_edges_source ON code_map_edges(snapshot_id, source_node_id, relation)",
+        "CREATE INDEX IF NOT EXISTS idx_code_map_edges_target ON code_map_edges(snapshot_id, target_node_id, relation)",
+        "CREATE INDEX IF NOT EXISTS idx_code_map_chunks_node ON code_map_chunks(snapshot_id, node_id, start_line)",
+    ),
+    4: (
+        """
+        CREATE TABLE IF NOT EXISTS code_map_deployments (
+            service_id TEXT NOT NULL,
+            environment TEXT NOT NULL,
+            repository_id TEXT NOT NULL REFERENCES code_map_repositories(repository_id),
+            deployed_commit TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY(service_id, environment)
+        )
+        """,
+        """
+        CREATE TABLE IF NOT EXISTS code_map_diagnosis_bindings (
+            binding_id TEXT PRIMARY KEY,
+            incident_id TEXT NOT NULL,
+            session_id TEXT,
+            repository_id TEXT NOT NULL REFERENCES code_map_repositories(repository_id),
+            snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id),
+            published_generation INTEGER NOT NULL,
+            requested_commit TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            UNIQUE(incident_id, session_id, repository_id)
+        )
+        """,
+        "CREATE INDEX IF NOT EXISTS idx_code_map_bindings_incident ON code_map_diagnosis_bindings(incident_id, session_id)",
+    ),
+}
+
+
 class SQLiteDatabase:
     """Own SQLite configuration and transaction semantics behind one interface."""
 
@@ -285,13 +488,30 @@ class SQLiteDatabase:
         return connection
 
     def initialize(self) -> None:
-        with self._connect() as connection:
+        connection = self._connect()
+        try:
             connection.execute("PRAGMA journal_mode = WAL")
             connection.executescript(SCHEMA_V1)
-            connection.execute(
-                "INSERT OR IGNORE INTO schema_migrations(version) VALUES (?)",
-                (SCHEMA_VERSION,),
-            )
+            connection.commit()
+        finally:
+            connection.close()
+
+        rows = self.query("SELECT MAX(version) AS version FROM schema_migrations")
+        current = int(rows[0]["version"] or 0)
+        user_version = int(self.query("PRAGMA user_version")[0][0])
+        if max(current, user_version) > SCHEMA_VERSION:
+            raise RuntimeError(f"database schema is newer than supported version {SCHEMA_VERSION}")
+        if current == 0:
+            with self.transaction() as migration:
+                migration.execute("INSERT INTO schema_migrations(version) VALUES (1)")
+                migration.execute("PRAGMA user_version = 1")
+            current = 1
+        for version in range(current + 1, SCHEMA_VERSION + 1):
+            with self.transaction() as migration:
+                for statement in MIGRATIONS[version]:
+                    migration.execute(statement)
+                migration.execute("INSERT INTO schema_migrations(version) VALUES (?)", (version,))
+                migration.execute(f"PRAGMA user_version = {version}")
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:

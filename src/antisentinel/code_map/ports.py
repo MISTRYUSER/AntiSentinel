@@ -1,0 +1,26 @@
+"""Ports used by the scheduler, worker, parser, and query layers."""
+
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Protocol
+
+from .models import MapSnapshot, RepositoryBudget, RepositoryRegistration, ScanJob
+
+
+class Clock(Protocol):
+    def now(self) -> datetime: ...
+
+
+class GitReader(Protocol):
+    def sync_ref(self, tracked_ref: str, timeout_s: float = 60.0) -> Any: ...
+    def list_tree(self, commit_sha: str, budget: RepositoryBudget) -> tuple[Any, ...]: ...
+    def read_blob(self, commit_sha: str, object_id: str, max_bytes: int) -> bytes: ...
+    def pin(self, commit_sha: str) -> None: ...
+
+
+class CodeMapStore(Protocol):
+    def register(self, registration: RepositoryRegistration) -> RepositoryRegistration: ...
+    def enqueue(self, registration_id: str, commit_sha: str, trigger: str, trace: Any | None = None) -> ScanJob: ...
+    def get_snapshot(self, repository_id: str, commit_sha: str, allow_partial: bool = False) -> MapSnapshot | None: ...
