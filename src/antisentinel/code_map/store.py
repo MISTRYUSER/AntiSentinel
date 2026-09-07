@@ -15,7 +15,7 @@ from antisentinel.domain.primitives import decode_datetime, encode_datetime
 from antisentinel.persistence.sqlite_database import SQLiteDatabase
 
 from .identity import snapshot_id_for
-from .models import RepositoryRegistration, ScanJob
+from .models import CodeMapError, MapSnapshot, RepositoryRegistration, ScanJob
 
 
 @dataclass(frozen=True)
@@ -24,6 +24,33 @@ class CheckLease:
     owner: str
     token: str
     expires_at: datetime
+
+
+@dataclass(frozen=True)
+class JobLease:
+    job_id: str
+    repository_id: str
+    commit_sha: str
+    parser_revision: str
+    rules_digest: str
+    owner: str
+    token: str
+    expires_at: datetime
+    attempt: int
+
+
+@dataclass(frozen=True)
+class StagedMapRows:
+    nodes: tuple[Any, ...] = ()
+    edges: tuple[Any, ...] = ()
+    chunks: tuple[Any, ...] = ()
+
+
+@dataclass(frozen=True)
+class PublishResult:
+    ok: bool
+    error: CodeMapError | None = None
+    snapshot: MapSnapshot | None = None
 
 
 class SQLiteCodeMapStore:
@@ -193,6 +220,146 @@ class SQLiteCodeMapStore:
         else:
             rows = self.database.query("SELECT * FROM code_map_scan_jobs WHERE repository_id=? ORDER BY created_at, job_id", (repository_id,))
         return [_job_from_row(row) for row in rows]
+
+    def claim_job(self, owner: str, now: datetime) -> JobLease | None:
+        now = _require_utc(now)
+        token = str(uuid4())
+        expires_at = now + timedelta(seconds=self.lease_seconds)
+        with self.database.transaction() as connection:
+            slot = connection.execute(
+                "SELECT owner, lease_expires_at FROM code_map_worker_slots WHERE slot_name='global'"
+            ).fetchone()
+            if slot is not None and slot["lease_expires_at"] and slot["lease_expires_at"] > _dt(now):
+                return None
+            row = connection.execute(
+                """
+                SELECT * FROM code_map_scan_jobs
+                WHERE status IN ('queued','retry_wait')
+                   OR (status='running' AND lease_expires_at IS NOT NULL AND lease_expires_at<=?)
+                ORDER BY created_at, job_id LIMIT 1
+                """,
+                (_dt(now),),
+            ).fetchone()
+            if row is None:
+                return None
+            attempt = int(row["attempt"]) + 1
+            connection.execute(
+                """
+                INSERT INTO code_map_worker_slots(slot_name, owner, lease_token, lease_expires_at)
+                VALUES('global',?,?,?)
+                ON CONFLICT(slot_name) DO UPDATE SET owner=excluded.owner, lease_token=excluded.lease_token, lease_expires_at=excluded.lease_expires_at
+                """,
+                (owner, token, _dt(expires_at)),
+            )
+            connection.execute(
+                """
+                UPDATE code_map_scan_jobs SET status='running', attempt=?, lease_owner=?, lease_token=?, lease_expires_at=?,
+                    started_at=COALESCE(started_at,?), error_code=NULL, error_message=NULL
+                WHERE job_id=? AND (status IN ('queued','retry_wait') OR lease_expires_at<=?)
+                """,
+                (attempt, owner, token, _dt(expires_at), _dt(now), row["job_id"], _dt(now)),
+            )
+            connection.execute(
+                """
+                INSERT OR REPLACE INTO code_map_job_attempts(
+                    attempt_id, job_id, attempt, status, trace_context_json, started_at
+                ) VALUES(?,?,?,?,?,?)
+                """,
+                (f"{row['job_id']}:{attempt}", row["job_id"], attempt, "running", row["trace_context_json"], _dt(now)),
+            )
+        return JobLease(
+            job_id=row["job_id"], repository_id=row["repository_id"], commit_sha=row["commit_sha"],
+            parser_revision=row["parser_revision"], rules_digest=row["rules_digest"], owner=owner,
+            token=token, expires_at=expires_at, attempt=attempt,
+        )
+
+    def heartbeat(self, lease: JobLease, now: datetime) -> bool:
+        now = _require_utc(now)
+        expires_at = now + timedelta(seconds=self.lease_seconds)
+        with self.database.transaction() as connection:
+            updated = connection.execute(
+                """
+                UPDATE code_map_scan_jobs SET lease_expires_at=?
+                WHERE job_id=? AND lease_owner=? AND lease_token=? AND status='running' AND lease_expires_at>?
+                """,
+                (_dt(expires_at), lease.job_id, lease.owner, lease.token, _dt(now)),
+            ).rowcount
+            slot_updated = connection.execute(
+                """
+                UPDATE code_map_worker_slots SET lease_expires_at=?
+                WHERE slot_name='global' AND owner=? AND lease_token=? AND lease_expires_at>?
+                """,
+                (_dt(expires_at), lease.owner, lease.token, _dt(now)),
+            ).rowcount
+        return updated == 1 and slot_updated == 1
+
+    def empty_staged_rows(self) -> StagedMapRows:
+        return StagedMapRows()
+
+    def publish(self, lease: JobLease, snapshot: MapSnapshot, staged_rows: StagedMapRows) -> PublishResult:
+        now = self._now()
+        with self.database.transaction() as connection:
+            row = connection.execute(
+                """
+                SELECT job_id FROM code_map_scan_jobs
+                WHERE job_id=? AND lease_owner=? AND lease_token=? AND status='running' AND lease_expires_at>?
+                """,
+                (lease.job_id, lease.owner, lease.token, _dt(now)),
+            ).fetchone()
+            slot = connection.execute(
+                "SELECT slot_name FROM code_map_worker_slots WHERE slot_name='global' AND owner=? AND lease_token=? AND lease_expires_at>?",
+                (lease.owner, lease.token, _dt(now)),
+            ).fetchone()
+            if row is None or slot is None:
+                return PublishResult(False, CodeMapError("lease_lost", False, {"job_id": lease.job_id}))
+            connection.execute(
+                """
+                INSERT INTO code_map_snapshots(
+                    snapshot_id,repository_id,commit_sha,parser_revision,rules_digest,status,generation,published_generation,
+                    file_count,node_count,edge_count,chunk_count,failed_files_json,excluded_files_json,logical_bytes,created_at,published_at
+                ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                ON CONFLICT(snapshot_id) DO UPDATE SET status=excluded.status, published_generation=excluded.published_generation, published_at=excluded.published_at
+                """,
+                (
+                    snapshot.snapshot_id, snapshot.repository_id, snapshot.commit_sha, snapshot.parser_revision,
+                    snapshot.rules_digest, "ready", snapshot.generation, snapshot.generation,
+                    snapshot.file_count, len(staged_rows.nodes), len(staged_rows.edges), len(staged_rows.chunks),
+                    json.dumps(list(snapshot.failed_files)), json.dumps(list(snapshot.excluded_files)), snapshot.logical_bytes,
+                    _dt(snapshot.created_at), _dt(now),
+                ),
+            )
+            connection.execute(
+                """
+                UPDATE code_map_scan_jobs SET status='succeeded', completed_at=?, lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
+                WHERE job_id=? AND lease_owner=? AND lease_token=?
+                """,
+                (_dt(now), lease.job_id, lease.owner, lease.token),
+            )
+            connection.execute(
+                "UPDATE code_map_job_attempts SET status='succeeded', completed_at=? WHERE job_id=? AND attempt=?",
+                (_dt(now), lease.job_id, lease.attempt),
+            )
+            connection.execute(
+                "UPDATE code_map_worker_slots SET owner=NULL, lease_token=NULL, lease_expires_at=NULL WHERE slot_name='global' AND owner=? AND lease_token=?",
+                (lease.owner, lease.token),
+            )
+        return PublishResult(True, snapshot=snapshot)
+
+    def get_snapshot(self, snapshot_id: str) -> MapSnapshot | None:
+        rows = self.database.query("SELECT * FROM code_map_snapshots WHERE snapshot_id=?", (snapshot_id,))
+        if not rows:
+            return None
+        row = rows[0]
+        return MapSnapshot(
+            snapshot_id=row["snapshot_id"], repository_id=row["repository_id"], commit_sha=row["commit_sha"],
+            parser_revision=row["parser_revision"], rules_digest=row["rules_digest"], status=row["status"],
+            generation=int(row["generation"]), published_generation=row["published_generation"],
+            file_count=int(row["file_count"]), node_count=int(row["node_count"]), edge_count=int(row["edge_count"]),
+            chunk_count=int(row["chunk_count"]), failed_files=tuple(json.loads(row["failed_files_json"])),
+            excluded_files=tuple(json.loads(row["excluded_files_json"])), logical_bytes=int(row["logical_bytes"]),
+            created_at=decode_datetime(row["created_at"], "created_at"),
+            published_at=_decode_optional(row["published_at"], "published_at"),
+        )
 
     def pause(self, repository_id: str) -> None:
         with self.database.transaction() as connection:
