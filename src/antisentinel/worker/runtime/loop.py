@@ -125,6 +125,7 @@ class RuntimeLoop:
         token_usage = TokenUsage()
         final: FinalDiagnosis | None = None
         pending_results: list[dict[str, Any]] = list(resume_snapshot.pending_results) if resume_snapshot else []
+        source_context: list[Any] = []
         completed_invocations = dict(resume_snapshot.completed_invocations) if resume_snapshot else {}
         duplicate_only_turns = 0
 
@@ -153,6 +154,7 @@ class RuntimeLoop:
                 tools=visible_tools,
                 memory_context=memory_context_provider(incident, session, turn) if memory_context_provider else None,
                 skill_context=skill_runtime.context_payload() if skill_runtime is not None else None,
+                source_context=source_context,
             )
             self._publish(runtime_events, self._event("model.started", incident, session, turn), event_sink)
             self._publish(runtime_events, self._event("model.called", incident, session, turn), event_sink)
@@ -345,6 +347,12 @@ class RuntimeLoop:
                             evidence_refs.append(ref)
                             session_task_summary["evidence_refs"].append({"evidence_id": ref.evidence_id, "role": ref.role})
                             evidences.append(evidence)
+                        if planned_call.tool_name == "code_map.read_source" and isinstance(result.result, dict):
+                            raw_source = result.result.get("source_context")
+                            if raw_source and result.evidence is not None and raw_source.get("evidence_id") == str(result.evidence.evidence_id):
+                                from antisentinel.code_map.source_context import SourceContextSlice
+
+                                source_context.append(SourceContextSlice(**raw_source))
                         attempt.succeed(
                             result=result.result,
                             result_summary=result.result_summary,

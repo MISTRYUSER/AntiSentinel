@@ -110,3 +110,29 @@ def test_runtime_loop_injects_memory_context_from_provider():
 
     assert result.status == "completed"
     assert captured[0].digest == "先看日志"
+
+
+def test_runtime_loop_reinjects_verified_source_context_after_source_tool_call():
+    from antisentinel.adapters.llm.openai_compatible import FakeProviderModel
+    from antisentinel.domain.evidence import Evidence
+    from antisentinel.tools.manifest import ToolDefinition, ToolExecutionResult
+    from antisentinel.tools.registry import ToolRegistry
+    from antisentinel.worker.runtime.engine import RuntimeConfig, RuntimeEngine
+
+    incident = Incident.create(title="source", source="test")
+    session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
+    evidence = Evidence.create(kind="source_code", content_ref="code-map://repo/snap/chunk", content_hash="a" * 64, metadata={})
+    registry = ToolRegistry(auto_discover=False)
+    registry.register(ToolDefinition(
+        name="code_map.read_source", description="source", argument_schema={"type": "object", "properties": {}, "required": [], "additionalProperties": False},
+        handler=lambda _: ToolExecutionResult(status="succeeded", result={"source_context": {"incident_id": str(incident.incident_id), "evidence_id": str(evidence.evidence_id), "repository_id": "repo", "snapshot_id": "snap", "commit_sha": "commit", "path": "a.py", "content": "def f(): pass\n", "content_hash": "a" * 64}}, evidence=evidence),
+    ))
+    model = FakeProviderModel([
+        {"tasks": [{"task_id": "source", "objective": "read", "tool_calls": [{"tool_name": "code_map.read_source", "arguments": {}}]}]},
+        {"final": {"summary": "done", "diagnosis": "source read", "confidence": 1.0, "evidence_refs": [str(evidence.evidence_id)]}},
+    ])
+
+    result = RuntimeEngine().run(incident, session, model, registry=registry, config=RuntimeConfig(max_turns=2))
+
+    assert result.status == "completed"
+    assert any(message["role"] == "source_context" and message["slices"][0]["evidence_id"] == str(evidence.evidence_id) for message in model.requests[1].messages)
