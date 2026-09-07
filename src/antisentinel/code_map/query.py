@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 from typing import Any
 
 from .models import CodeMapError
@@ -64,6 +65,38 @@ class CodeMapQuery:
             (snapshot_id, node_id, *relations, node_budget),
         )
         return QueryEnvelope(items=tuple(dict(row) for row in rows), snapshot_id=snapshot_id)
+
+    def get_node(self, scope: QueryScope, repository_id: str, snapshot_id: str, node_id: str) -> QueryEnvelope:
+        rejected = self._snapshot_scope_error(scope, repository_id, snapshot_id)
+        if rejected:
+            return QueryEnvelope(error=rejected, snapshot_id=snapshot_id)
+        rows = self.store.database.query(
+            "SELECT node_id,kind,qualified_name,path,start_line,end_line FROM code_map_nodes WHERE node_id=? AND snapshot_id=? AND repository_id=?",
+            (node_id, snapshot_id, repository_id),
+        )
+        return QueryEnvelope(items=tuple(dict(row) for row in rows), snapshot_id=snapshot_id)
+
+    def read_source(self, scope: QueryScope, repository_id: str, snapshot_id: str, chunk_id: str) -> QueryEnvelope:
+        rejected = self._snapshot_scope_error(scope, repository_id, snapshot_id)
+        if rejected:
+            return QueryEnvelope(error=rejected, snapshot_id=snapshot_id)
+        rows = self.store.database.query(
+            "SELECT path,byte_start,byte_end,content_hash,encoding FROM code_map_chunks WHERE chunk_id=? AND snapshot_id=?",
+            (chunk_id, snapshot_id),
+        )
+        if not rows:
+            return QueryEnvelope(error=CodeMapError("source_not_found", False, {}), snapshot_id=snapshot_id)
+        chunk = rows[0]
+        snapshot = self.store.get_snapshot(snapshot_id)
+        assert snapshot is not None
+        blob = self.store.read_chunk_source(repository_id, snapshot.commit_sha, chunk_id)
+        data = blob[int(chunk["byte_start"]):int(chunk["byte_end"])]
+        if hashlib.sha256(data).hexdigest() != chunk["content_hash"]:
+            return QueryEnvelope(error=CodeMapError("hash_mismatch", False, {}), snapshot_id=snapshot_id)
+        return QueryEnvelope(items=({
+            "chunk_id": chunk_id, "path": chunk["path"], "content": data.decode(chunk["encoding"]),
+            "content_hash": chunk["content_hash"],
+        },), snapshot_id=snapshot_id, indexed_commit=snapshot.commit_sha)
 
     def _snapshot_scope_error(self, scope: QueryScope, repository_id: str, snapshot_id: str) -> CodeMapError | None:
         rejected = self._scope_error(scope, repository_id)
