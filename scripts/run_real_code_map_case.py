@@ -36,7 +36,7 @@ def main(argv=None):
     database.initialize()
     store = SQLiteCodeMapStore(database)
     store.register(RepositoryRegistration("real-local", str(args.repository), "runtime-credential", "HEAD"))
-    job = store.enqueue("real-local", args.commit, "explicit", parser_revision="python-ast-v1")
+    job = store.enqueue("real-local", args.commit, "explicit", parser_revision="multilang-tree-sitter-v1")
     lease = store.claim_job("real-worker", datetime.now(timezone.utc))
     reader = SubprocessGitReader(str(args.repository), args.output / "cache", "runtime-credential", frozenset())
     synced = reader.sync_ref("HEAD")
@@ -45,7 +45,8 @@ def main(argv=None):
     tree_entries = reader.list_tree(args.commit, RepositoryBudget())
     included_entries = [entry for entry in tree_entries if entry.included]
     supported_python_files = [entry for entry in included_entries if entry.path.endswith(".py")]
-    unsupported_files = [entry.path for entry in included_entries if not entry.path.endswith(".py")]
+    supported_multilang_files = [entry for entry in included_entries if entry.path.endswith((".go", ".ts", ".tsx"))]
+    unsupported_files = [entry.path for entry in included_entries if not (entry.path.endswith(".py") or entry.path.endswith((".go", ".ts", ".tsx")))]
     builder = SnapshotBuilder(reader, budget=RepositoryBudget())
     built = builder.build(lease)
     result = store.publish(lease, built.snapshot, built.rows)
@@ -55,7 +56,8 @@ def main(argv=None):
         "case": "real-local", "repository": str(args.repository), "commit": args.commit,
         "case_pass": result.ok and ready is not None and not integrity and ready.file_count > 0,
         "input_files": len(included_entries), "input_bytes": sum(entry.byte_count for entry in supported_python_files),
-        "supported_python_files": len(supported_python_files), "unsupported_files": len(unsupported_files),
+        "supported_python_files": len(supported_python_files),
+        "supported_multilang_files": len(supported_multilang_files), "unsupported_files": len(unsupported_files),
         "unsupported_sample": unsupported_files[:20],
         "output_nodes": ready.node_count if ready else 0, "output_edges": ready.edge_count if ready else 0,
         "output_chunks": ready.chunk_count if ready else 0, "persisted_nodes": ready.node_count if ready else 0,

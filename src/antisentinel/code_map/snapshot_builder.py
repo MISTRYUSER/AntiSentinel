@@ -9,6 +9,7 @@ from .identity import content_hash, node_id_for, snapshot_id_for
 from .incremental import AstFactCache, AstFactKey
 from .models import MapSnapshot, RepositoryBudget
 from .python_parser import PythonAstParser
+from .multilang_parser import MultiLanguageParser
 from .relations import RelationResolver
 from .store import JobLease, SourceBlob, SourceFile, StagedMapRows
 
@@ -40,9 +41,10 @@ class SnapshotBuilder:
         included_files = 0
         unsupported_files = 0
         cache_hits = 0
+        multi_enabled = not lease.parser_revision.startswith("python")
         for entry in self.reader.list_tree(lease.commit_sha, self.budget):
-            if not entry.included or not entry.path.endswith(".py"):
-                if entry.included:
+            if not entry.included or not (entry.path.endswith(".py") or (multi_enabled and (entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx")))) :
+                if entry.included and not (entry.path.endswith(".py") or entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx")):
                     unsupported_files += 1
                 continue
             included_files += 1
@@ -50,7 +52,8 @@ class SnapshotBuilder:
             key = AstFactKey(content_hash(data), entry.path, "", lease.parser_revision, lease.rules_digest)
             parsed = self.fact_cache.get(key) if self.fact_cache else None
             if parsed is None:
-                parsed = parser.parse_file(entry.path, data, "file-facts")
+                file_parser = parser if entry.path.endswith(".py") else MultiLanguageParser(lease.parser_revision)
+                parsed = file_parser.parse_file(entry.path, data, "file-facts")
                 if self.fact_cache is not None:
                     self.fact_cache.put(key, parsed)
             else:
@@ -69,11 +72,13 @@ class SnapshotBuilder:
             ))
         nodes = tuple(symbol for parsed in parsed_files for symbol in parsed.symbols)
         chunks = tuple(chunk for parsed in parsed_files for chunk in parsed.chunks)
-        edges = parser.contains_edges(tuple(parsed_files), snapshot_id) + RelationResolver().resolve(tuple(parsed_files), snapshot_id)
+        edges = parser.contains_edges(tuple(parsed_files), snapshot_id)
+        if all(parsed.tree is not None for parsed in parsed_files):
+            edges += RelationResolver().resolve(tuple(parsed_files), snapshot_id)
         snapshot = MapSnapshot(
             snapshot_id=snapshot_id, repository_id=lease.repository_id, commit_sha=lease.commit_sha,
             parser_revision=lease.parser_revision, rules_digest=lease.rules_digest,
-            status="partial" if failed_files or (unsupported_files and not parsed_files) else "building", file_count=len(parsed_files),
+            status="partial" if failed_files or (unsupported_files and not parsed_files) or not parsed_files or not any(parsed.symbols for parsed in parsed_files) else "building", file_count=len(parsed_files),
             failed_files=tuple(failed_files), logical_bytes=logical_bytes,
         )
         return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks, blobs=tuple(blobs), files=tuple(files)), cache_hits, changes)
