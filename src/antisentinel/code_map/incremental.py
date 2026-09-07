@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from typing import Any
 
 
@@ -26,3 +26,15 @@ class AstFactCache:
 
     def put(self, key: AstFactKey, value: Any) -> None:
         self._facts[key] = deepcopy(value)
+
+
+def normalize_semantics(output: Any) -> Any:
+    value = asdict(output) if is_dataclass(output) else deepcopy(output)
+    if isinstance(value, dict):
+        value.pop("cache_hits", None)
+        for key in ("created_at", "published_at"):
+            value.pop(key, None)
+        return {key: normalize_semantics(item) for key, item in sorted(value.items())}
+    if isinstance(value, (list, tuple)):
+        return tuple(normalize_semantics(item) for item in value)
+    return value
