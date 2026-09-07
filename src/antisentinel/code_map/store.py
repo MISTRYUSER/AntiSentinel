@@ -472,6 +472,13 @@ class SQLiteCodeMapStore:
         rows = self.database.query("SELECT DISTINCT repository_id FROM code_map_diagnosis_bindings WHERE incident_id=?", (incident_id,))
         return QueryScope(incident_id, frozenset(row["repository_id"] for row in rows))
 
+    def incident_binding_matches(self, incident_id: str, repository_id: str, snapshot_id: str) -> bool:
+        rows = self.database.query(
+            "SELECT 1 FROM code_map_diagnosis_bindings WHERE incident_id=? AND repository_id=? AND snapshot_id=?",
+            (incident_id, repository_id, snapshot_id),
+        )
+        return bool(rows)
+
     def pause(self, repository_id: str) -> None:
         with self.database.transaction() as connection:
             connection.execute(
