@@ -333,17 +333,30 @@ class SQLiteCodeMapStore:
             ).fetchone()
             if row is None or slot is None:
                 return PublishResult(False, CodeMapError("lease_lost", False, {"job_id": lease.job_id}))
+            if (snapshot.repository_id, snapshot.commit_sha, snapshot.parser_revision, snapshot.rules_digest) != (lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest):
+                return PublishResult(False, CodeMapError('scope_mismatch', False))
+            existing = connection.execute('SELECT * FROM code_map_snapshots WHERE snapshot_id=?', (snapshot.snapshot_id,)).fetchone()
+            if existing and existing['status'] == 'ready':
+                return PublishResult(False, CodeMapError('snapshot_immutable', False))
+            generation = existing['generation'] + 1 if existing else 1
+            status = 'partial' if snapshot.failed_files or snapshot.status == 'partial' else 'ready'
+            if existing:
+                self._archive_generation(connection, snapshot.snapshot_id)
+                for table in ('edges', 'chunks', 'nodes', 'files'):
+                    connection.execute(f'DELETE FROM code_map_{table} WHERE snapshot_id=?', (snapshot.snapshot_id,))
             connection.execute(
                 """
                 INSERT INTO code_map_snapshots(
                     snapshot_id,repository_id,commit_sha,parser_revision,rules_digest,status,generation,published_generation,
                     file_count,node_count,edge_count,chunk_count,failed_files_json,excluded_files_json,logical_bytes,created_at,published_at
                 ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                ON CONFLICT(snapshot_id) DO UPDATE SET status=excluded.status, published_generation=excluded.published_generation, published_at=excluded.published_at
+                ON CONFLICT(snapshot_id) DO UPDATE SET status=excluded.status, generation=excluded.generation, published_generation=excluded.published_generation, published_at=excluded.published_at,
+                    file_count=excluded.file_count,node_count=excluded.node_count,edge_count=excluded.edge_count,chunk_count=excluded.chunk_count,
+                    failed_files_json=excluded.failed_files_json,excluded_files_json=excluded.excluded_files_json,logical_bytes=excluded.logical_bytes
                 """,
                 (
                     snapshot.snapshot_id, snapshot.repository_id, snapshot.commit_sha, snapshot.parser_revision,
-                    snapshot.rules_digest, "ready", snapshot.generation, snapshot.generation,
+                    snapshot.rules_digest, status, generation, generation,
                     snapshot.file_count, len(staged_rows.nodes), len(staged_rows.edges), len(staged_rows.chunks),
                     json.dumps(list(snapshot.failed_files)), json.dumps(list(snapshot.excluded_files)), snapshot.logical_bytes,
                     _dt(snapshot.created_at), _dt(now),
@@ -398,20 +411,62 @@ class SQLiteCodeMapStore:
                 )
             connection.execute(
                 """
-                UPDATE code_map_scan_jobs SET status='succeeded', completed_at=?, lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
+                UPDATE code_map_scan_jobs SET status=?, completed_at=?, lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
                 WHERE job_id=? AND lease_owner=? AND lease_token=?
                 """,
-                (_dt(now), lease.job_id, lease.owner, lease.token),
+                ('partial' if status == 'partial' else 'succeeded', _dt(now), lease.job_id, lease.owner, lease.token),
             )
             connection.execute(
-                "UPDATE code_map_job_attempts SET status='succeeded', completed_at=? WHERE job_id=? AND attempt=?",
-                (_dt(now), lease.job_id, lease.attempt),
+                "UPDATE code_map_job_attempts SET status=?, completed_at=? WHERE job_id=? AND attempt=?",
+                ('partial' if status == 'partial' else 'succeeded', _dt(now), lease.job_id, lease.attempt),
             )
             connection.execute(
                 "UPDATE code_map_worker_slots SET owner=NULL, lease_token=NULL, lease_expires_at=NULL WHERE slot_name='global' AND owner=? AND lease_token=?",
                 (lease.owner, lease.token),
             )
-        return PublishResult(True, snapshot=snapshot)
+            self._archive_generation(connection, snapshot.snapshot_id)
+        return PublishResult(True, snapshot=self.get_snapshot(snapshot.snapshot_id))
+
+    @staticmethod
+    def _archive_generation(connection, snapshot_id):
+        snapshot = dict(connection.execute('SELECT * FROM code_map_snapshots WHERE snapshot_id=?', (snapshot_id,)).fetchone())
+        payload = {'snapshot': snapshot}
+        for table in ('nodes', 'edges', 'chunks', 'files'):
+            payload[table] = [dict(row) for row in connection.execute(f'SELECT * FROM code_map_{table} WHERE snapshot_id=?', (snapshot_id,))]
+        connection.execute('INSERT OR IGNORE INTO code_map_generations VALUES(?,?,?)', (snapshot_id, snapshot['generation'], json.dumps(payload, sort_keys=True)))
+
+    def read_generation(self, snapshot_id, generation):
+        rows = self.database.query('SELECT payload_json FROM code_map_generations WHERE snapshot_id=? AND generation=?', (snapshot_id, generation))
+        if not rows:
+            # V4 snapshots predate the archive table; their current generation is still readable.
+            current = self.database.query('SELECT * FROM code_map_snapshots WHERE snapshot_id=? AND published_generation=?', (snapshot_id, generation))
+            if not current:
+                raise DomainError('generation_missing')
+            return {'snapshot': dict(current[0]), **{table: [dict(row) for row in self.database.query(f'SELECT * FROM code_map_{table} WHERE snapshot_id=?', (snapshot_id,))] for table in ('nodes', 'edges', 'chunks', 'files')}}
+        return json.loads(rows[0][0])
+
+    def retry_job(self, job_id):
+        with self.database.transaction() as connection:
+            changed = connection.execute("UPDATE code_map_scan_jobs SET status='queued', next_attempt_at=NULL, completed_at=NULL WHERE job_id=? AND status IN ('partial','failed')", (job_id,)).rowcount
+            if changed != 1:
+                raise DomainError('retry_not_allowed')
+
+    def read_generation_chunk(self, repository_id, snapshot_id, generation, chunk_id):
+        payload = self.read_generation(snapshot_id, generation)
+        if payload['snapshot']['repository_id'] != repository_id:
+            raise DomainError('scope_mismatch')
+        chunk = next((c for c in payload['chunks'] if c['chunk_id'] == chunk_id), None)
+        if chunk is None:
+            raise DomainError('source_not_found')
+        source_file = next(f for f in payload['files'] if f['path'] == chunk['path'])
+        rows = self.database.query('SELECT content FROM code_map_blobs WHERE content_hash=?', (source_file['content_hash'],))
+        if not rows:
+            raise DomainError('source_not_found')
+        blob = bytes(rows[0][0])
+        data = blob[chunk['byte_start']:chunk['byte_end']]
+        if hashlib.sha256(blob).hexdigest() != source_file['content_hash'] or hashlib.sha256(data).hexdigest() != chunk['content_hash']:
+            raise DomainError('hash_mismatch')
+        return {**chunk, 'content': data.decode(chunk['encoding']), 'commit_sha': payload['snapshot']['commit_sha']}
 
     def get_snapshot(self, snapshot_id: str) -> MapSnapshot | None:
         rows = self.database.query("SELECT * FROM code_map_snapshots WHERE snapshot_id=?", (snapshot_id,))
@@ -454,9 +509,9 @@ class SQLiteCodeMapStore:
             raise DomainError("hash_mismatch")
         return data
 
-    def bind_incident(self, incident_id: str, repository_id: str, snapshot_id: str, session_id: str | None = None) -> None:
+    def bind_incident(self, incident_id: str, repository_id: str, snapshot_id: str, session_id: str | None = None, *, allow_partial: bool = False) -> None:
         snapshot = self.get_snapshot(snapshot_id)
-        if snapshot is None or snapshot.status != "ready" or snapshot.repository_id != repository_id:
+        if snapshot is None or snapshot.status not in (('ready', 'partial') if allow_partial else ('ready',)) or snapshot.repository_id != repository_id:
             raise DomainError("snapshot_missing")
         with self.database.transaction() as connection:
             connection.execute(

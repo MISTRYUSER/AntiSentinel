@@ -54,17 +54,48 @@ class CodeMapQuery:
         rejected = self._snapshot_scope_error(scope, repository_id, snapshot_id)
         if rejected:
             return QueryEnvelope(error=rejected, snapshot_id=snapshot_id)
-        if direction != "outbound" or depth != 1:
-            return QueryEnvelope(error=CodeMapError("query_not_supported", False, {}), snapshot_id=snapshot_id)
-        placeholders = ",".join("?" for _ in relations)
-        rows = self.store.database.query(
-            f"""SELECT n.node_id,n.kind,n.qualified_name,n.path,n.start_line,n.end_line
-                FROM code_map_edges e JOIN code_map_nodes n ON n.node_id=e.target_node_id
-                WHERE e.snapshot_id=? AND e.source_node_id=? AND e.relation IN ({placeholders})
-                ORDER BY n.path,n.qualified_name,n.start_line,n.node_id LIMIT ?""",
-            (snapshot_id, node_id, *relations, node_budget),
-        )
-        return QueryEnvelope(items=tuple(dict(row) for row in rows), snapshot_id=snapshot_id)
+        if direction not in {"outbound", "inbound", "both"} or not 1 <= depth <= 3 or not 1 <= node_budget <= 200:
+            return QueryEnvelope(error=CodeMapError("invalid_arguments", False, {}), snapshot_id=snapshot_id)
+        if not relations or any(r not in {"contains", "calls", "imports", "inherits", "tested_by"} for r in relations):
+            return QueryEnvelope(error=CodeMapError("relation_not_available", False, {}), snapshot_id=snapshot_id)
+        seed = self.store.database.query("SELECT node_id FROM code_map_nodes WHERE node_id=? AND snapshot_id=?", (node_id, snapshot_id))
+        if not seed:
+            return QueryEnvelope(error=CodeMapError("source_not_found", False, {}), snapshot_id=snapshot_id)
+        visited, frontier, items = {node_id}, [node_id], []
+        limited = False
+        inspected = 0
+        for _ in range(depth):
+            following = []
+            for source in frontier:
+                columns = [("source_node_id", "target_node_id")] if direction == "outbound" else [("target_node_id", "source_node_id")]
+                if direction == "both":
+                    columns = [("source_node_id", "target_node_id"), ("target_node_id", "source_node_id")]
+                for origin, target in columns:
+                    marks = ",".join("?" for _ in relations)
+                    rows = self.store.database.query(
+                        f"SELECT n.node_id,n.kind,n.qualified_name,n.path,n.start_line,n.end_line FROM code_map_edges e JOIN code_map_nodes n ON n.node_id=e.{target} AND n.snapshot_id=e.snapshot_id WHERE e.snapshot_id=? AND e.{origin}=? AND e.relation IN ({marks}) ORDER BY n.path,n.start_line,n.node_id LIMIT ?",
+                        (snapshot_id, source, *relations, max(1, 1001-inspected)))
+                    for row in rows:
+                        inspected += 1
+                        if inspected > 1000:
+                            limited = True
+                            break
+                        if row["node_id"] in visited:
+                            continue
+                        if len(items) >= node_budget:
+                            limited = True
+                            break
+                        visited.add(row["node_id"])
+                        following.append(row["node_id"])
+                        items.append(dict(row))
+                    if limited:
+                        break
+                if limited:
+                    break
+            frontier = following
+            if limited or not frontier:
+                break
+        return QueryEnvelope(items=tuple(items), snapshot_id=snapshot_id, incomplete=limited)
 
     def get_node(self, scope: QueryScope, repository_id: str, snapshot_id: str, node_id: str) -> QueryEnvelope:
         rejected = self._snapshot_scope_error(scope, repository_id, snapshot_id)

@@ -16,7 +16,7 @@ def test_publish_persists_nodes_contains_edges_chunks_and_reopens_ready_snapshot
     store.register(RepositoryRegistration(
         repository_id="repo-a", remote_url="file:///repo-a", credential_ref="local", tracked_ref="refs/heads/main",
     ))
-    job = store.enqueue("repo-a", "a" * 40, "scheduled")
+    job = store.enqueue("repo-a", "a" * 40, "scheduled", parser_revision="python-3.13/ast-v1")
     lease = store.claim_job("worker", now)
     snapshot_id = snapshot_id_for("repo-a", "a" * 40, "python-3.13/ast-v1", job.rules_digest)
     parsed = PythonAstParser("python-3.13/ast-v1").parse_file(

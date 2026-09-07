@@ -21,9 +21,9 @@ def test_initialize_upgrades_v1_database_without_changing_existing_rows(tmp_path
     database = SQLiteDatabase(path)
     database.initialize()
 
-    assert SCHEMA_VERSION == 4
+    assert SCHEMA_VERSION == 5
     assert database.query("SELECT title FROM incidents WHERE incident_id='inc-1'")[0]["title"] == "title"
-    assert database.query("SELECT MAX(version) AS version FROM schema_migrations")[0]["version"] == 4
+    assert database.query("SELECT MAX(version) AS version FROM schema_migrations")[0]["version"] == 5
     for table in (
         "code_map_repositories", "code_map_scan_jobs", "code_map_job_attempts", "code_map_worker_slots",
         "code_map_snapshots", "code_map_blobs", "code_map_files", "code_map_nodes", "code_map_edges", "code_map_chunks",
@@ -38,7 +38,7 @@ def test_initialize_is_idempotent_and_rejects_newer_schema(tmp_path):
     database = SQLiteDatabase(tmp_path / "database.db")
     database.initialize()
     database.initialize()
-    assert database.query("SELECT COUNT(*) AS count FROM schema_migrations")[0]["count"] == 4
+    assert database.query("SELECT COUNT(*) AS count FROM schema_migrations")[0]["count"] == 5
 
     with database.transaction() as connection:
         connection.execute("INSERT INTO schema_migrations(version) VALUES (99)")

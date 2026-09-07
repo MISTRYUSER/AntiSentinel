@@ -1,0 +1,6 @@
+fixture/
+cache.git/
+cache.git.lock
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

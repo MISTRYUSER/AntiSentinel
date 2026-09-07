@@ -72,3 +72,12 @@ def test_incident_binding_produces_server_side_repository_scope(tmp_path):
 
     assert scope.incident_id == "incident-a"
     assert scope.allowed_repositories == frozenset({"repo-a"})
+
+
+def test_inbound_neighbors_and_invalid_budget(tmp_path):
+    query, scope, sid, symbols = build_query(tmp_path)
+    result = query.get_neighbors(scope, 'repo-a', sid, symbols[1].node_id, direction='inbound', relations=('contains',), depth=2)
+    assert result.error is None
+    assert [n['qualified_name'] for n in result.items] == ['Service']
+    rejected = query.get_neighbors(scope, 'repo-a', sid, symbols[0].node_id, direction='outbound', relations=('contains',), node_budget=-1)
+    assert rejected.error.code == 'invalid_arguments'

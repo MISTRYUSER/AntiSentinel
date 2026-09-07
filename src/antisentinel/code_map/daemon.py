@@ -30,6 +30,7 @@ class RegisteredGitReader:
     def __init__(self, store: SQLiteCodeMapStore, cache_root):
         self.store = store
         self.cache_root = cache_root
+        self.builders = {}
 
     def sync_registration(self, registration, *, timeout_s: float = 60.0):
         from .git_reader import SubprocessGitReader
@@ -40,6 +41,23 @@ class RegisteredGitReader:
             allowed_hosts=frozenset(),
         )
         return reader.sync_ref(registration.tracked_ref, timeout_s=timeout_s)
+
+    def build(self, lease):
+        from .git_reader import SubprocessGitReader
+        from .incremental import AstFactCache
+        from .snapshot_builder import SnapshotBuilder
+        registration = self.store.get_registration(lease.repository_id)
+        key = (lease.repository_id, registration.remote_url)
+        if key not in self.builders:
+            reader = SubprocessGitReader(registration.remote_url, self.cache_root / lease.repository_id,
+                                         registration.credential_ref, frozenset())
+            self.builders[key] = SnapshotBuilder(reader, fact_cache=AstFactCache())
+        builder = self.builders[key]
+        previous = self.store.database.query(
+            "SELECT commit_sha FROM code_map_snapshots WHERE repository_id=? AND status='ready' ORDER BY published_at DESC LIMIT 1",
+            (lease.repository_id,),
+        )
+        return builder.build(lease, previous_commit=previous[0][0] if previous else None)
 
 
 class CodeMapDaemon:
@@ -89,6 +107,6 @@ def build_daemon_from_environment(config: CodeMapConfig | None = None) -> CodeMa
     store = SQLiteCodeMapStore(database, lease_seconds=config.lease_seconds)
     git_reader = RegisteredGitReader(store, config.cache_root)
     scheduler = CodeMapScheduler(store, git_reader, owner="code-map-scheduler")
-    worker = CodeMapWorker(store, owner="code-map-worker")
+    worker = CodeMapWorker(store, builder=git_reader.build, owner="code-map-worker")
     telemetry = Telemetry(service_name="antisentinel.code_map", database=database, trace_path=config.storage_root / "observability" / "code-map-traces.jsonl")
     return CodeMapDaemon(config, scheduler, worker, telemetry=telemetry)

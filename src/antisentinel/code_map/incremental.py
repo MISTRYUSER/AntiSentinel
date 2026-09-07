@@ -32,6 +32,7 @@ def normalize_semantics(output: Any) -> Any:
     value = asdict(output) if is_dataclass(output) else deepcopy(output)
     if isinstance(value, dict):
         value.pop("cache_hits", None)
+        value.pop("changes", None)
         for key in ("created_at", "published_at"):
             value.pop(key, None)
         return {key: normalize_semantics(item) for key, item in sorted(value.items())}

@@ -12,6 +12,8 @@ dependencies = [
     "opentelemetry-sdk>=1.39",
     "opentelemetry-exporter-otlp-proto-grpc>=1.39",
     "prometheus-client>=0.22",
+    "tree-sitter>=0.25",
+    "tree-sitter-language-pack>=0.10",
 ]
 
 [build-system]

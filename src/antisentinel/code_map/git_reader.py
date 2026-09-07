@@ -37,6 +37,8 @@ class SubprocessGitReader:
         self.cache_root = Path(cache_root)
         self.credential_ref = credential_ref
         self.allowed_hosts = allowed_hosts
+        self._object_sizes = {}
+        self._verified_commits = set()
         self._validate_remote()
 
     def sync_ref(self, tracked_ref: str, timeout_s: float = 60.0) -> SyncResult:
@@ -57,7 +59,7 @@ class SubprocessGitReader:
     def list_tree(self, commit_sha: str, budget: RepositoryBudget) -> tuple[TreeEntry, ...]:
         with self._cache_lock():
             self._require_commit(commit_sha)
-            raw = self._run(("ls-tree", "-r", "-z", commit_sha), 60.0).stdout
+            raw = self._run(("ls-tree", "-r", "-l", "-z", commit_sha), 60.0).stdout
             entries: list[TreeEntry] = []
             included_files = 0
             total_bytes = 0
@@ -65,7 +67,7 @@ class SubprocessGitReader:
                 if not record:
                     continue
                 header, raw_path = record.split(b"\t", 1)
-                mode, object_type, object_id = header.decode("ascii").split(" ", 2)
+                mode, object_type, object_id, size = header.decode("ascii").split()
                 path = raw_path.decode("utf-8", "surrogateescape")
                 if any(0xDC80 <= ord(character) <= 0xDCFF for character in path):
                     entries.append(TreeEntry(path, mode, object_type, object_id, included=False, reason="unsupported_path"))
@@ -79,7 +81,8 @@ class SubprocessGitReader:
                 if object_type != "blob":
                     entries.append(TreeEntry(path, mode, object_type, object_id, included=False, reason="unsupported_object"))
                     continue
-                byte_count = int(self._run(("cat-file", "-s", object_id), 60.0).stdout.decode().strip())
+                byte_count = int(size)
+                self._object_sizes[object_id] = byte_count
                 if byte_count > budget.max_file_bytes:
                     raise GitReadError("budget_exceeded", f"budget_exceeded: {path}")
                 included_files += 1
@@ -94,7 +97,9 @@ class SubprocessGitReader:
             raise GitReadError("budget_exceeded")
         with self._cache_lock():
             self._require_commit(commit_sha)
-            byte_count = int(self._run(("cat-file", "-s", object_id), 60.0).stdout.decode().strip())
+            byte_count = self._object_sizes.get(object_id)
+            if byte_count is None:
+                byte_count = int(self._run(("cat-file", "-s", object_id), 60.0).stdout.decode().strip())
             if byte_count > max_bytes:
                 raise GitReadError("budget_exceeded")
             return self._run(("cat-file", "blob", object_id), 60.0).stdout
@@ -165,7 +170,10 @@ class SubprocessGitReader:
         self._run(("update-ref", f"refs/antisentinel/pinned/{commit_sha}", commit_sha), timeout_s)
 
     def _require_commit(self, commit_sha: str, timeout_s: float = 60.0) -> None:
+        if commit_sha in self._verified_commits:
+            return
         self._run(("cat-file", "-e", f"{commit_sha}^{{commit}}"), timeout_s)
+        self._verified_commits.add(commit_sha)
 
     def _run(self, args: tuple[str, ...], timeout_s: float) -> subprocess.CompletedProcess[bytes]:
         try:
