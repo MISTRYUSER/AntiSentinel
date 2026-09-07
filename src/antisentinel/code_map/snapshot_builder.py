@@ -75,6 +75,8 @@ class SnapshotBuilder:
         edges = parser.contains_edges(tuple(parsed_files), snapshot_id)
         if all(parsed.tree is not None for parsed in parsed_files):
             edges += RelationResolver().resolve(tuple(parsed_files), snapshot_id)
+        elif parsed_files:
+            edges += MultiLanguageParser(lease.parser_revision).resolve_edges(tuple(parsed_files), snapshot_id)
         snapshot = MapSnapshot(
             snapshot_id=snapshot_id, repository_id=lease.repository_id, commit_sha=lease.commit_sha,
             parser_revision=lease.parser_revision, rules_digest=lease.rules_digest,

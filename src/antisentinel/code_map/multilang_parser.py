@@ -24,3 +24,25 @@ class MultiLanguageParser:
                     break
         return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),(),{})
     def contains_edges(self, parsed_files, snapshot_id): return ()
+    def resolve_edges(self, parsed_files, snapshot_id):
+        from .models import CodeEdge
+        import hashlib
+        by_name={n.qualified_name:n for p in parsed_files for n in p.symbols}
+        out=[]
+        for p in parsed_files:
+            text=p.data.decode(p.encoding,errors='replace')
+            for i,line in enumerate(text.splitlines(),1):
+                if re.search(r'^\s*import\s|^\s*from\s+\S+\s+import\s+',line):
+                    expr=line.strip(); src=p.symbols[0] if p.symbols else None
+                    if src:
+                        eid=hashlib.sha256(f'{src.node_id}|imports|{expr}|{i}'.encode()).hexdigest()
+                        out.append(CodeEdge(eid,snapshot_id,src.node_id,'imports',None,expr,i,i,'unresolved','text'))
+                if '(' in line and not any(line.lstrip().startswith(x) for x in ('func ','function ')):
+                    src=p.symbols[0] if p.symbols else None
+                    if src:
+                        for token in re.findall(r'\b[A-Za-z_]\w*', line):
+                            target=by_name.get(token)
+                            if target and target.node_id != src.node_id:
+                                eid=hashlib.sha256(f'{src.node_id}|calls|{target.node_id}|{i}'.encode()).hexdigest()
+                                out.append(CodeEdge(eid,snapshot_id,src.node_id,'calls',target.node_id,None,i,i,'resolved','text'))
+        return tuple(out)
