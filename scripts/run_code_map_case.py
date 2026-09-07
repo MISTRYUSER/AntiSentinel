@@ -102,6 +102,24 @@ class CaseRunner:
         first_lease = store.claim_check(clock.now(), "race-1")
         second_lease = store.claim_check(clock.now(), "race-2")
         jobs = store.list_jobs("case-repo")
+        worker_job = jobs[0]
+        crashed_lease = store.claim_job("crashed-worker", clock.now())
+        if crashed_lease is None:
+            raise RuntimeError("scheduler case could not claim queued worker job")
+        clock.advance(61)
+        recovered_lease = store.claim_job("recovered-worker", clock.now())
+        if recovered_lease is None:
+            raise RuntimeError("scheduler case could not recover expired worker lease")
+        from antisentinel.code_map.identity import snapshot_id_for
+        from antisentinel.code_map.models import MapSnapshot
+        recovered_snapshot = MapSnapshot(
+            snapshot_id=snapshot_id_for(worker_job.repository_id, worker_job.commit_sha, worker_job.parser_revision, worker_job.rules_digest),
+            repository_id=worker_job.repository_id, commit_sha=worker_job.commit_sha,
+            parser_revision=worker_job.parser_revision, rules_digest=worker_job.rules_digest,
+            created_at=clock.now(),
+        )
+        stale_result = store.publish(crashed_lease, recovered_snapshot, store.empty_staged_rows())
+        recovered_result = store.publish(recovered_lease, recovered_snapshot, store.empty_staged_rows())
         telemetry = Telemetry(trace_path=self.output / "traces.jsonl")
         with telemetry.span("case.scheduler", case="scheduler"):
             pass
@@ -123,7 +141,10 @@ class CaseRunner:
             "persistence_readback": persisted == len(jobs) + 0,
             "trace_flushed": trace_flushed, "t1": t1, "t2": t2, "persistence_lag_ms": round(t2 - t1, 2),
             "retries": 0,
-            "recovery_checks": {"scheduler_claim": first_lease is not None and second_lease is None, "worker_lease_recovery": "pending"},
+            "recovery_checks": {
+                "scheduler_claim": first_lease is not None and second_lease is None,
+                "worker_lease_recovery": recovered_lease.attempt == 2 and stale_result.ok is False and recovered_result.ok is True,
+            },
             "intervals": intervals,
             "logical_job_count": len(jobs),
             "hard_gates": {
@@ -131,7 +152,7 @@ class CaseRunner:
                 "duplicate_same_sha_zero": len(jobs) == 1,
                 "interval_sequence": intervals[:5] == [1800, 3600, 7200, 14400, 14400],
                 "single_check_lease": first_lease is not None and second_lease is None,
-                "worker_lease_recovery": False,
+                "worker_lease_recovery": recovered_lease.attempt == 2 and stale_result.ok is False and recovered_result.ok is True,
             },
         })
         return finalize_case(report)
