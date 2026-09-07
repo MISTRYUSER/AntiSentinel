@@ -43,6 +43,25 @@ def test_runner_exposes_staged_scheduler_case_entrypoint():
     assert callable(CaseRunner.run_scheduler_case)
 
 
+def test_runner_exposes_daemon_git_case_entrypoint():
+    from scripts.run_code_map_case import CaseRunner
+
+    assert callable(CaseRunner.run_daemon_case)
+
+
+def test_daemon_start_probe_returns_after_process_is_observed_alive(tmp_path):
+    import time
+    from scripts.run_code_map_case import CaseRunner
+
+    class AliveProcess:
+        def poll(self):
+            return None
+
+    started = time.monotonic()
+    CaseRunner._wait_for_process_start(AliveProcess(), timeout_s=1.0)
+    assert time.monotonic() - started < 0.5
+
+
 def test_finalize_case_passes_only_with_complete_persistent_report(tmp_path):
     from scripts.run_code_map_case import empty_case_report, finalize_case
 

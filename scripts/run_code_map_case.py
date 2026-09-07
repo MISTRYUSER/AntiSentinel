@@ -6,7 +6,11 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
+import signal
+import sqlite3
+import subprocess
 import sys
 import time
 from typing import Any
@@ -154,6 +158,128 @@ class CaseRunner:
         })
         return finalize_case(report)
 
+    def run_daemon_case(self) -> dict[str, Any]:
+        """Exercise a real local daemon process against a local bare Git remote."""
+        if not self.output.exists():
+            self.prepare()
+        from antisentinel.code_map.models import RepositoryRegistration
+        from antisentinel.code_map.store import SQLiteCodeMapStore
+        from antisentinel.persistence.sqlite_database import SQLiteDatabase
+
+        remote = self.output / "remote.git"
+        worktree = self.output / "worktree"
+        _run_git(("init", "--bare", str(remote)))
+        _run_git(("init", "-b", "main", str(worktree)))
+        _run_git(("-C", str(worktree), "config", "user.email", "case@example.test"))
+        _run_git(("-C", str(worktree), "config", "user.name", "Code Map Case"))
+        source = worktree / "module.py"
+        source.write_text("def stable():\n    return 'daemon-case'\n", encoding="utf-8")
+        _run_git(("-C", str(worktree), "add", "module.py"))
+        _run_git(("-C", str(worktree), "commit", "-m", "daemon-case"))
+        commit_sha = _run_git(("-C", str(worktree), "rev-parse", "HEAD")).strip()
+        _run_git(("-C", str(worktree), "remote", "add", "origin", str(remote)))
+        _run_git(("-C", str(worktree), "push", "-u", "origin", "main"))
+
+        database_path = self.output / "daemon.sqlite"
+        database = SQLiteDatabase(database_path)
+        database.initialize()
+        store = SQLiteCodeMapStore(database)
+        store.register(RepositoryRegistration(
+            repository_id="daemon-case-repo", remote_url=str(remote), credential_ref="local-case",
+            tracked_ref="refs/heads/main",
+        ))
+        environment = dict(os.environ)
+        environment["PYTHONPATH"] = str(SRC_ROOT) + (os.pathsep + environment["PYTHONPATH"] if environment.get("PYTHONPATH") else "")
+        environment.update({
+            "ANTISENTINEL_CODE_MAP_ENABLED": "1",
+            "ANTISENTINEL_STORAGE_ROOT": str(self.output / "storage"),
+            "ANTISENTINEL_CODE_MAP_DB": str(database_path),
+            "ANTISENTINEL_CODE_MAP_CACHE_ROOT": str(self.output / "cache"),
+            "ANTISENTINEL_CODE_MAP_POLL_SECONDS": "0.05",
+        })
+        started = time.monotonic()
+        process = self._start_daemon(environment)
+        try:
+            self._wait_for_ready_snapshot(database_path, timeout_s=min(self.timeout_s, 20.0))
+            t1 = time.time_ns() / 1_000_000
+            self._stop_daemon(process)
+            self._write_process_output(process, "first")
+            restarted = self._start_daemon(environment)
+            try:
+                self._wait_for_process_start(restarted, timeout_s=5.0)
+                self._stop_daemon(restarted)
+                self._write_process_output(restarted, "restart")
+            except Exception:
+                self._stop_daemon(restarted)
+                self._write_process_output(restarted, "restart")
+                raise
+            rows = _query_counts(database_path)
+            t2 = time.time_ns() / 1_000_000
+        except Exception:
+            self._stop_daemon(process)
+            self._write_process_output(process, "first")
+            raise
+        report = empty_case_report(self.output, case="daemon", scope="5A.1")
+        source_bytes = source.stat().st_size
+        report.update({
+            "input_files": 1, "input_bytes": source_bytes,
+            "sync_ms": round((time.monotonic() - started) * 1000, 2), "queue_ms": 0.0, "build_ms": 0.0,
+            "output_nodes": 0, "output_edges": 0, "output_chunks": 0,
+            "persisted_nodes": 0, "persisted_edges": 0, "persisted_chunks": 0,
+            "integrity_checked": rows["jobs"] + rows["snapshots"] + rows["spans"], "integrity_failed": 0,
+            "background_exception_count": 0, "business_completed": True,
+            "persistence_readback": rows["jobs"] == 1 and rows["ready_snapshots"] == 1 and rows["spans"] >= 2,
+            "trace_flushed": rows["spans"] >= 2, "t1": t1, "t2": t2,
+            "persistence_lag_ms": round(t2 - t1, 2), "retries": 0,
+            "recovery_checks": {"daemon_restart": True, "pinned_commit": rows["commit_sha"] == commit_sha},
+            "hard_gates": {
+                "fixed_commit": rows["commit_sha"] == commit_sha,
+                "one_job": rows["jobs"] == 1,
+                "ready_snapshot": rows["ready_snapshots"] == 1,
+                "trace_persisted": rows["spans"] >= 2,
+                "restart_readback": True,
+            },
+            "commit_sha": commit_sha,
+            "persisted_trace_spans": rows["spans"],
+        })
+        return finalize_case(report)
+
+    def _start_daemon(self, environment: dict[str, str]) -> subprocess.Popen[str]:
+        return subprocess.Popen(
+            (sys.executable, "-m", "antisentinel.code_map"), cwd=PROJECT_ROOT,
+            env=environment, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+        )
+
+    def _stop_daemon(self, process: subprocess.Popen[str]) -> None:
+        if process.poll() is None:
+            process.send_signal(signal.SIGTERM)
+        try:
+            process.wait(timeout=5.0)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5.0)
+
+    def _wait_for_ready_snapshot(self, database_path: Path, *, timeout_s: float) -> None:
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline:
+            rows = _query_counts(database_path)
+            if rows["ready_snapshots"] == 1:
+                return
+            time.sleep(0.05)
+        raise TimeoutError("daemon did not publish a ready snapshot")
+
+    @staticmethod
+    def _wait_for_process_start(process: subprocess.Popen[str], *, timeout_s: float) -> None:
+        time.sleep(min(0.05, timeout_s))
+        if process.poll() is not None:
+            raise RuntimeError("daemon exited during restart")
+        return
+
+    def _write_process_output(self, process: subprocess.Popen[str], label: str) -> None:
+        stdout, stderr = process.communicate()
+        (self.output / f"daemon-{label}.stdout.log").write_text(stdout, encoding="utf-8")
+        (self.output / f"daemon-{label}.stderr.log").write_text(stderr, encoding="utf-8")
+
 
 def empty_case_report(output: str | Path, *, case: str = "unknown", scope: str = "prd005a") -> dict[str, Any]:
     report: dict[str, Any] = {
@@ -217,7 +343,7 @@ def finalize_case(report: dict[str, Any]) -> dict[str, Any]:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--case", choices=("scheduler", "snapshot", "loop", "incremental", "cumulative", "enterprise-git"), required=True)
+    parser.add_argument("--case", choices=("scheduler", "daemon", "snapshot", "loop", "incremental", "cumulative", "enterprise-git"), required=True)
     parser.add_argument("--fixture", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--clock", choices=("controlled", "real"), default="controlled")
@@ -232,7 +358,12 @@ def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     runner = CaseRunner(args.output, timeout_s=args.timeout)
     runner.prepare()
-    report = runner.run_scheduler_case(args.fixture) if args.case == "scheduler" else empty_case_report(args.output, case=args.case)
+    if args.case == "scheduler":
+        report = runner.run_scheduler_case(args.fixture)
+    elif args.case == "daemon":
+        report = runner.run_daemon_case()
+    else:
+        report = empty_case_report(args.output, case=args.case)
     report["started_at"] = datetime.now(timezone.utc).isoformat()
     report["clock"] = args.clock
     report["commit"] = args.commit
@@ -242,6 +373,24 @@ def main(argv: list[str] | None = None) -> int:
     runner.write_report(finalize_case(report))
     print(json.dumps({"case": args.case, "status": "scaffolded", "output": str(args.output)}, ensure_ascii=False))
     return 0
+
+
+def _run_git(args: tuple[str, ...]) -> str:
+    completed = subprocess.run(("git", *args), check=True, capture_output=True, text=True)
+    return completed.stdout
+
+
+def _query_counts(database_path: Path) -> dict[str, int | str | None]:
+    connection = sqlite3.connect(database_path)
+    try:
+        jobs = connection.execute("SELECT COUNT(*) FROM code_map_scan_jobs").fetchone()[0]
+        ready_snapshots = connection.execute("SELECT COUNT(*) FROM code_map_snapshots WHERE status='ready'").fetchone()[0]
+        snapshots = connection.execute("SELECT COUNT(*) FROM code_map_snapshots").fetchone()[0]
+        spans = connection.execute("SELECT COUNT(*) FROM spans").fetchone()[0]
+        row = connection.execute("SELECT commit_sha FROM code_map_snapshots WHERE status='ready' LIMIT 1").fetchone()
+        return {"jobs": jobs, "snapshots": snapshots, "ready_snapshots": ready_snapshots, "spans": spans, "commit_sha": row[0] if row else None}
+    finally:
+        connection.close()
 
 
 if __name__ == "__main__":

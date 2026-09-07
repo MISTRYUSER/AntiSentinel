@@ -56,8 +56,15 @@ class CodeMapDaemon:
     def run_forever(self) -> None:
         while not self._stop.is_set():
             now = datetime.now(timezone.utc)
-            self.scheduler.tick(now)
-            self.worker.run_once(now=now)
+            if self.telemetry is None:
+                self.scheduler.tick(now)
+                self.worker.run_once(now=now)
+            else:
+                with self.telemetry.span("code_map.tick"):
+                    with self.telemetry.span("code_map.scheduler.tick"):
+                        self.scheduler.tick(now)
+                    with self.telemetry.span("code_map.worker.run_once"):
+                        self.worker.run_once(now=now)
             self._last_tick_at = now
             self._ticks += 1
             self._worker_runs += 1
