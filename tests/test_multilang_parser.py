@@ -25,3 +25,10 @@ def test_go_typescript_java_relations_are_resolved_or_explicitly_unresolved():
 def test_supported_language_registry_is_shared():
     from antisentinel.code_map.languages import is_supported_path
     assert all(is_supported_path('x'+ext) for ext in ('.py','.go','.ts','.java','.kt','.rs','.cpp'))
+
+def test_string_tokens_do_not_create_calls():
+    from antisentinel.code_map.multilang_parser import MultiLanguageParser
+    p=MultiLanguageParser('multilang-tree-sitter-v1')
+    files=(p.parse_file('charge.ts', b'function charge() {}\n', 's'), p.parse_file('show.ts', b'function show() { console.log("charge"); }\n', 's'))
+    edges=p.resolve_edges(files,'s')
+    assert not any(e.relation=='calls' and e.target_node_id == files[0].symbols[1].node_id for e in edges)

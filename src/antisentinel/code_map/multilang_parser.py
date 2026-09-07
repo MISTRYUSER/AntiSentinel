@@ -73,20 +73,19 @@ class MultiLanguageParser:
                     out.append(CodeEdge(eid,snapshot_id,child.node_id,"inherits",parent.node_id if parent else None,parent_name if not parent else None,i,i,"resolved" if parent else "unresolved","text"))
         for p in parsed_files:
             text=p.data.decode(p.encoding,errors='replace')
+            calls_by_line = _tree_sitter_calls_by_line(p.path, p.data)
             for i,line in enumerate(text.splitlines(),1):
                 if re.search(r'^\s*import\s|^\s*from\s+\S+\s+import\s+',line):
                     expr=line.strip(); src=source_for(p, i)
                     if src:
                         eid=hashlib.sha256(f'{src.node_id}|imports|{expr}|{i}'.encode()).hexdigest()
                         out.append(CodeEdge(eid,snapshot_id,src.node_id,'imports',None,expr,i,i,'unresolved','text'))
-                if '(' in line:
+                for token in calls_by_line.get(i, ()):
                     src=source_for(p, i)
-                    if src:
-                        for token in re.findall(r'\b[A-Za-z_]\w*', line):
-                            target=by_name.get(token)
-                            if target and target.node_id != src.node_id:
-                                eid=hashlib.sha256(f'{src.node_id}|calls|{target.node_id}|{i}'.encode()).hexdigest()
-                                out.append(CodeEdge(eid,snapshot_id,src.node_id,'calls',target.node_id,None,i,i,'resolved','text'))
+                    target=by_name.get(token)
+                    if src and target and target.node_id != src.node_id:
+                        eid=hashlib.sha256(f'{src.node_id}|calls|{target.node_id}|{i}'.encode()).hexdigest()
+                        out.append(CodeEdge(eid,snapshot_id,src.node_id,'calls',target.node_id,None,i,i,'resolved','tree-sitter'))
         return tuple(out)
 
 
@@ -117,5 +116,22 @@ def _tree_sitter_symbols(path, data, scope):
                 parent=q
             for child in node.children: walk(child,parent)
         walk(root); return tuple(out)
+    except Exception:
+        return ()
+
+
+def _tree_sitter_calls_by_line(path, data):
+    try:
+        from tree_sitter_language_pack import get_parser
+        lang=language_for_path(path)
+        if not lang: return ()
+        root=get_parser(lang).parse(data).root_node; names={}
+        def walk(node):
+            if node.type in {"call_expression", "call", "method_invocation", "function_call_expression"}:
+                fn=node.child_by_field_name("function") or node.child_by_field_name("name")
+                if fn is not None:
+                    names.setdefault(node.start_point[0]+1, []).append(data[fn.start_byte:fn.end_byte].decode("utf-8","replace").split(".")[-1])
+            for child in node.children: walk(child)
+        walk(root); return {k:tuple(v) for k,v in names.items()}
     except Exception:
         return ()
