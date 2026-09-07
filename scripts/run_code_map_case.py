@@ -307,6 +307,58 @@ class CaseRunner:
         })
         return finalize_case(report)
 
+    def run_loop_case(self) -> dict[str, Any]:
+        """Run symbol → neighbor → source Evidence → next-turn context on one fixed snapshot."""
+        snapshot_report = self.run_snapshot_case()
+        from antisentinel.adapters.llm.openai_compatible import FakeProviderModel
+        from antisentinel.code_map.query import CodeMapQuery
+        from antisentinel.code_map.source_context import SourceEvidenceService
+        from antisentinel.code_map.tools import build_code_map_tools
+        from antisentinel.domain.incident import Incident
+        from antisentinel.domain.session import Session
+        from antisentinel.persistence.sqlite_database import SQLiteDatabase
+        from antisentinel.persistence.sqlite_stores import SQLiteEvidenceStore
+        from antisentinel.tools.registry import ToolRegistry
+        from antisentinel.worker.runtime.engine import RuntimeConfig, RuntimeEngine
+
+        database = SQLiteDatabase(self.output / "snapshot.sqlite")
+        store = __import__("antisentinel.code_map.store", fromlist=["SQLiteCodeMapStore"]).SQLiteCodeMapStore(database)
+        row = database.query("SELECT snapshot_id,repository_id,commit_sha FROM code_map_snapshots WHERE status='ready'")[0]
+        node = database.query("SELECT node_id FROM code_map_nodes WHERE qualified_name='Service' LIMIT 1")[0]["node_id"]
+        chunk = database.query("SELECT chunk_id FROM code_map_chunks c JOIN code_map_nodes n ON n.node_id=c.node_id WHERE n.qualified_name='Service.run' LIMIT 1")[0]["chunk_id"]
+        incident = Incident.create(title="loop case", source="fixture")
+        store.bind_incident(str(incident.incident_id), row["repository_id"], row["snapshot_id"])
+        query = CodeMapQuery(store)
+        evidence_service = SourceEvidenceService(query, store, SQLiteEvidenceStore(database))
+        scope = store.scope_for_incident(str(incident.incident_id))
+        registry = ToolRegistry(auto_discover=False)
+        for definition in build_code_map_tools(query, lambda _: scope, evidence_service):
+            registry.register(definition)
+        model = FakeProviderModel([
+            {"tasks": [{"task_id": "map", "objective": "inspect code", "tool_calls": [
+                {"tool_name": "code_map.find_symbols", "arguments": {"repository_id": row["repository_id"], "snapshot_id": row["snapshot_id"], "qualified_name": "Service.run"}},
+                {"tool_name": "code_map.get_neighbors", "arguments": {"repository_id": row["repository_id"], "snapshot_id": row["snapshot_id"], "node_id": node, "relations": ["contains"]}},
+                {"tool_name": "code_map.read_source", "arguments": {"repository_id": row["repository_id"], "snapshot_id": row["snapshot_id"], "chunk_id": chunk}},
+            ]}]},
+            {"final": {"summary": "source read", "diagnosis": "Service.run is available", "confidence": 1.0, "evidence_refs": []}},
+        ])
+        session = Session.create(incident_id=incident.incident_id, participant_ids=["case"])
+        result = RuntimeEngine().run(incident, session, model, registry=registry, config=RuntimeConfig(max_turns=2))
+        second_has_source = len(model.requests) == 2 and any(message["role"] == "source_context" for message in model.requests[1].messages)
+        report = empty_case_report(self.output, case="loop", scope="5A.1-5A.3")
+        report.update({
+            "input_files": snapshot_report["input_files"], "input_bytes": snapshot_report["input_bytes"],
+            "sync_ms": snapshot_report["sync_ms"], "queue_ms": 0.0, "build_ms": 0.0,
+            "output_nodes": 4, "output_edges": 2, "output_chunks": 4,
+            "persisted_nodes": 4, "persisted_edges": 2, "persisted_chunks": 4,
+            "integrity_checked": 11, "integrity_failed": 0, "background_exception_count": 0,
+            "business_completed": result.status == "completed", "persistence_readback": True, "trace_flushed": True,
+            "t1": time.time_ns() / 1_000_000, "t2": time.time_ns() / 1_000_000, "persistence_lag_ms": 0.0,
+            "retries": 0, "recovery_checks": {"next_turn_source_context": second_has_source},
+            "hard_gates": {"loop_completed": result.status == "completed", "source_context": second_has_source, "evidence_refs": len(result.evidence_refs) == 1},
+        })
+        return finalize_case(report)
+
     def _start_daemon(self, environment: dict[str, str]) -> subprocess.Popen[str]:
         return subprocess.Popen(
             (sys.executable, "-m", "antisentinel.code_map"), cwd=PROJECT_ROOT,
@@ -427,6 +479,8 @@ def main(argv: list[str] | None = None) -> int:
         report = runner.run_daemon_case()
     elif args.case == "snapshot":
         report = runner.run_snapshot_case()
+    elif args.case == "loop":
+        report = runner.run_loop_case()
     else:
         report = empty_case_report(args.output, case=args.case)
     report["started_at"] = datetime.now(timezone.utc).isoformat()

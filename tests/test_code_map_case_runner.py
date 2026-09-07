@@ -55,6 +55,12 @@ def test_runner_exposes_snapshot_case_entrypoint():
     assert callable(CaseRunner.run_snapshot_case)
 
 
+def test_runner_exposes_loop_case_entrypoint():
+    from scripts.run_code_map_case import CaseRunner
+
+    assert callable(CaseRunner.run_loop_case)
+
+
 def test_daemon_start_probe_returns_after_process_is_observed_alive(tmp_path):
     import time
     from scripts.run_code_map_case import CaseRunner
