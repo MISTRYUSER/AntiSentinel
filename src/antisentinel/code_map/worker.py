@@ -49,15 +49,26 @@ class CodeMapWorker:
                     queue.put(("ok", value))
                 except Exception as exc:
                     queue.put(("error", type(exc).__name__, str(exc)))
-            process = ctx.Process(target=child, daemon=True); process.start(); process.join(self.timeout_seconds)
+            process = ctx.Process(target=child, daemon=True); process.start()
+            message_holder = []
+            def drain():
+                try: message_holder.append(queue.get())
+                except (EOFError, OSError): pass
+            reader = threading.Thread(target=drain, daemon=True); reader.start()
+            process.join(self.timeout_seconds)
             if process.is_alive():
-                process.terminate(); process.join(5)
+                process.terminate(); process.join(1)
+                if process.is_alive(): process.kill(); process.join(5)
+                if process.is_alive():
+                    self.store.fail_job(lease, "build_process_stuck", "child did not exit")
+                    return WorkerResult("failed", lease.job_id, "build_process_stuck")
                 self.store.fail_job(lease, "build_timeout", f"timeout>{self.timeout_seconds}s")
                 return WorkerResult("failed", lease.job_id, "build_timeout")
-            if queue.empty():
+            reader.join(2)
+            if not message_holder:
                 self.store.fail_job(lease, "builder_exit", "builder exited without result")
                 return WorkerResult("failed", lease.job_id, "builder_exit")
-            message = queue.get()
+            message = message_holder[0]
             if message[0] == "error":
                 self.store.fail_job(lease, message[1], message[2]); return WorkerResult("failed", lease.job_id, message[1])
             built = message[1]

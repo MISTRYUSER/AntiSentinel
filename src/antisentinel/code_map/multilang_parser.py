@@ -22,6 +22,7 @@ class MultiLanguageParser:
             "cpp": [(r"^\s*(?:class|struct|namespace)\s+(\w+)", "class"), (r"^\s*[\w:<>&*~]+\s+(\w+)\s*\([^;]*\)\s*[{;]", "function")],
             "java": [(r"^\s*(?:public|private|protected)?\s*(?:abstract\s+)?class\s+(\w+)", "class"), (r"^\s*[\w<>\[\], ?]+\s+(\w+)\s*\([^;]*\)\s*\{", "function")],
             "typescript": [(r"^\s*(?:export\s+)?(?:abstract\s+)?class\s+(\w+)", "class"), (r"^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)", "function"), (r"^\s*(?:export\s+)?(?:const|let)\s+(\w+)\s*=", "function")],
+            "tsx": [(r"^\s*(?:export\s+)?(?:abstract\s+)?class\s+(\w+)", "class"), (r"^\s*(?:export\s+)?(?:async\s+)?function\s+(\w+)", "function"), (r"^\s*(?:export\s+)?(?:const|let)\s+(\w+)\s*=", "function")],
         }[lang]
         nodes=[]
         parents={}
@@ -137,7 +138,7 @@ def _tree_sitter_calls_by_line(path, data):
             for child in node.children: walk(child)
         walk(root); return {k:tuple(v) for k,v in names.items()}
     except Exception:
-        return ()
+        return {}
 
 
 def _parameter_names_by_symbol(parsed, text):

@@ -45,3 +45,8 @@ def test_parameter_shadowing_does_not_resolve_cross_file_call():
     b=p.parse_file('b.ts', b'function caller(charge: () => void) {\n charge();\n}\n','s')
     edges=p.resolve_edges((a,b),'s')
     assert not any(e.relation=='calls' and e.target_node_id == a.symbols[1].node_id for e in edges)
+
+def test_tsx_uses_distinct_registered_grammar():
+    from antisentinel.code_map.multilang_parser import MultiLanguageParser
+    result=MultiLanguageParser('multilang-tree-sitter-v1').parse_file('App.tsx', b'export function App(){ return <div/> }\n', 's')
+    assert result.symbols

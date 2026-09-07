@@ -117,3 +117,26 @@ def test_worker_failure_is_persisted_and_releases_slot(tmp_path):
     saved=store.get_job(job.job_id)
     assert saved.status=='failed' and saved.error_code=='RuntimeError' and saved.error_message=='boom'
     assert store.claim_job('worker-2', clock.now()) is None
+
+def test_worker_drains_large_child_result_before_join(tmp_path):
+    from antisentinel.code_map.worker import CodeMapWorker
+    from antisentinel.code_map.models import MapSnapshot
+    clock, store, job = make_store(tmp_path)
+    def large(_lease):
+        return MapSnapshot('s'*64, 'repo-a', 'a'*40, 'python-ast-v1', job.rules_digest, failed_files=('x'*1024*1024,))
+    result=CodeMapWorker(store, builder=large, owner='worker-1', timeout_seconds=5).run_once(now=clock.now())
+    assert result.status == 'succeeded'
+
+def test_worker_kills_child_that_ignores_sigterm(tmp_path):
+    from antisentinel.code_map.worker import CodeMapWorker
+    import os, signal, time
+    clock, store, job = make_store(tmp_path)
+    pid_file=tmp_path/'pid'
+    def stuck(_lease):
+        pid_file.write_text(str(os.getpid())); signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(10)
+    result=CodeMapWorker(store, builder=stuck, owner='worker-1', timeout_seconds=.2).run_once(now=clock.now())
+    assert result.error_code == 'build_timeout'
+    pid=int(pid_file.read_text())
+    try: os.kill(pid, 0)
+    except ProcessLookupError: pass
+    else: raise AssertionError('builder child still alive')
