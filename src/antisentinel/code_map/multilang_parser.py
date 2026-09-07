@@ -4,15 +4,16 @@ import re
 from .python_parser import ParsedFile
 from .identity import content_hash, node_id_for
 from .models import CodeNode, CodeChunk
+from .languages import LANGUAGE_BY_EXTENSION, language_for_path
 
 class MultiLanguageParser:
-    extensions = {'.go': 'go', '.ts': 'typescript', '.tsx': 'typescript', '.java': 'java', '.kt': 'kotlin', '.rs': 'rust', '.cpp': 'cpp', '.cc': 'cpp', '.h': 'cpp'}
+    extensions = LANGUAGE_BY_EXTENSION
     def __init__(self, parser_revision: str): self.parser_revision = parser_revision
     def parse_file(self, path: str, data: bytes, node_scope: str) -> ParsedFile:
         try: text=data.decode('utf-8')
         except UnicodeDecodeError: return ParsedFile(path,data,'unknown',content_hash(data),(),(),{},('decode_error',))
         syntax_error = _tree_sitter_error(path, data)
-        lang = next((v for k,v in self.extensions.items() if path.endswith(k)), None)
+        lang = language_for_path(path)
         if not lang: return ParsedFile(path,data,'utf-8',content_hash(data),(),(),{})
         pats = {
             "go": [(r"^\s*type\s+(\w+)\s+struct\b", "class"), (r"^\s*func\s+(?:\([^)]*\)\s+)?(\w+)\s*\(", "function")],
@@ -41,7 +42,7 @@ class MultiLanguageParser:
                     parents[nid]=module_id
                     break
         lines=text.splitlines(True)
-        chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(lines[n.start_line-1].encode()), commit_sha="unbound") for n in nodes)
+        chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(data[sum(len(x.encode()) for x in lines[:n.start_line-1]):sum(len(x.encode()) for x in lines[:n.end_line])]), commit_sha="unbound") for n in nodes)
         return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents)
     def contains_edges(self, parsed_files, snapshot_id):
         from .models import CodeEdge
@@ -92,8 +93,7 @@ class MultiLanguageParser:
 def _tree_sitter_error(path, data):
     try:
         from tree_sitter_language_pack import get_parser
-        ext=path.rsplit('.',1)[-1].lower()
-        lang={'go':'go','ts':'typescript','tsx':'tsx','java':'java','kt':'kotlin','rs':'rust','cpp':'cpp','cc':'cpp','h':'cpp'}.get(ext)
+        lang=language_for_path(path)
         if not lang: return False
         root=get_parser(lang).parse(data).root_node
         return root.has_error
@@ -104,7 +104,7 @@ def _tree_sitter_error(path, data):
 def _tree_sitter_symbols(path, data, scope):
     try:
         from tree_sitter_language_pack import get_parser
-        ext=path.rsplit('.',1)[-1].lower(); lang={'go':'go','ts':'typescript','tsx':'tsx','java':'java','kt':'kotlin','rs':'rust','cpp':'cpp','cc':'cpp','h':'cpp'}.get(ext)
+        lang=language_for_path(path)
         if not lang: return ()
         root=get_parser(lang).parse(data).root_node; out=[]
         kinds={'type_declaration':'class','type_spec':'class','function_declaration':'function','method_declaration':'function','method_elem':'function','class_declaration':'class','interface_declaration':'class','method_definition':'function','function_definition':'function','function_item':'function'}

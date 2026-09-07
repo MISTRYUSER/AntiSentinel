@@ -45,8 +45,8 @@ def main(argv=None):
     tree_entries = reader.list_tree(args.commit, RepositoryBudget())
     included_entries = [entry for entry in tree_entries if entry.included]
     supported_python_files = [entry for entry in included_entries if entry.path.endswith(".py")]
-    supported_multilang_files = [entry for entry in included_entries if entry.path.endswith((".go", ".ts", ".tsx"))]
-    unsupported_files = [entry.path for entry in included_entries if not (entry.path.endswith(".py") or entry.path.endswith((".go", ".ts", ".tsx")))]
+    supported_multilang_files = [entry for entry in included_entries if entry.path.endswith((".go", ".ts", ".tsx", ".java", ".kt", ".rs", ".cpp", ".cc", ".h"))]
+    unsupported_files = [entry.path for entry in included_entries if not (entry.path.endswith(".py") or entry.path.endswith((".go", ".ts", ".tsx", ".java", ".kt", ".rs", ".cpp", ".cc", ".h")))]
     builder = SnapshotBuilder(reader, budget=RepositoryBudget())
     built = builder.build(lease)
     result = store.publish(lease, built.snapshot, built.rows)

@@ -43,9 +43,10 @@ class CodeMapQuery:
         if rejected:
             return QueryEnvelope(error=rejected, snapshot_id=snapshot_id)
         rows = self.store.database.query(
-            """SELECT node_id,kind,qualified_name,path,start_line,end_line FROM code_map_nodes
-               WHERE snapshot_id=? AND repository_id=? AND qualified_name=?
-               ORDER BY path,qualified_name,start_line,node_id LIMIT ?""",
+            """SELECT n.node_id,n.kind,n.qualified_name,n.path,n.start_line,n.end_line,
+                      c.chunk_id FROM code_map_nodes n LEFT JOIN code_map_chunks c ON c.node_id=n.node_id AND c.snapshot_id=n.snapshot_id
+               WHERE n.snapshot_id=? AND n.repository_id=? AND n.qualified_name=?
+               ORDER BY n.path,n.qualified_name,n.start_line,n.node_id LIMIT ?""",
             (snapshot_id, repository_id, qualified_name, limit),
         )
         return QueryEnvelope(items=tuple(dict(row) for row in rows), snapshot_id=snapshot_id)
@@ -102,7 +103,7 @@ class CodeMapQuery:
         if rejected:
             return QueryEnvelope(error=rejected, snapshot_id=snapshot_id)
         rows = self.store.database.query(
-            "SELECT node_id,kind,qualified_name,path,start_line,end_line FROM code_map_nodes WHERE node_id=? AND snapshot_id=? AND repository_id=?",
+            "SELECT n.node_id,n.kind,n.qualified_name,n.path,n.start_line,n.end_line,c.chunk_id FROM code_map_nodes n LEFT JOIN code_map_chunks c ON c.node_id=n.node_id AND c.snapshot_id=n.snapshot_id WHERE n.node_id=? AND n.snapshot_id=? AND n.repository_id=?",
             (node_id, snapshot_id, repository_id),
         )
         return QueryEnvelope(items=tuple(dict(row) for row in rows), snapshot_id=snapshot_id)

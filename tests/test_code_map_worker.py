@@ -107,3 +107,13 @@ def test_partial_retry_keeps_original_generation_and_binding(tmp_path):
     assert old['snapshot']['status'] == 'partial'
     assert old['snapshot']['failed_files_json'] == '["bad.py"]'
     assert store.database.query('SELECT published_generation FROM code_map_diagnosis_bindings')[0][0] == 1
+
+def test_worker_failure_is_persisted_and_releases_slot(tmp_path):
+    from antisentinel.code_map.worker import CodeMapWorker
+    clock, store, job = make_store(tmp_path)
+    def broken(_lease): raise RuntimeError('boom')
+    result=CodeMapWorker(store, builder=broken, owner='worker-1').run_once(now=clock.now())
+    assert result.status=='failed' and result.error_code=='RuntimeError'
+    saved=store.get_job(job.job_id)
+    assert saved.status=='failed' and saved.error_code=='RuntimeError' and saved.error_message=='boom'
+    assert store.claim_job('worker-2', clock.now()) is None

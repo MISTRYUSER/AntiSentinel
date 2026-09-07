@@ -207,8 +207,9 @@ class SQLiteCodeMapStore:
             )
             if not changed:
                 return None
-            parser_revision = "python-ast-v1"
-            rules_digest = _rules_digest(json.loads(row["rules_json"]))
+            rules = json.loads(row["rules_json"])
+            parser_revision = str(rules.get("parser_revision", "multilang-tree-sitter-v1"))
+            rules_digest = _rules_digest(rules)
             return _insert_or_get_job(
                 connection, repository_id=lease.repository_id, commit_sha=commit_sha,
                 parser_revision=parser_revision, rules_digest=rules_digest,
@@ -313,6 +314,18 @@ class SQLiteCodeMapStore:
                 (_dt(expires_at), lease.owner, lease.token, _dt(now)),
             ).rowcount
         return updated == 1 and slot_updated == 1
+
+    def fail_job(self, lease: JobLease, error_code: str, error_message: str | None = None) -> bool:
+        """Persist a terminal worker failure and release its slot."""
+        now = self._now()
+        with self.database.transaction() as connection:
+            changed = connection.execute(
+                "UPDATE code_map_scan_jobs SET status='failed', error_code=?, error_message=?, completed_at=?, lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL WHERE job_id=? AND lease_owner=? AND lease_token=?",
+                (error_code, error_message, _dt(now), lease.job_id, lease.owner, lease.token),
+            ).rowcount
+            connection.execute("UPDATE code_map_job_attempts SET status='failed', completed_at=? WHERE job_id=? AND attempt=?", (_dt(now), lease.job_id, lease.attempt))
+            connection.execute("UPDATE code_map_worker_slots SET owner=NULL, lease_token=NULL, lease_expires_at=NULL WHERE slot_name='global' AND owner=? AND lease_token=?", (lease.owner, lease.token))
+        return changed == 1
 
     def empty_staged_rows(self) -> StagedMapRows:
         return StagedMapRows()

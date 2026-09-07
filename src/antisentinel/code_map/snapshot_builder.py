@@ -10,6 +10,7 @@ from .incremental import AstFactCache, AstFactKey
 from .models import MapSnapshot, RepositoryBudget
 from .python_parser import PythonAstParser
 from .multilang_parser import MultiLanguageParser
+from .languages import is_supported_path
 from .relations import RelationResolver
 from .store import JobLease, SourceBlob, SourceFile, StagedMapRows
 
@@ -43,8 +44,8 @@ class SnapshotBuilder:
         cache_hits = 0
         multi_enabled = not lease.parser_revision.startswith("python")
         for entry in self.reader.list_tree(lease.commit_sha, self.budget):
-            if not entry.included or not (entry.path.endswith(".py") or (multi_enabled and (entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx") or entry.path.endswith(".java")))):
-                if entry.included and not (entry.path.endswith(".py") or entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx") or entry.path.endswith(".java")):
+            if not entry.included or not (entry.path.endswith(".py") or (multi_enabled and is_supported_path(entry.path))):
+                if entry.included and not is_supported_path(entry.path):
                     unsupported_files += 1
                 continue
             included_files += 1

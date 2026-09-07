@@ -21,3 +21,7 @@ def test_go_typescript_java_relations_are_resolved_or_explicitly_unresolved():
     assert sum(e.relation=='contains' for e in edges) >= 3
     assert any(e.relation=='inherits' and e.resolution=='resolved' for e in edges)
     assert any(e.relation=='calls' for e in edges)
+
+def test_supported_language_registry_is_shared():
+    from antisentinel.code_map.languages import is_supported_path
+    assert all(is_supported_path('x'+ext) for ext in ('.py','.go','.ts','.java','.kt','.rs','.cpp'))

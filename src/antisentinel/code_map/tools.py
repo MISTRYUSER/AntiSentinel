@@ -31,7 +31,13 @@ def build_code_map_tools(query, scope_provider: Callable[[dict], object], source
     def read_source(arguments):
         if source_evidence_service is not None:
             scope = scope_provider(arguments)
-            source = source_evidence_service.read_source(scope.incident_id, arguments["repository_id"], arguments["snapshot_id"], arguments["chunk_id"])
+            chunk_id = arguments.get("chunk_id")
+            if not chunk_id and arguments.get("node_id"):
+                rows = query.store.database.query("SELECT chunk_id FROM code_map_chunks WHERE node_id=? AND snapshot_id=? ORDER BY start_line LIMIT 1", (arguments["node_id"], arguments["snapshot_id"]))
+                chunk_id = rows[0]["chunk_id"] if rows else None
+            if not chunk_id:
+                return result(query.read_source(scope, arguments["repository_id"], arguments["snapshot_id"], ""))
+            source = source_evidence_service.read_source(scope.incident_id, arguments["repository_id"], arguments["snapshot_id"], chunk_id)
             evidence = source_evidence_service.evidence_store.get(source.evidence_id)
             return ToolExecutionResult(status="succeeded", result={"items": [{"path": source.path, "content_hash": source.content_hash}], "source_context": source.__dict__}, result_summary=f"source: {source.path}", evidence=evidence)
         return result(query.read_source(scope_provider(arguments), arguments["repository_id"], arguments["snapshot_id"], arguments["chunk_id"]))
@@ -42,5 +48,5 @@ def build_code_map_tools(query, scope_provider: Callable[[dict], object], source
         ToolDefinition("code_map.find_symbols", "Find exact symbols in one snapshot.", {**common, "properties": {"repository_id": {"type": "string"}, "snapshot_id": {"type": "string"}, "qualified_name": {"type": "string"}, "limit": {"type": "integer"}}, "required": ["repository_id", "snapshot_id", "qualified_name"]}, find_symbols),
         ToolDefinition("code_map.get_node", "Read one code-map node.", {**common, "properties": {"repository_id": {"type": "string"}, "snapshot_id": {"type": "string"}, "node_id": {"type": "string"}}, "required": ["repository_id", "snapshot_id", "node_id"]}, get_node),
         ToolDefinition("code_map.get_neighbors", "Read bounded code-map neighbors.", {**common, "properties": {"repository_id": {"type": "string"}, "snapshot_id": {"type": "string"}, "node_id": {"type": "string"}, "direction": {"type": "string"}, "relations": {"type": "array"}, "depth": {"type": "integer"}, "node_budget": {"type": "integer"}}, "required": ["repository_id", "snapshot_id", "node_id"]}, get_neighbors),
-        ToolDefinition("code_map.read_source", "Read one hash-verified source chunk.", {**common, "properties": {"repository_id": {"type": "string"}, "snapshot_id": {"type": "string"}, "chunk_id": {"type": "string"}}, "required": ["repository_id", "snapshot_id", "chunk_id"]}, read_source),
+        ToolDefinition("code_map.read_source", "Read one hash-verified source chunk.", {**common, "properties": {"repository_id": {"type": "string"}, "snapshot_id": {"type": "string"}, "chunk_id": {"type": "string"}, "node_id": {"type": "string"}}, "required": ["repository_id", "snapshot_id"]}, read_source),
     )
