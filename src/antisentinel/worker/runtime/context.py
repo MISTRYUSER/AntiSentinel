@@ -25,6 +25,7 @@ class ContextBuilder:
         tools: list[dict[str, Any]],
         memory_context: MemoryContextView | None = None,
         skill_context: dict[str, Any] | None = None,
+        source_context: list[Any] | None = None,
     ) -> ModelRequest:
         messages: list[dict[str, Any]] = [build_system_message(skill_mode=skill_context is not None)]
         messages.append(
@@ -64,6 +65,26 @@ class ContextBuilder:
                     "evidence_refs": list(memory_context.evidence_refs),
                 }
             )
+        if source_context:
+            budget = 32 * 1024
+            slices = []
+            for item in source_context[:4]:
+                content = item.content
+                size = len(content.encode("utf-8"))
+                if size > budget:
+                    break
+                slices.append({
+                    "evidence_id": item.evidence_id,
+                    "repository_id": item.repository_id,
+                    "snapshot_id": item.snapshot_id,
+                    "commit_sha": item.commit_sha,
+                    "path": item.path,
+                    "content": content,
+                    "content_hash": item.content_hash,
+                })
+                budget -= size
+            if slices:
+                messages.append({"role": "source_context", "slices": slices})
         if skill_context is not None:
             if "active_skills" in skill_context:
                 messages.extend({"role": "skill", **item} for item in skill_context["active_skills"])

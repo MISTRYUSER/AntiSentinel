@@ -69,6 +69,24 @@ def test_context_includes_prior_turn_summaries():
     assert "Initial context" in str(request.messages)
 
 
+def test_context_includes_at_most_four_hash_verified_source_slices_with_32k_budget():
+    from antisentinel.code_map.source_context import SourceContextSlice
+
+    incident = Incident.create(title="Source", source="test")
+    session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
+    turn = Turn.create(session_id=session.session_id)
+    slices = [
+        SourceContextSlice(str(incident.incident_id), f"ev-{index}", "repo-a", "snap", "commit", "a.py", "x" * 8_000, "hash")
+        for index in range(5)
+    ]
+
+    request = ContextBuilder().build(incident, session, turn, prior_turns=[], task_results=[], tools=[], source_context=slices)
+
+    source_message = next(message for message in request.messages if message["role"] == "source_context")
+    assert len(source_message["slices"]) == 4
+    assert sum(len(item["content"]) for item in source_message["slices"]) <= 32 * 1024
+
+
 def test_runtime_loop_injects_memory_context_from_provider():
     from antisentinel.domain.incident import Incident
     from antisentinel.domain.session import Session
