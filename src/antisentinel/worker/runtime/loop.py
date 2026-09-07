@@ -411,6 +411,11 @@ class RuntimeLoop:
                     tool_calls=[item.to_dict() for item in tool_calls],
                     attempts=[item.to_dict() for item in attempts],
                     messages=request.messages,
+                    source_context_refs=[
+                        {"evidence_id": item.evidence_id, "repository_id": item.repository_id, "snapshot_id": item.snapshot_id,
+                         "commit_sha": item.commit_sha, "path": item.path, "content_hash": item.content_hash}
+                        for item in source_context
+                    ],
                     turn_count=len(turns),
                     current_task_index=None,
                     current_tool_call_index=None,

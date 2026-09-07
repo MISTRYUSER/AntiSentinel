@@ -49,3 +49,16 @@ def test_in_memory_store_defensively_copies_and_clears():
 
     store.clear("session-1")
     assert store.load("session-1") is None
+
+
+def test_checkpoint_keeps_source_context_references_without_source_body():
+    snapshot = make_snapshot()
+    snapshot.source_context_refs = [{
+        "evidence_id": "evidence-1", "repository_id": "repo-a", "snapshot_id": "snapshot-a",
+        "commit_sha": "commit-a", "path": "app.py", "content_hash": "a" * 64,
+    }]
+
+    encoded = snapshot.to_dict()
+
+    assert encoded["source_context_refs"][0]["evidence_id"] == "evidence-1"
+    assert "content" not in encoded["source_context_refs"][0]
