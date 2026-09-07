@@ -11,6 +11,7 @@ class MultiLanguageParser:
     def parse_file(self, path: str, data: bytes, node_scope: str) -> ParsedFile:
         try: text=data.decode('utf-8')
         except UnicodeDecodeError: return ParsedFile(path,data,'unknown',content_hash(data),(),(),{},('decode_error',))
+        syntax_error = _tree_sitter_error(path, data)
         lang = next((v for k,v in self.extensions.items() if path.endswith(k)), None)
         if not lang: return ParsedFile(path,data,'utf-8',content_hash(data),(),(),{})
         pats = {
@@ -37,7 +38,7 @@ class MultiLanguageParser:
                     break
         lines=text.splitlines(True)
         chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(lines[n.start_line-1].encode()), commit_sha="unbound") for n in nodes)
-        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents)
+        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents, (('syntax_error',) if syntax_error else ()))
     def contains_edges(self, parsed_files, snapshot_id):
         from .models import CodeEdge
         import hashlib
@@ -79,3 +80,15 @@ class MultiLanguageParser:
                                 eid=hashlib.sha256(f'{src.node_id}|calls|{target.node_id}|{i}'.encode()).hexdigest()
                                 out.append(CodeEdge(eid,snapshot_id,src.node_id,'calls',target.node_id,None,i,i,'resolved','text'))
         return tuple(out)
+
+
+def _tree_sitter_error(path, data):
+    try:
+        from tree_sitter_language_pack import get_parser
+        ext=path.rsplit('.',1)[-1].lower()
+        lang={'go':'go','ts':'typescript','tsx':'tsx','java':'java','kt':'kotlin','rs':'rust','cpp':'cpp','cc':'cpp','h':'cpp'}.get(ext)
+        if not lang: return False
+        root=get_parser(lang).parse(data).root_node
+        return root.has_error
+    except Exception:
+        return False
