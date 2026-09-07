@@ -39,7 +39,10 @@ class CodeMapScheduler:
             return SchedulerResult(status="idle")
         registration = self.store.get_registration(lease.repository_id)
         try:
-            result = self.git_reader.sync_ref(registration.tracked_ref, timeout_s=60.0)
+            if hasattr(self.git_reader, "sync_registration"):
+                result = self.git_reader.sync_registration(registration, timeout_s=60.0)
+            else:
+                result = self.git_reader.sync_ref(registration.tracked_ref, timeout_s=60.0)
             if not isinstance(result, SyncResult):
                 result = SyncResult(success=True, commit_sha=str(result))
         except TimeoutError:

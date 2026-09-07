@@ -94,11 +94,6 @@ class CaseRunner:
             current = store.get_registration("case-repo").current_interval or 1800
             clock.advance(current)
 
-        race_registration = RepositoryRegistration(
-            repository_id="race-repo", remote_url="file:///race-repo", credential_ref="race-credential",
-            tracked_ref="refs/heads/main",
-        )
-        store.register(race_registration)
         first_lease = store.claim_check(clock.now(), "race-1")
         second_lease = store.claim_check(clock.now(), "race-2")
         jobs = store.list_jobs("case-repo")
@@ -120,12 +115,13 @@ class CaseRunner:
         )
         stale_result = store.publish(crashed_lease, recovered_snapshot, store.empty_staged_rows())
         recovered_result = store.publish(recovered_lease, recovered_snapshot, store.empty_staged_rows())
-        telemetry = Telemetry(trace_path=self.output / "traces.jsonl")
+        telemetry = Telemetry(trace_path=self.output / "traces.jsonl", database=database)
         with telemetry.span("case.scheduler", case="scheduler"):
             pass
         t1 = time.time_ns() / 1_000_000
         trace_flushed = telemetry.force_flush()
         persisted = database.query("SELECT COUNT(*) AS count FROM code_map_scan_jobs")[0]["count"]
+        persisted_spans = database.query("SELECT COUNT(*) AS count FROM spans")[0]["count"]
         t2 = time.time_ns() / 1_000_000
         fixture_files = list(fixture.rglob("*") if fixture and fixture.exists() else ())
         input_files = sum(item.is_file() for item in fixture_files)
@@ -136,9 +132,9 @@ class CaseRunner:
             "sync_ms": round((time.monotonic() - started) * 1000, 2), "queue_ms": 0.0, "build_ms": 0.0,
             "output_nodes": 0, "output_edges": 0, "output_chunks": 0,
             "persisted_nodes": 0, "persisted_edges": 0, "persisted_chunks": 0,
-            "integrity_checked": int(persisted), "integrity_failed": 0,
+            "integrity_checked": int(persisted + persisted_spans), "integrity_failed": 0,
             "background_exception_count": 0, "business_completed": True,
-            "persistence_readback": persisted == len(jobs) + 0,
+            "persistence_readback": persisted == len(jobs) and persisted_spans >= 1,
             "trace_flushed": trace_flushed, "t1": t1, "t2": t2, "persistence_lag_ms": round(t2 - t1, 2),
             "retries": 0,
             "recovery_checks": {
@@ -147,6 +143,7 @@ class CaseRunner:
             },
             "intervals": intervals,
             "logical_job_count": len(jobs),
+            "persisted_trace_spans": int(persisted_spans),
             "hard_gates": {
                 "logical_job_count_one": len(jobs) == 1,
                 "duplicate_same_sha_zero": len(jobs) == 1,
@@ -227,6 +224,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--commit")
     parser.add_argument("--repository-id")
     parser.add_argument("--timeout", type=float, default=120.0)
+    parser.add_argument("--retry-index", type=int, default=0)
     return parser
 
 
@@ -239,6 +237,8 @@ def main(argv: list[str] | None = None) -> int:
     report["clock"] = args.clock
     report["commit"] = args.commit
     report["repository_id"] = args.repository_id
+    report["retries"] = args.retry_index
+    report["case_attempt"] = args.retry_index + 1
     runner.write_report(finalize_case(report))
     print(json.dumps({"case": args.case, "status": "scaffolded", "output": str(args.output)}, ensure_ascii=False))
     return 0
