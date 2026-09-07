@@ -99,6 +99,26 @@ class SubprocessGitReader:
                 raise GitReadError("budget_exceeded")
             return self._run(("cat-file", "blob", object_id), 60.0).stdout
 
+    def diff_paths(self, old_commit: str, new_commit: str) -> tuple[tuple[str, str | None, str], ...]:
+        with self._cache_lock():
+            self._require_commit(old_commit)
+            self._require_commit(new_commit)
+            fields = self._run(("diff", "--name-status", "-z", "-M", old_commit, new_commit), 60.0).stdout.split(b"\0")
+        changes = []
+        index = 0
+        while index < len(fields) and fields[index]:
+            status = fields[index].decode("ascii")
+            index += 1
+            first = fields[index].decode("utf-8", "surrogateescape")
+            index += 1
+            if status.startswith(("R", "C")):
+                second = fields[index].decode("utf-8", "surrogateescape")
+                index += 1
+                changes.append((status, first, second))
+            else:
+                changes.append((status, None, first))
+        return tuple(changes)
+
     def _validate_remote(self) -> None:
         parsed = urlparse(self.remote_url)
         if parsed.scheme == "file":

@@ -90,3 +90,23 @@ def test_reader_rejects_scp_style_ssh_host_outside_allowlist(tmp_path):
 
     with pytest.raises(GitReadError, match="remote_not_allowed"):
         SubprocessGitReader("git@untrusted.example:team/repo.git", tmp_path / "cache", "credential", frozenset())
+
+
+def test_reader_reports_added_modified_deleted_and_renamed_paths(tmp_path):
+    from antisentinel.code_map.git_reader import SubprocessGitReader
+
+    remote, worktree, commit_a = make_remote(tmp_path)
+    reader = SubprocessGitReader(str(remote), tmp_path / "cache", "local-test", frozenset())
+    reader.sync_ref("refs/heads/main")
+    git = lambda *args: run_git(worktree, *args)
+    git("mv", "module.py", "renamed.py")
+    (worktree / "added.py").write_text("VALUE = 1\n", encoding="utf-8")
+    git("add", "renamed.py", "added.py")
+    git("commit", "-m", "commit-b")
+    git("push", "origin", "main")
+    commit_b = reader.sync_ref("refs/heads/main").commit_sha
+
+    changes = reader.diff_paths(commit_a, commit_b)
+
+    assert ("A", None, "added.py") in changes
+    assert any(status.startswith("R") and old == "module.py" and new == "renamed.py" for status, old, new in changes)
