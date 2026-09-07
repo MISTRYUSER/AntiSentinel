@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from .identity import snapshot_id_for
 from .models import MapSnapshot, RepositoryBudget
 from .python_parser import PythonAstParser
-from .store import JobLease, StagedMapRows
+from .store import JobLease, SourceBlob, SourceFile, StagedMapRows
 
 
 @dataclass(frozen=True)
@@ -25,6 +25,8 @@ class SnapshotBuilder:
     def build(self, lease: JobLease) -> BuildOutput:
         snapshot_id = snapshot_id_for(lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest)
         parsed_files = []
+        blobs = []
+        files = []
         logical_bytes = 0
         failed_files = []
         for entry in self.reader.list_tree(lease.commit_sha, self.budget):
@@ -37,6 +39,12 @@ class SnapshotBuilder:
                 continue
             parsed_files.append(parsed)
             logical_bytes += len(data)
+            blobs.append(SourceBlob(parsed.file_hash, entry.object_id, data, parsed.encoding))
+            file_identity = f"{snapshot_id}|{entry.path}"
+            files.append(SourceFile(
+                file_id=__import__("hashlib").sha256(file_identity.encode()).hexdigest(), snapshot_id=snapshot_id,
+                path=entry.path, git_object_id=entry.object_id, content_hash=parsed.file_hash, byte_count=len(data),
+            ))
         nodes = tuple(symbol for parsed in parsed_files for symbol in parsed.symbols)
         chunks = tuple(chunk for parsed in parsed_files for chunk in parsed.chunks)
         edges = self.parser.contains_edges(tuple(parsed_files), snapshot_id)
@@ -46,4 +54,4 @@ class SnapshotBuilder:
             status="partial" if failed_files else "building", file_count=len(parsed_files),
             failed_files=tuple(failed_files), logical_bytes=logical_bytes,
         )
-        return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks))
+        return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks, blobs=tuple(blobs), files=tuple(files)))

@@ -44,6 +44,27 @@ class StagedMapRows:
     nodes: tuple[Any, ...] = ()
     edges: tuple[Any, ...] = ()
     chunks: tuple[Any, ...] = ()
+    blobs: tuple[Any, ...] = ()
+    files: tuple[Any, ...] = ()
+
+
+@dataclass(frozen=True)
+class SourceBlob:
+    content_hash: str
+    git_object_id: str
+    data: bytes
+    encoding: str
+
+
+@dataclass(frozen=True)
+class SourceFile:
+    file_id: str
+    snapshot_id: str
+    path: str
+    git_object_id: str
+    content_hash: str
+    byte_count: int
+    status: str = "ready"
 
 
 @dataclass(frozen=True)
@@ -328,6 +349,16 @@ class SQLiteCodeMapStore:
                     _dt(snapshot.created_at), _dt(now),
                 ),
             )
+            for blob in staged_rows.blobs:
+                connection.execute(
+                    "INSERT OR IGNORE INTO code_map_blobs(content_hash,git_object_id,byte_count,encoding,content) VALUES(?,?,?,?,?)",
+                    (blob.content_hash, blob.git_object_id, len(blob.data), blob.encoding, blob.data),
+                )
+            for source_file in staged_rows.files:
+                connection.execute(
+                    "INSERT OR REPLACE INTO code_map_files(file_id,snapshot_id,path,git_object_id,content_hash,byte_count,status,error_code) VALUES(?,?,?,?,?,?,?,NULL)",
+                    (source_file.file_id, source_file.snapshot_id, source_file.path, source_file.git_object_id, source_file.content_hash, source_file.byte_count, source_file.status),
+                )
             for node in staged_rows.nodes:
                 connection.execute(
                     """
@@ -406,6 +437,22 @@ class SQLiteCodeMapStore:
             (repository_id, commit_sha, *states),
         )
         return self.get_snapshot(rows[0]["snapshot_id"]) if rows else None
+
+    def read_chunk_source(self, repository_id: str, commit_sha: str, chunk_id: str) -> bytes:
+        rows = self.database.query(
+            """SELECT f.content_hash,b.content FROM code_map_chunks c
+               JOIN code_map_snapshots s ON s.snapshot_id=c.snapshot_id
+               JOIN code_map_files f ON f.snapshot_id=c.snapshot_id AND f.path=c.path
+               JOIN code_map_blobs b ON b.content_hash=f.content_hash
+               WHERE c.chunk_id=? AND s.repository_id=? AND s.commit_sha=? AND s.status='ready'""",
+            (chunk_id, repository_id, commit_sha),
+        )
+        if not rows:
+            raise DomainError("source_not_found")
+        data = bytes(rows[0]["content"])
+        if hashlib.sha256(data).hexdigest() != rows[0]["content_hash"]:
+            raise DomainError("hash_mismatch")
+        return data
 
     def pause(self, repository_id: str) -> None:
         with self.database.transaction() as connection:
