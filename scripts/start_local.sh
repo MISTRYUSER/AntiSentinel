@@ -73,4 +73,18 @@ echo "Model: $ANTISENTINEL_MODEL_BASE_URL / $ANTISENTINEL_MODEL_NAME"
 echo "Phoenix OTLP: ${OTEL_EXPORTER_OTLP_ENDPOINT:-disabled}"
 echo "LibreChat: ${ANTISENTINEL_START_LIBRECHAT:-0}"
 
-exec uvicorn antisentinel.api.app:app --host "$ANTISENTINEL_HOST" --port "$ANTISENTINEL_PORT"
+CODE_MAP_PID=""
+API_PID=""
+cleanup() {
+  if [[ -n "$CODE_MAP_PID" ]]; then kill "$CODE_MAP_PID" 2>/dev/null || true; fi
+  if [[ -n "$API_PID" ]]; then kill "$API_PID" 2>/dev/null || true; fi
+}
+trap cleanup EXIT INT TERM
+
+if [[ "${ANTISENTINEL_CODE_MAP_ENABLED:-0}" == "1" ]]; then
+  python -m antisentinel.code_map &
+  CODE_MAP_PID=$!
+fi
+uvicorn antisentinel.api.app:app --host "$ANTISENTINEL_HOST" --port "$ANTISENTINEL_PORT" &
+API_PID=$!
+wait "$API_PID"

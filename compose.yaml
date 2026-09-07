@@ -25,6 +25,20 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+  code-map:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "antisentinel.code_map"]
+    environment:
+      ANTISENTINEL_CODE_MAP_ENABLED: "1"
+      ANTISENTINEL_CODE_MAP_DB: /app/storage/antisentinel.db
+      ANTISENTINEL_CODE_MAP_CACHE_ROOT: /app/storage/code-map-git
+      ANTISENTINEL_STORAGE_ROOT: /app/storage
+      ANTISENTINEL_CODE_MAP_POLL_SECONDS: ${ANTISENTINEL_CODE_MAP_POLL_SECONDS:-5}
+      ANTISENTINEL_CODE_MAP_MIN_INTERVAL_SECONDS: ${ANTISENTINEL_CODE_MAP_MIN_INTERVAL_SECONDS:-1800}
+      ANTISENTINEL_CODE_MAP_MAX_INTERVAL_SECONDS: ${ANTISENTINEL_CODE_MAP_MAX_INTERVAL_SECONDS:-14400}
+    volumes:
+      - antisentinel_data:/app/storage
   redis:
     image: redis:7-alpine
     restart: unless-stopped
