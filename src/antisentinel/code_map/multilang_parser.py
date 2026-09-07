@@ -78,7 +78,7 @@ class MultiLanguageParser:
                     if src:
                         eid=hashlib.sha256(f'{src.node_id}|imports|{expr}|{i}'.encode()).hexdigest()
                         out.append(CodeEdge(eid,snapshot_id,src.node_id,'imports',None,expr,i,i,'unresolved','text'))
-                if '(' in line and not any(line.lstrip().startswith(x) for x in ('func ','function ')):
+                if '(' in line:
                     src=source_for(p, i)
                     if src:
                         for token in re.findall(r'\b[A-Za-z_]\w*', line):
