@@ -52,9 +52,13 @@ def main(argv=None):
     result = store.publish(lease, built.snapshot, built.rows)
     ready = store.get_snapshot(built.snapshot.snapshot_id)
     integrity = store.database.query("PRAGMA foreign_key_check")
+    relation_counts = {}
+    for edge in built.rows.edges:
+        relation_counts[edge.relation] = relation_counts.get(edge.relation, 0) + 1
     report = {
         "case": "real-local", "repository": str(args.repository), "commit": args.commit,
-        "case_pass": result.ok and ready is not None and not integrity and ready.file_count > 0 and not ready.failed_files,
+        "relation_counts": relation_counts,
+        "case_pass": result.ok and ready is not None and not integrity and ready.file_count > 0 and not ready.failed_files and relation_counts.get("contains", 0) > 0 and relation_counts.get("calls", 0) > 0,
         "input_files": len(included_entries), "input_bytes": sum(entry.byte_count for entry in supported_python_files),
         "supported_python_files": len(supported_python_files),
         "supported_multilang_files": len(supported_multilang_files), "unsupported_files": len(unsupported_files),
