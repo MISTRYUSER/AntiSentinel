@@ -74,6 +74,7 @@ class MultiLanguageParser:
         for p in parsed_files:
             text=p.data.decode(p.encoding,errors='replace')
             calls_by_line = _tree_sitter_calls_by_line(p.path, p.data)
+            parameters = _parameter_names_by_symbol(p, text)
             for i,line in enumerate(text.splitlines(),1):
                 if re.search(r'^\s*import\s|^\s*from\s+\S+\s+import\s+',line):
                     expr=line.strip(); src=source_for(p, i)
@@ -82,6 +83,8 @@ class MultiLanguageParser:
                         out.append(CodeEdge(eid,snapshot_id,src.node_id,'imports',None,expr,i,i,'unresolved','text'))
                 for token in calls_by_line.get(i, ()):
                     src=source_for(p, i)
+                    if src and token in parameters.get(src.node_id, set()):
+                        continue
                     target=by_name.get(token)
                     if src and target and target.node_id != src.node_id:
                         eid=hashlib.sha256(f'{src.node_id}|calls|{target.node_id}|{i}'.encode()).hexdigest()
@@ -135,3 +138,18 @@ def _tree_sitter_calls_by_line(path, data):
         walk(root); return {k:tuple(v) for k,v in names.items()}
     except Exception:
         return ()
+
+
+def _parameter_names_by_symbol(parsed, text):
+    result={}; lines=text.splitlines()
+    for n in parsed.symbols:
+        if n.kind == 'module': continue
+        for line in lines[n.start_line-1:n.start_line+1]:
+            m=re.search(r'\(([^)]*)\)', line)
+            if not m: continue
+            names=set()
+            for part in m.group(1).split(','):
+                token=re.match(r'\s*([A-Za-z_]\w*)', part)
+                if token: names.add(token.group(1))
+            result[n.node_id]=names; break
+    return result

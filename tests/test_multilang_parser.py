@@ -32,3 +32,16 @@ def test_string_tokens_do_not_create_calls():
     files=(p.parse_file('charge.ts', b'function charge() {}\n', 's'), p.parse_file('show.ts', b'function show() { console.log("charge"); }\n', 's'))
     edges=p.resolve_edges(files,'s')
     assert not any(e.relation=='calls' and e.target_node_id == files[0].symbols[1].node_id for e in edges)
+
+def test_call_parser_failure_is_empty_mapping(monkeypatch):
+    import antisentinel.code_map.multilang_parser as m
+    monkeypatch.setattr(m, 'language_for_path', lambda _: 'typescript')
+    assert isinstance(m._tree_sitter_calls_by_line('x.ts', b'bad'), dict)
+
+def test_parameter_shadowing_does_not_resolve_cross_file_call():
+    from antisentinel.code_map.multilang_parser import MultiLanguageParser
+    p=MultiLanguageParser('multilang-tree-sitter-v1')
+    a=p.parse_file('a.ts', b'function charge() {}\n','s')
+    b=p.parse_file('b.ts', b'function caller(charge: () => void) {\n charge();\n}\n','s')
+    edges=p.resolve_edges((a,b),'s')
+    assert not any(e.relation=='calls' and e.target_node_id == a.symbols[1].node_id for e in edges)

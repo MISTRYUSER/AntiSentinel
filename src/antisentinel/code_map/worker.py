@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable
 import threading
-from concurrent.futures import ThreadPoolExecutor, TimeoutError
+import multiprocessing as mp
 
 from antisentinel.domain.errors import DomainError
 
@@ -38,37 +38,39 @@ class CodeMapWorker:
         def watch():
             interval = max(0.5, min(self.store.lease_seconds / 3, 10.0))
             while not stop.wait(interval):
-                if not self.store.heartbeat(lease, self.store._now()):
-                    return
-        heartbeat = threading.Thread(target=watch, daemon=True)
-        heartbeat.start()
+                if not self.store.heartbeat(lease, self.store._now()): return
+        heartbeat = threading.Thread(target=watch, daemon=True); heartbeat.start()
         try:
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = executor.submit(self.builder, lease) if self.builder is not None else executor.submit(lambda: MapSnapshot(
-                snapshot_id=snapshot_id_for(lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest),
-                repository_id=lease.repository_id, commit_sha=lease.commit_sha, parser_revision=lease.parser_revision,
-                rules_digest=lease.rules_digest, created_at=current))
-            built = future.result(timeout=self.timeout_seconds)
-            executor.shutdown(wait=False, cancel_futures=True)
-            
+            ctx = mp.get_context("fork")
+            queue = ctx.Queue()
+            def child():
+                try:
+                    value = self.builder(lease) if self.builder is not None else MapSnapshot(snapshot_id=snapshot_id_for(lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest), repository_id=lease.repository_id, commit_sha=lease.commit_sha, parser_revision=lease.parser_revision, rules_digest=lease.rules_digest, created_at=current)
+                    queue.put(("ok", value))
+                except Exception as exc:
+                    queue.put(("error", type(exc).__name__, str(exc)))
+            process = ctx.Process(target=child, daemon=True); process.start(); process.join(self.timeout_seconds)
+            if process.is_alive():
+                process.terminate(); process.join(5)
+                self.store.fail_job(lease, "build_timeout", f"timeout>{self.timeout_seconds}s")
+                return WorkerResult("failed", lease.job_id, "build_timeout")
+            if queue.empty():
+                self.store.fail_job(lease, "builder_exit", "builder exited without result")
+                return WorkerResult("failed", lease.job_id, "builder_exit")
+            message = queue.get()
+            if message[0] == "error":
+                self.store.fail_job(lease, message[1], message[2]); return WorkerResult("failed", lease.job_id, message[1])
+            built = message[1]
             snapshot = built.snapshot if hasattr(built, "snapshot") else built
             rows = built.rows if hasattr(built, "rows") else self.store.empty_staged_rows()
             result = self.store.publish(lease, snapshot, rows)
             if not result.ok:
-                code = result.error.code if result.error else "publish_failed"
-                self.store.fail_job(lease, code, code)
-                return WorkerResult("failed", lease.job_id, code)
+                code = result.error.code if result.error else "publish_failed"; self.store.fail_job(lease, code, code); return WorkerResult("failed", lease.job_id, code)
             return WorkerResult("succeeded", lease.job_id)
-        except TimeoutError:
-            self.store.fail_job(lease, "build_timeout", f"timeout>{self.timeout_seconds}s")
-            return WorkerResult("failed", lease.job_id, "build_timeout")
         except DomainError as exc:
-            self.store.fail_job(lease, str(exc), str(exc))
-            return WorkerResult("failed", lease.job_id, str(exc))
-        except Exception as exc:  # normalize builder failures at the worker boundary
-            code = type(exc).__name__
-            self.store.fail_job(lease, code, str(exc))
-            return WorkerResult("failed", lease.job_id, code)
+            self.store.fail_job(lease, str(exc), str(exc)); return WorkerResult("failed", lease.job_id, str(exc))
+        except Exception as exc:
+            code = type(exc).__name__; self.store.fail_job(lease, code, str(exc)); return WorkerResult("failed", lease.job_id, code)
         finally:
             stop.set()
             heartbeat.join(timeout=1)
