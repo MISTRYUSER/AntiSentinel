@@ -38,7 +38,7 @@ class MultiLanguageParser:
                     break
         lines=text.splitlines(True)
         chunks=tuple(CodeChunk(chunk_id=n.node_id+"-chunk", node_id=n.node_id, snapshot_id=node_scope, path=path, start_line=n.start_line, end_line=n.end_line, byte_start=sum(len(x.encode()) for x in lines[:n.start_line-1]), byte_end=sum(len(x.encode()) for x in lines[:n.end_line]), content_hash=content_hash(lines[n.start_line-1].encode()), commit_sha="unbound") for n in nodes)
-        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents, (('syntax_error',) if syntax_error else ()))
+        return ParsedFile(path,data,'utf-8',content_hash(data),tuple(nodes),chunks,parents)
     def contains_edges(self, parsed_files, snapshot_id):
         from .models import CodeEdge
         import hashlib
