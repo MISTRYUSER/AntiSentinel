@@ -24,14 +24,18 @@ class MultiLanguageParser:
         }[lang]
         nodes=[]
         parents={}
+        semantic = _tree_sitter_symbols(path, data, node_scope)
         module_name=path.rsplit('/',1)[-1].rsplit('.',1)[0]
         module_id=node_id_for(node_scope,path,"module",module_name,1,max(1,len(text.splitlines())))
         module=CodeNode(module_id,node_scope,"unbound","unbound","module",module_name,path,1,max(1,len(text.splitlines())),content_hash(data),0,0)
         nodes.append(module)
+        if semantic:
+            nodes.extend(semantic)
+            parents.update({n.node_id: module_id for n in semantic})
         for i,line in enumerate(text.splitlines(),1):
             for pat,kind in pats:
                 m=re.search(pat,line)
-                if m:
+                if m and not semantic:
                     name=m.group(1); q=name; nid=node_id_for(node_scope,path,kind,q,i,i)
                     nodes.append(CodeNode(nid,node_scope,'unbound','unbound',kind,q,path,i,i,content_hash(line.encode()),0,len(line.encode())))
                     parents[nid]=module_id
@@ -95,3 +99,23 @@ def _tree_sitter_error(path, data):
         return root.has_error
     except Exception:
         return False
+
+
+def _tree_sitter_symbols(path, data, scope):
+    try:
+        from tree_sitter_language_pack import get_parser
+        ext=path.rsplit('.',1)[-1].lower(); lang={'go':'go','ts':'typescript','tsx':'tsx','java':'java','kt':'kotlin','rs':'rust','cpp':'cpp','cc':'cpp','h':'cpp'}.get(ext)
+        if not lang: return ()
+        root=get_parser(lang).parse(data).root_node; out=[]
+        kinds={'type_declaration':'class','type_spec':'class','function_declaration':'function','method_declaration':'function','method_elem':'function','class_declaration':'class','interface_declaration':'class','method_definition':'function','function_definition':'function','function_item':'function'}
+        def walk(node, parent=''):
+            kind=kinds.get(node.type); name_node=node.child_by_field_name('name') if kind else None
+            if kind and name_node is not None:
+                name=data[name_node.start_byte:name_node.end_byte].decode('utf-8','replace'); q=f'{parent}.{name}' if parent else name
+                sl=node.start_point[0]+1; el=node.end_point[0]+1; nid=node_id_for(scope,path,kind,q,sl,el)
+                out.append(CodeNode(nid,scope,'unbound','unbound',kind,q,path,sl,el,content_hash(data[node.start_byte:node.end_byte]),node.start_point[1],node.end_point[1]))
+                parent=q
+            for child in node.children: walk(child,parent)
+        walk(root); return tuple(out)
+    except Exception:
+        return ()
