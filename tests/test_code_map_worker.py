@@ -85,3 +85,25 @@ def test_worker_run_once_builds_and_publishes_a_job(tmp_path):
     assert result.status == "succeeded"
     assert result.job_id == job.job_id
     assert store.get_job(job.job_id).status == "succeeded"
+
+
+def test_partial_retry_keeps_original_generation_and_binding(tmp_path):
+    from dataclasses import replace
+    from antisentinel.code_map.models import MapSnapshot
+    from antisentinel.code_map.identity import snapshot_id_for
+    clock, store, job = make_store(tmp_path)
+    lease = store.claim_job('worker', clock.now())
+    sid = snapshot_id_for(job.repository_id, job.commit_sha, job.parser_revision, job.rules_digest)
+    snapshot = MapSnapshot(sid, job.repository_id, job.commit_sha, job.parser_revision, job.rules_digest, status='partial', failed_files=('bad.py',))
+    store.publish(lease, snapshot, store.empty_staged_rows())
+    assert store.get_snapshot(sid).status == 'partial'
+    assert store.get_published_snapshot(job.repository_id, job.commit_sha) is None
+    store.bind_incident('inc', job.repository_id, sid, allow_partial=True)
+    store.retry_job(job.job_id)
+    lease = store.claim_job('worker', clock.now())
+    store.publish(lease, replace(snapshot, status='building', failed_files=()), store.empty_staged_rows())
+    assert store.get_snapshot(sid).generation == 2
+    old = store.read_generation(sid, 1)
+    assert old['snapshot']['status'] == 'partial'
+    assert old['snapshot']['failed_files_json'] == '["bad.py"]'
+    assert store.database.query('SELECT published_generation FROM code_map_diagnosis_bindings')[0][0] == 1

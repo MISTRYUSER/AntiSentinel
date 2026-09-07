@@ -23,6 +23,7 @@ class ParsedFile:
     chunks: tuple[CodeChunk, ...]
     parents: Mapping[str, str]
     errors: tuple[str, ...] = ()
+    tree: ast.Module | None = None
 
 
 class PythonAstParser:
@@ -75,7 +76,7 @@ class PythonAstParser:
             stack.pop()
 
         visit(tree.body)
-        return ParsedFile(path, data, encoding, content_hash(data), tuple(symbols), tuple(chunks), parents)
+        return ParsedFile(path, data, encoding, content_hash(data), tuple(symbols), tuple(chunks), parents, tree=tree)
 
     def contains_edges(self, parsed_files: tuple[ParsedFile, ...], snapshot_id: str) -> tuple[CodeEdge, ...]:
         edges: list[CodeEdge] = []

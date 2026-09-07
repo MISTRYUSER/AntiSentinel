@@ -9,6 +9,7 @@ from .identity import content_hash, node_id_for, snapshot_id_for
 from .incremental import AstFactCache, AstFactKey
 from .models import MapSnapshot, RepositoryBudget
 from .python_parser import PythonAstParser
+from .relations import RelationResolver
 from .store import JobLease, SourceBlob, SourceFile, StagedMapRows
 
 
@@ -17,16 +18,19 @@ class BuildOutput:
     snapshot: MapSnapshot
     rows: StagedMapRows
     cache_hits: int = 0
+    changes: tuple = ()
 
 
 class SnapshotBuilder:
     def __init__(self, reader, *, parser: PythonAstParser | None = None, budget: RepositoryBudget | None = None, fact_cache: AstFactCache | None = None) -> None:
         self.reader = reader
-        self.parser = parser or PythonAstParser("python-3.13/ast-v1")
+        self.parser = parser
         self.budget = budget or RepositoryBudget()
         self.fact_cache = fact_cache
 
-    def build(self, lease: JobLease) -> BuildOutput:
+    def build(self, lease: JobLease, *, previous_commit: str | None = None) -> BuildOutput:
+        parser = self.parser or PythonAstParser(lease.parser_revision)
+        changes = self.reader.diff_paths(previous_commit, lease.commit_sha) if previous_commit else ()
         snapshot_id = snapshot_id_for(lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest)
         parsed_files = []
         blobs = []
@@ -41,12 +45,12 @@ class SnapshotBuilder:
             key = AstFactKey(content_hash(data), entry.path, "", lease.parser_revision, lease.rules_digest)
             parsed = self.fact_cache.get(key) if self.fact_cache else None
             if parsed is None:
-                parsed = self.parser.parse_file(entry.path, data, snapshot_id)
+                parsed = parser.parse_file(entry.path, data, "file-facts")
                 if self.fact_cache is not None:
                     self.fact_cache.put(key, parsed)
             else:
-                parsed = _rebind(parsed, snapshot_id)
                 cache_hits += 1
+            parsed = _rebind(parsed, snapshot_id)
             if parsed.errors:
                 failed_files.append(entry.path)
                 continue
@@ -60,14 +64,14 @@ class SnapshotBuilder:
             ))
         nodes = tuple(symbol for parsed in parsed_files for symbol in parsed.symbols)
         chunks = tuple(chunk for parsed in parsed_files for chunk in parsed.chunks)
-        edges = self.parser.contains_edges(tuple(parsed_files), snapshot_id)
+        edges = parser.contains_edges(tuple(parsed_files), snapshot_id) + RelationResolver().resolve(tuple(parsed_files), snapshot_id)
         snapshot = MapSnapshot(
             snapshot_id=snapshot_id, repository_id=lease.repository_id, commit_sha=lease.commit_sha,
             parser_revision=lease.parser_revision, rules_digest=lease.rules_digest,
             status="partial" if failed_files else "building", file_count=len(parsed_files),
             failed_files=tuple(failed_files), logical_bytes=logical_bytes,
         )
-        return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks, blobs=tuple(blobs), files=tuple(files)), cache_hits)
+        return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks, blobs=tuple(blobs), files=tuple(files)), cache_hits, changes)
 
 
 def _rebind(parsed, snapshot_id):

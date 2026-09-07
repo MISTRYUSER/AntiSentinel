@@ -53,3 +53,27 @@ def test_relation_resolver_marks_test_call_and_import_evidence():
 
     assert any(edge.relation == "imports" and edge.source_node_id == symbols["test_target"] and edge.target_node_id == symbols["target"] for edge in edges)
     assert any(edge.relation == "tested_by" and edge.source_node_id == symbols["target"] and edge.target_node_id == symbols["test_target"] for edge in edges)
+
+
+def test_resolution_is_file_scoped_and_shadowed_import_is_not_resolved():
+    from antisentinel.code_map.python_parser import PythonAstParser
+    from antisentinel.code_map.relations import RelationResolver
+    parser = PythonAstParser("v1")
+    dep = parser.parse_file("dep.py", b"def target():\n    pass\n", "s")
+    other = parser.parse_file("other.py", b"def target():\n    pass\n", "s")
+    caller = parser.parse_file("app.py", b"from dep import target as alias\ndef caller():\n    alias()\n    alias()\ndef shadow(alias):\n    alias()\n", "s")
+    edges = RelationResolver().resolve((dep, other, caller), "s")
+    calls = [e for e in edges if e.relation == "calls"]
+    assert [e.target_node_id for e in calls] == [dep.symbols[0].node_id, dep.symbols[0].node_id, None]
+    assert [e.call_start_line for e in calls] == [3, 4, 6]
+    assert len({e.edge_id for e in calls}) == 3
+
+
+def test_unimported_other_file_name_is_unresolved():
+    from antisentinel.code_map.python_parser import PythonAstParser
+    from antisentinel.code_map.relations import RelationResolver
+    parser = PythonAstParser("v1")
+    dep = parser.parse_file("dep.py", b"def target():\n    pass\n", "s")
+    caller = parser.parse_file("app.py", b"def caller():\n    target()\n", "s")
+    edges = RelationResolver().resolve((dep, caller), "s")
+    assert all(e.target_node_id is None for e in edges if e.relation == "calls")

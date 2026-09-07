@@ -8,7 +8,7 @@ from pathlib import Path
 import sqlite3
 
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 
 SCHEMA_V1 = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -271,6 +271,9 @@ CREATE TABLE IF NOT EXISTS import_ledger (
 
 
 MIGRATIONS: dict[int, tuple[str, ...]] = {
+    5: (
+        "CREATE TABLE code_map_generations(snapshot_id TEXT NOT NULL REFERENCES code_map_snapshots(snapshot_id), generation INTEGER NOT NULL, payload_json TEXT NOT NULL, PRIMARY KEY(snapshot_id,generation))",
+    ),
     2: (
         """
         CREATE TABLE IF NOT EXISTS code_map_repositories (

@@ -17,6 +17,8 @@ from typing import Any
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 SRC_ROOT = PROJECT_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
@@ -302,7 +304,7 @@ class CaseRunner:
             "persistence_readback": ready is not None and ready.commit_sha == commit_sha,
             "trace_flushed": spans >= 1, "t1": t1, "t2": t2, "persistence_lag_ms": round(t2 - t1, 2),
             "retries": 0, "recovery_checks": {"reopen_ready": ready is not None},
-            "hard_gates": {"ready": ready is not None, "fixed_commit": ready is not None and ready.commit_sha == commit_sha, "expected_map": ready is not None and (ready.node_count, ready.edge_count, ready.chunk_count) == (4, 2, 4)},
+            "hard_gates": {"ready": ready is not None, "fixed_commit": ready is not None and ready.commit_sha == commit_sha, "expected_map": ready is not None and (ready.node_count, ready.edge_count, ready.chunk_count) == (4, 3, 4)},
             "commit_sha": commit_sha, "persisted_trace_spans": int(spans), "job_id": job.job_id,
         })
         return finalize_case(report)
@@ -349,8 +351,8 @@ class CaseRunner:
         report.update({
             "input_files": snapshot_report["input_files"], "input_bytes": snapshot_report["input_bytes"],
             "sync_ms": snapshot_report["sync_ms"], "queue_ms": 0.0, "build_ms": 0.0,
-            "output_nodes": 4, "output_edges": 2, "output_chunks": 4,
-            "persisted_nodes": 4, "persisted_edges": 2, "persisted_chunks": 4,
+            "output_nodes": 4, "output_edges": 3, "output_chunks": 4,
+            "persisted_nodes": 4, "persisted_edges": 3, "persisted_chunks": 4,
             "integrity_checked": 11, "integrity_failed": 0, "background_exception_count": 0,
             "business_completed": result.status == "completed", "persistence_readback": True, "trace_flushed": True,
             "t1": time.time_ns() / 1_000_000, "t2": time.time_ns() / 1_000_000, "persistence_lag_ms": 0.0,
@@ -481,6 +483,11 @@ def main(argv: list[str] | None = None) -> int:
         report = runner.run_snapshot_case()
     elif args.case == "loop":
         report = runner.run_loop_case()
+    elif args.case == "incremental":
+        from scripts.code_map_c4 import run_c4
+        report = run_c4(args.output, args.timeout)
+        print(json.dumps(report, ensure_ascii=False))
+        return 0 if report['case_pass'] else 1
     else:
         report = empty_case_report(args.output, case=args.case)
     report["started_at"] = datetime.now(timezone.utc).isoformat()

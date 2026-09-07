@@ -1,0 +1,9 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "origin"]
+	url = /Users/xuewentao/agentCode/antisentinel/docs/validation/prd005a-stage4-c4/cumulative-loop/remote.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

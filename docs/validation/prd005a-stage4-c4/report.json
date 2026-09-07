@@ -1,0 +1,190 @@
+{
+  "case": "C4",
+  "case_pass": true,
+  "scenarios_passed": 6,
+  "scenarios": [
+    {
+      "name": "add",
+      "commit": "0655c73dcc5e1f9e2c73b05c4b876fa0c7390c77",
+      "previous": "30642380c74d8762f32a94487b14430ebeaf2e49",
+      "changes": [
+        [
+          "A",
+          null,
+          "added.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 6,
+      "nodes": 9,
+      "edges": 6,
+      "chunks": 9,
+      "input_files": 7,
+      "input_bytes": 323,
+      "integrity_checks": 110,
+      "full_ms": 393.7323330028448,
+      "incremental_ms": 691.8058750015916,
+      "t1_ns": 1788750020426906000,
+      "t2_ns": 1788750020484063000,
+      "persistence_lag_ms": 57.157
+    },
+    {
+      "name": "modify",
+      "commit": "8d0f7544d9772637e4190a2fad73e5b0e8b7f931",
+      "previous": "0655c73dcc5e1f9e2c73b05c4b876fa0c7390c77",
+      "changes": [
+        [
+          "M",
+          null,
+          "added.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 6,
+      "nodes": 9,
+      "edges": 6,
+      "chunks": 9,
+      "input_files": 7,
+      "input_bytes": 323,
+      "integrity_checks": 110,
+      "full_ms": 356.31124999781605,
+      "incremental_ms": 454.20399999420624,
+      "t1_ns": 1788750021915768000,
+      "t2_ns": 1788750021956786000,
+      "persistence_lag_ms": 41.018
+    },
+    {
+      "name": "delete",
+      "commit": "c77123e2041d10ab55be2efdba8e23b05f224c04",
+      "previous": "8d0f7544d9772637e4190a2fad73e5b0e8b7f931",
+      "changes": [
+        [
+          "D",
+          null,
+          "delete_me.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 6,
+      "nodes": 8,
+      "edges": 6,
+      "chunks": 8,
+      "input_files": 6,
+      "input_bytes": 294,
+      "integrity_checks": 100,
+      "full_ms": 427.9111659998307,
+      "incremental_ms": 525.3656249988126,
+      "t1_ns": 1788750023343905000,
+      "t2_ns": 1788750023378335000,
+      "persistence_lag_ms": 34.43
+    },
+    {
+      "name": "rename",
+      "commit": "7e780d22d5298f806fca949551146c8279db6bcd",
+      "previous": "c77123e2041d10ab55be2efdba8e23b05f224c04",
+      "changes": [
+        [
+          "R100",
+          "rename_me.py",
+          "renamed.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 5,
+      "nodes": 8,
+      "edges": 6,
+      "chunks": 8,
+      "input_files": 6,
+      "input_bytes": 294,
+      "integrity_checks": 100,
+      "full_ms": 421.6210830054479,
+      "incremental_ms": 391.7067500005942,
+      "t1_ns": 1788750024899049000,
+      "t2_ns": 1788750024939620000,
+      "persistence_lag_ms": 40.571
+    },
+    {
+      "name": "export",
+      "commit": "d5db1006c2bee85c4a0169d382292ecbc898b246",
+      "previous": "7e780d22d5298f806fca949551146c8279db6bcd",
+      "changes": [
+        [
+          "M",
+          null,
+          "dep.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 5,
+      "nodes": 8,
+      "edges": 3,
+      "chunks": 8,
+      "input_files": 6,
+      "input_bytes": 302,
+      "integrity_checks": 88,
+      "full_ms": 306.48525001015514,
+      "incremental_ms": 533.3112079970306,
+      "t1_ns": 1788750026444828000,
+      "t2_ns": 1788750026491423000,
+      "persistence_lag_ms": 46.595
+    },
+    {
+      "name": "caller",
+      "commit": "d1e0a32a288d25ac27340aed0cc68d9310384502",
+      "previous": "d5db1006c2bee85c4a0169d382292ecbc898b246",
+      "changes": [
+        [
+          "M",
+          null,
+          "app.py"
+        ],
+        [
+          "M",
+          null,
+          "test_dep.py"
+        ]
+      ],
+      "equal": true,
+      "golden_call_match": true,
+      "cache_hits": 4,
+      "nodes": 8,
+      "edges": 6,
+      "chunks": 8,
+      "input_files": 6,
+      "input_bytes": 328,
+      "integrity_checks": 100,
+      "full_ms": 403.1244590005372,
+      "incremental_ms": 799.5330829871818,
+      "t1_ns": 1788750028604013000,
+      "t2_ns": 1788750028648710000,
+      "persistence_lag_ms": 44.697
+    }
+  ],
+  "base_commit": "30642380c74d8762f32a94487b14430ebeaf2e49",
+  "partial_commit": "0449dbcacb7fe5428e3ad5051e02861a04f27cdc",
+  "partial_generations": [
+    1,
+    2
+  ],
+  "old_snapshot_changed": 0,
+  "binding_generation": 1,
+  "background_exception_count": 0,
+  "golden_edge_precision": 1.0,
+  "golden_edge_recall": 1.0,
+  "golden_edges": 6,
+  "persisted_trace_spans": 30,
+  "elapsed_seconds": 13.857983499998227,
+  "retries": 0,
+  "input_files": 6,
+  "input_bytes": 328,
+  "persisted_snapshots": 8,
+  "integrity_checks": 608,
+  "full_median_ms": 398.428396001691,
+  "incremental_median_ms": 529.3384164979216,
+  "performance_note": "Different change inputs; timings are observations, not a performance improvement claim."
+}
