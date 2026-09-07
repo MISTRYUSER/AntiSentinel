@@ -136,3 +136,23 @@ def test_runtime_loop_reinjects_verified_source_context_after_source_tool_call()
 
     assert result.status == "completed"
     assert any(message["role"] == "source_context" and message["slices"][0]["evidence_id"] == str(evidence.evidence_id) for message in model.requests[1].messages)
+
+
+def test_runtime_resume_rehydrates_checkpoint_source_references_before_model_call():
+    from antisentinel.adapters.llm.openai_compatible import FakeProviderModel
+    from antisentinel.code_map.source_context import SourceContextSlice
+    from antisentinel.tools.registry import ToolRegistry
+    from antisentinel.worker.runtime.checkpoint import InMemoryCheckpointStore, RuntimeSnapshot
+    from antisentinel.worker.runtime.engine import RuntimeConfig, RuntimeEngine
+
+    incident = Incident.create(title="resume", source="test")
+    session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
+    checkpoint = RuntimeSnapshot(session_id=str(session.session_id), incident=incident.to_dict(), session=session.to_dict(), turns=[], tasks=[], tool_calls=[], attempts=[], messages=[], turn_count=0, current_task_index=None, current_tool_call_index=None, successful_tool_call_ids=(), last_error=None, source_context_refs=[{"evidence_id": "evidence-1"}])
+    store = InMemoryCheckpointStore()
+    store.save(checkpoint)
+    model = FakeProviderModel([{"final": {"summary": "done", "diagnosis": "resumed", "confidence": 1.0, "evidence_refs": []}}])
+
+    result = RuntimeEngine().run(incident, session, model, registry=ToolRegistry(auto_discover=False), config=RuntimeConfig(max_turns=1), checkpoint_store=store, resume=True, source_context_rehydrator=lambda refs: [SourceContextSlice(str(incident.incident_id), "evidence-1", "repo", "snap", "commit", "a.py", "def f(): pass\n", "a" * 64)])
+
+    assert result.status == "completed"
+    assert any(message["role"] == "source_context" for message in model.requests[0].messages)

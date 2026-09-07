@@ -107,6 +107,7 @@ class RuntimeLoop:
         trace_context: TraceContext | None = None,
         observability_metrics=None,
         memory_context_provider: Callable[[Incident, Session, Turn], Any] | None = None,
+        source_context_rehydrator: Callable[[list[dict[str, Any]]], list[Any]] | None = None,
         skill_runtime=None,
     ) -> RuntimeResult:
         metrics = metrics or RuntimeMetrics()
@@ -125,7 +126,7 @@ class RuntimeLoop:
         token_usage = TokenUsage()
         final: FinalDiagnosis | None = None
         pending_results: list[dict[str, Any]] = list(resume_snapshot.pending_results) if resume_snapshot else []
-        source_context: list[Any] = []
+        source_context: list[Any] = source_context_rehydrator(resume_snapshot.source_context_refs) if resume_snapshot and source_context_rehydrator else []
         completed_invocations = dict(resume_snapshot.completed_invocations) if resume_snapshot else {}
         duplicate_only_turns = 0
 

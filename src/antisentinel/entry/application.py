@@ -313,6 +313,13 @@ class DiagnosisApplicationService:
     def _run_session(self, incident, session, model, registry, skill_runtime=None) -> None:
         session_id = str(session.session_id)
         try:
+            source_context_rehydrator = None
+            if self.code_map_store is not None and self.code_map_evidence_store is not None:
+                from antisentinel.code_map.query import CodeMapQuery
+                from antisentinel.code_map.source_context import SourceEvidenceService
+
+                source_service = SourceEvidenceService(CodeMapQuery(self.code_map_store), self.code_map_store, self.code_map_evidence_store)
+                source_context_rehydrator = source_service.rehydrate
             result = self.engine.run(
                 incident, session, model, registry=registry,
                 config=RuntimeConfig(),
@@ -327,6 +334,7 @@ class DiagnosisApplicationService:
                         query=f"{incident.title} {incident.summary or ''}",
                     )) if self.memory_recorder is not None else None
                 ),
+                source_context_rehydrator=source_context_rehydrator,
             )
             if self.memory_recorder is not None:
                 self.memory_recorder.record(

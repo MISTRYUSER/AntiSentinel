@@ -34,6 +34,7 @@ class RuntimeEngine:
         event_sink: Callable[[object], None] | None = None,
         observability_metrics=None,
         memory_context_provider: Callable[[Incident, Session, Any], Any] | None = None,
+        source_context_rehydrator: Callable[[list[dict[str, Any]]], list[Any]] | None = None,
         skill_runtime=None,
     ) -> RuntimeResult:
         resume_snapshot = None
@@ -54,6 +55,7 @@ class RuntimeEngine:
                 trace_context=trace_context,
                 observability_metrics=observability_metrics,
                 memory_context_provider=memory_context_provider,
+                source_context_rehydrator=source_context_rehydrator,
                 skill_runtime=skill_runtime,
             )
             return replace(result, trace_id=trace_context.trace_id)
