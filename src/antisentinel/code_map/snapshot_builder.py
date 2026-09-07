@@ -43,8 +43,8 @@ class SnapshotBuilder:
         cache_hits = 0
         multi_enabled = not lease.parser_revision.startswith("python")
         for entry in self.reader.list_tree(lease.commit_sha, self.budget):
-            if not entry.included or not (entry.path.endswith(".py") or (multi_enabled and (entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx")))) :
-                if entry.included and not (entry.path.endswith(".py") or entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx")):
+            if not entry.included or not (entry.path.endswith(".py") or (multi_enabled and (entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx") or entry.path.endswith(".java")))):
+                if entry.included and not (entry.path.endswith(".py") or entry.path.endswith(".go") or entry.path.endswith(".ts") or entry.path.endswith(".tsx") or entry.path.endswith(".java")):
                     unsupported_files += 1
                 continue
             included_files += 1
