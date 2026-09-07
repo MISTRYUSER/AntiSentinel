@@ -50,6 +50,7 @@ class DiagnosisApplicationService:
     application_store: Any | None = None
     conversation_store: Any | None = None
     sqlite_database: Any | None = None
+    code_map_store: Any | None = None
     audit_degraded: list[str] = field(default_factory=list)
     skill_runtime_factory: Callable[[ToolRegistry, str, str, str | None], object] | None = None
 
@@ -130,6 +131,8 @@ class DiagnosisApplicationService:
                 database_path = os.getenv("ANTISENTINEL_SQLITE_PATH", "").strip() or str(Path(resolved_storage_root) / "antisentinel.db")
                 service.sqlite_database = SQLiteDatabase(database_path)
                 service.sqlite_database.initialize()
+                from antisentinel.code_map.store import SQLiteCodeMapStore
+                service.code_map_store = SQLiteCodeMapStore(service.sqlite_database)
                 service.application_store = SQLiteApplicationStore(service.sqlite_database)
                 service.conversation_store = SQLiteConversationStore(service.sqlite_database)
                 primary_memory = SQLiteMemoryStore(service.sqlite_database)
@@ -261,6 +264,7 @@ class DiagnosisApplicationService:
                         raise InvalidInputError(f"unsupported model mode: {model_mode}")
                     model = model_factory()
                 registry = self.registry_factory()
+            self._bind_code_map_tools(registry, incident)
             session = Session.create(incident_id=incident.incident_id, participant_ids=participant_ids)
             session_id = str(session.session_id)
             skill_runtime = None
@@ -286,6 +290,19 @@ class DiagnosisApplicationService:
             return {"session_id": session_id, "incident_id": str(incident.incident_id), "status": "running"}
         finally:
             self._running_incidents.discard(incident_id)
+
+    def _bind_code_map_tools(self, registry: ToolRegistry, incident: Incident) -> None:
+        if self.code_map_store is None:
+            return
+        scope = self.code_map_store.scope_for_incident(str(incident.incident_id))
+        if not scope.allowed_repositories:
+            return
+        from antisentinel.code_map.query import CodeMapQuery
+        from antisentinel.code_map.tools import build_code_map_tools
+
+        for definition in build_code_map_tools(CodeMapQuery(self.code_map_store), lambda _: scope):
+            if registry.resolve(definition.name) is None:
+                registry.register(definition)
 
     def _run_session(self, incident, session, model, registry, skill_runtime=None) -> None:
         session_id = str(session.session_id)

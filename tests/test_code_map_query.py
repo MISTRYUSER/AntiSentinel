@@ -62,3 +62,13 @@ def test_get_node_and_read_source_return_hash_verified_chunk_content(tmp_path):
     assert node.items[0]["qualified_name"] == "Service.run"
     assert source.items[0]["content"] == "    def run(self):\n        return 1\n"
     assert len(source.items[0]["content_hash"]) == 64
+
+
+def test_incident_binding_produces_server_side_repository_scope(tmp_path):
+    query, _, snapshot_id, _ = build_query(tmp_path)
+
+    query.store.bind_incident("incident-a", "repo-a", snapshot_id)
+    scope = query.store.scope_for_incident("incident-a")
+
+    assert scope.incident_id == "incident-a"
+    assert scope.allowed_repositories == frozenset({"repo-a"})

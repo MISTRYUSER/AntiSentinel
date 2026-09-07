@@ -454,6 +454,24 @@ class SQLiteCodeMapStore:
             raise DomainError("hash_mismatch")
         return data
 
+    def bind_incident(self, incident_id: str, repository_id: str, snapshot_id: str, session_id: str | None = None) -> None:
+        snapshot = self.get_snapshot(snapshot_id)
+        if snapshot is None or snapshot.status != "ready" or snapshot.repository_id != repository_id:
+            raise DomainError("snapshot_missing")
+        with self.database.transaction() as connection:
+            connection.execute(
+                """INSERT INTO code_map_diagnosis_bindings(binding_id,incident_id,session_id,repository_id,snapshot_id,published_generation,requested_commit,created_at)
+                   VALUES(?,?,?,?,?,?,?,?)
+                   ON CONFLICT(incident_id,session_id,repository_id) DO UPDATE SET snapshot_id=excluded.snapshot_id,published_generation=excluded.published_generation,requested_commit=excluded.requested_commit,created_at=excluded.created_at""",
+                (str(uuid4()), incident_id, session_id, repository_id, snapshot_id, snapshot.published_generation or snapshot.generation, snapshot.commit_sha, _dt(self._now())),
+            )
+
+    def scope_for_incident(self, incident_id: str):
+        from .query import QueryScope
+
+        rows = self.database.query("SELECT DISTINCT repository_id FROM code_map_diagnosis_bindings WHERE incident_id=?", (incident_id,))
+        return QueryScope(incident_id, frozenset(row["repository_id"] for row in rows))
+
     def pause(self, repository_id: str) -> None:
         with self.database.transaction() as connection:
             connection.execute(
