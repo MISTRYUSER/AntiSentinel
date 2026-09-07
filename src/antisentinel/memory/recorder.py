@@ -99,15 +99,19 @@ class MemoryRecorder:
         )
         candidates = tuple(self.candidate_extractor.extract(source))
         enqueue_trace = trace.child(request_id=f"memory-enqueue-{result.session_id}")
-        with self.telemetry.span("memory.job.enqueue", context=enqueue_trace, candidate_count=len(candidates)):
-            self.memory_jobs.enqueue(MemoryJob(job_id=f"memory:{result.session_id}", source=source, candidates=candidates))
+        with self.telemetry.span("memory.job.enqueue", context=enqueue_trace, candidate_count=len(candidates)) as enqueue_span:
+            self.memory_jobs.enqueue(MemoryJob(
+                job_id=f"memory:{result.session_id}", source=source, candidates=candidates,
+                trace_context=TraceContext.from_otel(enqueue_span).inject(),
+            ))
         return tree
 
     def process_one_memory_job(self):
         job = self.memory_jobs.claim()
         if job is None:
             return None
-        trace = TraceContext(trace_id=f"trace-{job.source.session_id}", session_id=job.source.session_id, request_id=f"memory-classify-{job.job_id}")
+        producer_trace = TraceContext.extract(job.trace_context or {}) or TraceContext.new(session_id=job.source.session_id)
+        trace = producer_trace.child(request_id=f"memory-classify-{job.job_id}")
         try:
             with self.telemetry.span("memory.classify", context=trace, candidate_count=len(job.candidates)):
                 classifications = tuple(self.memory_classifier.classify(candidate) for candidate in job.candidates)

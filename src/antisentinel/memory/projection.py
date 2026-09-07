@@ -64,22 +64,26 @@ class LLMMemoryProjector:
         self.max_input_chars = max_input_chars
 
     def project(self, source: ProjectionSource) -> tuple[MemoryProjection, ...]:
-        allowed_turns = {turn_id for turn_id, _ in source.turns}
         bounded, used = [], 0
         for turn_id, content in source.turns:
             available = self.max_input_chars - used
             if available <= 0: break
             value = content[:min(1000, available)]
             bounded.append({"turn_id":turn_id,"content":value}); used += len(value)
+        disclosed_turns = frozenset(item["turn_id"] for item in bounded)
+        input_truncated = len(bounded) != len(source.turns) or any(
+            len(item["content"]) != len(content)
+            for item, (_, content) in zip(bounded, source.turns)
+        )
         payload = {"model": self.model, "response_format": {"type": "json_object"}, "temperature": 0, "messages": [{"role":"system","content":"提取长期记忆。只返回JSON: {projections:[{kind,content,turn_ids,confidence}]}。kind只允许session_digest,keyphrase,user_fact,diagnosis_fact,decision,failure_barrier。不得复制原文大段，不得编造。"}, {"role":"user","content":json.dumps({"session_id":source.session_id,"turns":bounded},ensure_ascii=False)}]}
         try:
-            return self._request_and_parse(payload, source, allowed_turns)
+            return self._request_and_parse(payload, source, disclosed_turns, input_truncated=input_truncated)
         except Exception:
             repair = dict(payload); repair["messages"] = [{"role":"system","content":"只返回严格JSON：{projections:[{kind,content,turn_ids,confidence}]}。turn_ids必须来自输入；禁止Markdown和解释。"}, payload["messages"][1]]
-            try: return self._request_and_parse(repair, source, allowed_turns)
-            except Exception as exc: return (self._failed(source, f"repair_{type(exc).__name__}", len(bounded) < len(source.turns)),)
+            try: return self._request_and_parse(repair, source, disclosed_turns, input_truncated=input_truncated)
+            except Exception as exc: return (self._failed(source, f"repair_{type(exc).__name__}", input_truncated),)
 
-    def _request_and_parse(self, payload, source, allowed_turns):
+    def _request_and_parse(self, payload, source, allowed_turns, *, input_truncated: bool = False):
         response = self.client.post(f"{self.base_url}/chat/completions", headers={"Authorization":f"Bearer {self.api_key}"}, json=payload); response.raise_for_status()
         raw = response.json()["choices"][0]["message"]["content"]
         matched = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.S | re.I) if isinstance(raw, str) else None
@@ -88,11 +92,28 @@ class LLMMemoryProjector:
         for item in value["projections"]:
             kind, content, turn_ids, confidence = item["kind"], item["content"], tuple(item["turn_ids"]), item["confidence"]
             if kind not in self.allowed_kinds or not isinstance(content,str) or not content.strip() or not turn_ids or not set(turn_ids) <= allowed_turns or isinstance(confidence,bool) or not isinstance(confidence,(int,float)) or not 0 <= confidence <= 1: raise ValueError
-            projections.append(RuleMemoryProjector._item(source, kind, content[:1000], tuple(MemorySourceRef("turn", turn_id) for turn_id in turn_ids), "active"))
+            projections.append(self._item(source, kind, content[:1000], tuple(MemorySourceRef("turn", turn_id) for turn_id in turn_ids), "active", input_truncated=input_truncated))
         if not projections: raise ValueError
         return tuple(projections)
 
+    def _item(self, source, kind, content, refs, status, *, input_truncated: bool = False):
+        projection_revision = f"llm:{self.model}:prompt-v1"
+        identity = f"{source.operator_id}|{source.incident_id}|{source.session_id}|{kind}|{content}|{projection_revision}"
+        return MemoryProjection(
+            sha256(identity.encode()).hexdigest(), kind, content, tuple(refs), status,
+            projection_revision=projection_revision, input_truncated=input_truncated,
+        )
+
     @staticmethod
     def _failed(source, reason, truncated):
-        item = RuleMemoryProjector._item(source, "session_digest", "", (), "failed")
-        return MemoryProjection(item.projection_id, item.kind, item.content, item.source_refs, item.status, item.content_version, item.projection_revision, reason, truncated)
+        item = LLMMemoryProjector._item_failed(source, reason, truncated)
+        return item
+
+    @staticmethod
+    def _item_failed(source, reason, truncated):
+        revision = "llm:failed:prompt-v1"
+        identity = f"{source.operator_id}|{source.incident_id}|{source.session_id}|session_digest||{revision}"
+        return MemoryProjection(
+            sha256(identity.encode()).hexdigest(), "session_digest", "", (), "failed",
+            projection_revision=revision, failure_reason=reason, input_truncated=truncated,
+        )

@@ -142,6 +142,7 @@ def test_trace_spans_are_persisted_to_sqlite_without_secrets(tmp_path):
 
     span = database.query("SELECT trace_id,session_id,turn_id,name,attributes_json FROM spans")[0]
     attributes = json.loads(span["attributes_json"])
-    assert (span["trace_id"], span["session_id"], span["turn_id"], span["name"]) == ("trace-1", "session-1", "turn-1", "model.complete")
+    finished = next(item for item in telemetry.finished_spans if item.name == "model.complete")
+    assert (span["trace_id"], span["session_id"], span["turn_id"], span["name"]) == (str(finished.context.trace_id), "session-1", "turn-1", "model.complete")
     assert attributes["input_tokens"] == 12
     assert "api_key" not in attributes

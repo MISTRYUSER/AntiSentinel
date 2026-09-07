@@ -20,6 +20,7 @@ class MemoryJob:
     next_attempt_at: float = 0.0
     status: str = "pending"
     last_error: str = ""
+    trace_context: dict[str, str] | None = None
 
 
 class MemoryJobQueue(Protocol):
@@ -149,6 +150,7 @@ return redis.call('HGET', KEYS[3] .. ready[1], 'payload')
             "next_attempt_at": job.next_attempt_at,
             "status": job.status,
             "last_error": job.last_error,
+            "trace_context": dict(job.trace_context or {}),
         }, ensure_ascii=False, separators=(",", ":"))
 
     @staticmethod
@@ -167,4 +169,8 @@ return redis.call('HGET', KEYS[3] .. ready[1], 'payload')
             attempts=int(value.get("attempts", 0)),
             next_attempt_at=float(value.get("next_attempt_at", 0)),
             status=str(value.get("status", "pending")), last_error=str(value.get("last_error", "")),
+            trace_context=(
+                {str(key): str(item) for key, item in dict(value.get("trace_context", {})).items()}
+                or None
+            ),
         )

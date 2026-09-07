@@ -1,5 +1,5 @@
 from antisentinel.memory.candidates import CandidateSource, MemoryCandidate
-from antisentinel.memory.jobs import InMemoryMemoryJobQueue, MemoryJob
+from antisentinel.memory.jobs import InMemoryMemoryJobQueue, MemoryJob, RedisMemoryJobQueue
 from antisentinel.memory.recorder import MemoryRecorder
 
 
@@ -52,3 +52,20 @@ def test_recorder_retries_classifier_failure_then_marks_job_failed(tmp_path):
     assert terminal.status == "failed"
     assert terminal.attempts == 2
     assert queue.has_inflight() is False
+
+
+def test_memory_job_round_trip_preserves_producer_trace_carrier():
+    from antisentinel.tracing.telemetry import TraceContext
+
+    trace_context = TraceContext.new(session_id="session-1").inject()
+    job = MemoryJob(
+        job_id="job-trace",
+        source=CandidateSource(operator_id="operator-1", session_id="session-1"),
+        candidates=(),
+        trace_context=trace_context,
+    )
+
+    encoded = RedisMemoryJobQueue._encode(job)
+    restored = RedisMemoryJobQueue._decode(encoded)
+
+    assert restored.trace_context == trace_context

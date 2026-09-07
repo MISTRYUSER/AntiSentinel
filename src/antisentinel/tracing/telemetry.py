@@ -14,9 +14,12 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from opentelemetry import trace
+from opentelemetry.context import Context
+from opentelemetry.propagate import extract, inject
 from opentelemetry.sdk.trace import ReadableSpan, TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor, SpanExportResult
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
+from opentelemetry.trace import Span
 
 
 class Telemetry:
@@ -32,11 +35,15 @@ class Telemetry:
         if otlp_endpoint:
             from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
             provider.add_span_processor(SimpleSpanProcessor(OTLPSpanExporter(endpoint=otlp_endpoint, insecure=True)))
+        self.provider = provider
         self.tracer = provider.get_tracer(service_name)
 
     @contextmanager
     def span(self, name: str, *, request_id: str | None = None, parent_request_id: str | None = None, context: "TraceContext | None" = None, **attributes: Any) -> Iterator[Any]:
-        with self.tracer.start_as_current_span(name) as current:
+        parent_context: Context | None = None
+        if context is not None and context.traceparent:
+            parent_context = extract(context.inject())
+        with self.tracer.start_as_current_span(name, context=parent_context) as current:
             context_token = _current_trace_context.set(context) if context is not None else None
             if context is not None:
                 attributes = {"trace_id": context.trace_id, "session_id": context.session_id, "turn_id": context.turn_id, "request_id": context.request_id, "parent_request_id": context.parent_request_id, **attributes}
@@ -55,8 +62,16 @@ class Telemetry:
 
     @property
     def finished_spans(self) -> list[ReadableSpan]:
-        self.exporter.force_flush()
+        self.force_flush()
         return list(self.exporter.get_finished_spans())
+
+    def force_flush(self) -> bool:
+        result = self.provider.force_flush()
+        return result is None or bool(result)
+
+    def shutdown(self) -> bool:
+        result = self.provider.shutdown()
+        return result is None or bool(result)
 
 
 class JsonlSpanExporter:
@@ -94,9 +109,9 @@ class SQLiteSpanExporter:
         for span in spans:
             attributes = _safe_attributes(span)
             context = span.context
-            trace_id = str(attributes.get("trace_id") or (context.trace_id if context else "unknown"))
+            trace_id = str(context.trace_id if context else "unknown")
             span_id = str(context.span_id if context else uuid4())
-            parent_span_id = str(span.parent.span_id) if span.parent is not None else attributes.get("parent_request_id")
+            parent_span_id = str(span.parent.span_id) if span.parent is not None else None
             encoded = json.dumps(attributes, ensure_ascii=False, separators=(",", ":"))
             with self.database.transaction() as connection:
                 connection.execute(
@@ -136,13 +151,73 @@ class TraceContext:
     request_id: str | None = None
     parent_request_id: str | None = None
     causation_id: str | None = None
+    traceparent: str | None = None
+    tracestate: str | None = None
 
     @classmethod
     def new(cls, *, session_id: str, request_id: str | None = None) -> "TraceContext":
-        return cls(trace_id=f"trace-{uuid4()}", session_id=session_id, request_id=request_id or f"request-{uuid4()}")
+        trace_id = f"trace-{uuid4()}"
+        trace_hex = __import__("hashlib").sha256(trace_id.encode()).hexdigest()[:32]
+        span_hex = __import__("hashlib").sha256((trace_id + ":span").encode()).hexdigest()[:16]
+        return cls(
+            trace_id=trace_id, session_id=session_id, request_id=request_id or f"request-{uuid4()}",
+            traceparent=f"00-{trace_hex}-{span_hex}-01",
+        )
 
     def child(self, *, turn_id: str | None = None, request_id: str | None = None) -> "TraceContext":
         return replace(self, turn_id=turn_id or self.turn_id, request_id=request_id or f"request-{uuid4()}", parent_request_id=self.request_id)
+
+    @classmethod
+    def from_otel(cls, span: Span) -> "TraceContext":
+        span_context = span.get_span_context()
+        carrier: dict[str, str] = {}
+        inject(carrier, context=trace.set_span_in_context(span))
+        attributes = dict(getattr(span, "attributes", {}) or {})
+        return cls(
+            trace_id=str(span_context.trace_id),
+            session_id=str(attributes.get("session_id", "")),
+            turn_id=str(attributes["turn_id"]) if attributes.get("turn_id") is not None else None,
+            request_id=str(attributes["request_id"]) if attributes.get("request_id") is not None else None,
+            parent_request_id=str(attributes["parent_request_id"]) if attributes.get("parent_request_id") is not None else None,
+            traceparent=carrier.get("traceparent"),
+            tracestate=carrier.get("tracestate"),
+        )
+
+    def inject(self) -> dict[str, str]:
+        carrier = {
+            "x-antisentinel-trace-id": self.trace_id,
+            "x-antisentinel-session-id": self.session_id,
+        }
+        if self.traceparent:
+            carrier["traceparent"] = self.traceparent
+        if self.tracestate:
+            carrier["tracestate"] = self.tracestate
+        return carrier
+
+    @classmethod
+    def extract(cls, carrier: dict[str, str]) -> "TraceContext | None":
+        if not carrier:
+            return None
+        traceparent = carrier.get("traceparent")
+        trace_id = carrier.get("x-antisentinel-trace-id", "")
+        if traceparent:
+            try:
+                extracted = extract(carrier)
+                span = trace.get_current_span(extracted)
+                context = span.get_span_context()
+                if not context.is_valid:
+                    return None
+                trace_id = str(context.trace_id)
+            except Exception:
+                return None
+        if not trace_id:
+            return None
+        return cls(
+            trace_id=trace_id,
+            session_id=carrier.get("x-antisentinel-session-id", ""),
+            traceparent=traceparent,
+            tracestate=carrier.get("tracestate"),
+        )
 
 
 _current_trace_context: ContextVar[TraceContext | None] = ContextVar("antisentinel_trace_context", default=None)

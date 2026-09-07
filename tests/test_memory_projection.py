@@ -66,3 +66,27 @@ def test_llm_projector_accepts_markdown_wrapped_json():
     client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"choices":[{"message":{"content":"```json\n{\"projections\":[{\"kind\":\"keyphrase\",\"content\":\"ERR_X\",\"turn_ids\":[\"turn-1\"],\"confidence\":0.9}]}\n```"}}]})))
     source = ProjectionSource("op", "inc", "session", datetime(2026, 9, 5, tzinfo=timezone.utc), (("turn-1", "ERR_X"),))
     assert LLMMemoryProjector(base_url="https://model.test", api_key="key", model="test", client=client).project(source)[0].status == "active"
+
+
+def test_llm_projector_rejects_reference_to_turn_omitted_from_bounded_input():
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"choices":[{"message":{"content":'{"projections":[{"kind":"diagnosis_fact","content":"not disclosed","turn_ids":["turn-2"],"confidence":0.9}]}'}}]})))
+    source = ProjectionSource(
+        "op", "inc", "session", datetime(2026, 9, 5, tzinfo=timezone.utc),
+        (("turn-1", "visible"), ("turn-2", "must remain undisclosed")),
+    )
+
+    result = LLMMemoryProjector(
+        base_url="https://model.test", api_key="key", model="test", client=client, max_input_chars=7,
+    ).project(source)
+
+    assert result[0].status == "failed"
+    assert result[0].input_truncated is True
+
+
+def test_llm_projection_revision_includes_model_and_prompt_revision():
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(200, json={"choices":[{"message":{"content":'{"projections":[{"kind":"diagnosis_fact","content":"上游超时","turn_ids":["turn-1"],"confidence":0.9}]}'}}]})))
+    source = ProjectionSource("op", "inc", "session", datetime(2026, 9, 5, tzinfo=timezone.utc), (("turn-1", "timeout"),))
+
+    result = LLMMemoryProjector(base_url="https://model.test", api_key="key", model="test-model", client=client).project(source)
+
+    assert result[0].projection_revision == "llm:test-model:prompt-v1"
