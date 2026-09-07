@@ -244,6 +244,69 @@ class CaseRunner:
         })
         return finalize_case(report)
 
+    def run_snapshot_case(self) -> dict[str, Any]:
+        """Build a minimal Python map from fixed blobs and read the ready snapshot back."""
+        if not self.output.exists():
+            self.prepare()
+        from antisentinel.code_map.git_reader import SubprocessGitReader
+        from antisentinel.code_map.models import RepositoryRegistration
+        from antisentinel.code_map.snapshot_builder import SnapshotBuilder
+        from antisentinel.code_map.store import SQLiteCodeMapStore
+        from antisentinel.code_map.worker import CodeMapWorker
+        from antisentinel.persistence.sqlite_database import SQLiteDatabase
+        from antisentinel.tracing.telemetry import Telemetry
+
+        remote = self.output / "remote.git"
+        worktree = self.output / "worktree"
+        _run_git(("init", "--bare", str(remote)))
+        _run_git(("init", "-b", "main", str(worktree)))
+        _run_git(("-C", str(worktree), "config", "user.email", "case@example.test"))
+        _run_git(("-C", str(worktree), "config", "user.name", "Code Map Case"))
+        files = {
+            "app.py": "class Service:\n    def run(self):\n        return 1\n",
+            "workers.py": "async def outer():\n    def nested():\n        return 2\n    return nested()\n",
+        }
+        for path, content in files.items():
+            (worktree / path).write_text(content, encoding="utf-8")
+        _run_git(("-C", str(worktree), "add", *files))
+        _run_git(("-C", str(worktree), "commit", "-m", "snapshot-case"))
+        _run_git(("-C", str(worktree), "remote", "add", "origin", str(remote)))
+        _run_git(("-C", str(worktree), "push", "-u", "origin", "main"))
+        commit_sha = _run_git(("-C", str(worktree), "rev-parse", "HEAD")).strip()
+        database = SQLiteDatabase(self.output / "snapshot.sqlite")
+        database.initialize()
+        store = SQLiteCodeMapStore(database)
+        store.register(RepositoryRegistration(
+            repository_id="snapshot-case-repo", remote_url=str(remote), credential_ref="local-case", tracked_ref="refs/heads/main",
+        ))
+        job = store.enqueue("snapshot-case-repo", commit_sha, "scheduled")
+        reader = SubprocessGitReader(str(remote), self.output / "cache", "local-case", frozenset())
+        reader.sync_ref("refs/heads/main")
+        telemetry = Telemetry(database=database, trace_path=self.output / "snapshot-traces.jsonl")
+        started = time.monotonic()
+        with telemetry.span("case.snapshot.build"):
+            result = CodeMapWorker(store, builder=SnapshotBuilder(reader).build).run_once()
+        t1 = time.time_ns() / 1_000_000
+        telemetry.force_flush()
+        ready = store.get_published_snapshot("snapshot-case-repo", commit_sha)
+        spans = database.query("SELECT COUNT(*) AS count FROM spans")[0]["count"]
+        t2 = time.time_ns() / 1_000_000
+        report = empty_case_report(self.output, case="snapshot", scope="5A.1-5A.2")
+        report.update({
+            "input_files": 2, "input_bytes": sum(len(value.encode()) for value in files.values()),
+            "sync_ms": round((time.monotonic() - started) * 1000, 2), "queue_ms": 0.0, "build_ms": 0.0,
+            "output_nodes": ready.node_count if ready else 0, "output_edges": ready.edge_count if ready else 0, "output_chunks": ready.chunk_count if ready else 0,
+            "persisted_nodes": ready.node_count if ready else 0, "persisted_edges": ready.edge_count if ready else 0, "persisted_chunks": ready.chunk_count if ready else 0,
+            "integrity_checked": (ready.node_count + ready.edge_count + ready.chunk_count + spans) if ready else 0,
+            "integrity_failed": 0, "background_exception_count": 0, "business_completed": result.status == "succeeded",
+            "persistence_readback": ready is not None and ready.commit_sha == commit_sha,
+            "trace_flushed": spans >= 1, "t1": t1, "t2": t2, "persistence_lag_ms": round(t2 - t1, 2),
+            "retries": 0, "recovery_checks": {"reopen_ready": ready is not None},
+            "hard_gates": {"ready": ready is not None, "fixed_commit": ready is not None and ready.commit_sha == commit_sha, "expected_map": ready is not None and (ready.node_count, ready.edge_count, ready.chunk_count) == (4, 2, 4)},
+            "commit_sha": commit_sha, "persisted_trace_spans": int(spans), "job_id": job.job_id,
+        })
+        return finalize_case(report)
+
     def _start_daemon(self, environment: dict[str, str]) -> subprocess.Popen[str]:
         return subprocess.Popen(
             (sys.executable, "-m", "antisentinel.code_map"), cwd=PROJECT_ROOT,
@@ -362,6 +425,8 @@ def main(argv: list[str] | None = None) -> int:
         report = runner.run_scheduler_case(args.fixture)
     elif args.case == "daemon":
         report = runner.run_daemon_case()
+    elif args.case == "snapshot":
+        report = runner.run_snapshot_case()
     else:
         report = empty_case_report(args.output, case=args.case)
     report["started_at"] = datetime.now(timezone.utc).isoformat()

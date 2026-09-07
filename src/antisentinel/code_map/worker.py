@@ -32,7 +32,7 @@ class CodeMapWorker:
         if lease is None:
             return WorkerResult("idle")
         try:
-            snapshot = self.builder(lease) if self.builder is not None else MapSnapshot(
+            built = self.builder(lease) if self.builder is not None else MapSnapshot(
                 snapshot_id=snapshot_id_for(
                     lease.repository_id, lease.commit_sha, lease.parser_revision, lease.rules_digest,
                 ),
@@ -40,7 +40,9 @@ class CodeMapWorker:
                 parser_revision=lease.parser_revision, rules_digest=lease.rules_digest,
                 created_at=current,
             )
-            result = self.store.publish(lease, snapshot, self.store.empty_staged_rows())
+            snapshot = built.snapshot if hasattr(built, "snapshot") else built
+            rows = built.rows if hasattr(built, "rows") else self.store.empty_staged_rows()
+            result = self.store.publish(lease, snapshot, rows)
             if not result.ok:
                 return WorkerResult("failed", lease.job_id, result.error.code if result.error else "publish_failed")
             return WorkerResult("succeeded", lease.job_id)

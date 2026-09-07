@@ -328,6 +328,43 @@ class SQLiteCodeMapStore:
                     _dt(snapshot.created_at), _dt(now),
                 ),
             )
+            for node in staged_rows.nodes:
+                connection.execute(
+                    """
+                    INSERT OR REPLACE INTO code_map_nodes(
+                        node_id,snapshot_id,repository_id,commit_sha,kind,qualified_name,path,start_line,end_line,start_col,end_col,content_hash
+                    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
+                    """,
+                    (
+                        node.node_id, node.snapshot_id, snapshot.repository_id, snapshot.commit_sha, node.kind,
+                        node.qualified_name, node.path, node.start_line, node.end_line, node.start_col, node.end_col, node.content_hash,
+                    ),
+                )
+            for edge in staged_rows.edges:
+                connection.execute(
+                    """
+                    INSERT OR REPLACE INTO code_map_edges(
+                        edge_id,snapshot_id,source_node_id,relation,target_node_id,unresolved_expression,call_start_line,call_end_line,resolution,basis
+                    ) VALUES(?,?,?,?,?,?,?,?,?,?)
+                    """,
+                    (
+                        edge.edge_id, edge.snapshot_id, edge.source_node_id, edge.relation, edge.target_node_id,
+                        edge.unresolved_expression, edge.call_start_line, edge.call_end_line, edge.resolution, edge.basis,
+                    ),
+                )
+            for chunk in staged_rows.chunks:
+                connection.execute(
+                    """
+                    INSERT OR REPLACE INTO code_map_chunks(
+                        chunk_id,node_id,snapshot_id,path,start_line,end_line,byte_start,byte_end,content_hash,commit_sha,encoding,truncated,partial_line
+                    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    """,
+                    (
+                        chunk.chunk_id, chunk.node_id, chunk.snapshot_id, chunk.path, chunk.start_line, chunk.end_line,
+                        chunk.byte_start, chunk.byte_end, chunk.content_hash, snapshot.commit_sha, chunk.encoding,
+                        int(chunk.truncated), int(chunk.partial_line),
+                    ),
+                )
             connection.execute(
                 """
                 UPDATE code_map_scan_jobs SET status='succeeded', completed_at=?, lease_owner=NULL, lease_token=NULL, lease_expires_at=NULL
@@ -360,6 +397,15 @@ class SQLiteCodeMapStore:
             created_at=decode_datetime(row["created_at"], "created_at"),
             published_at=_decode_optional(row["published_at"], "published_at"),
         )
+
+    def get_published_snapshot(self, repository_id: str, commit_sha: str, allow_partial: bool = False) -> MapSnapshot | None:
+        states = ("ready", "partial") if allow_partial else ("ready",)
+        placeholders = ",".join("?" for _ in states)
+        rows = self.database.query(
+            f"SELECT snapshot_id FROM code_map_snapshots WHERE repository_id=? AND commit_sha=? AND status IN ({placeholders}) ORDER BY published_at DESC LIMIT 1",
+            (repository_id, commit_sha, *states),
+        )
+        return self.get_snapshot(rows[0]["snapshot_id"]) if rows else None
 
     def pause(self, repository_id: str) -> None:
         with self.database.transaction() as connection:
