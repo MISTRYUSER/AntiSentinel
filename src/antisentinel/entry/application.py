@@ -51,6 +51,7 @@ class DiagnosisApplicationService:
     conversation_store: Any | None = None
     sqlite_database: Any | None = None
     code_map_store: Any | None = None
+    code_map_evidence_store: Any | None = None
     audit_degraded: list[str] = field(default_factory=list)
     skill_runtime_factory: Callable[[ToolRegistry, str, str, str | None], object] | None = None
 
@@ -139,6 +140,7 @@ class DiagnosisApplicationService:
                 memory_store = AuditedMemoryStore(primary_memory, FileMemoryStore(resolved_storage_root), service.audit_degraded.append)
                 event_store = AuditedEventStore(SQLiteEventStore(service.sqlite_database), FileEventStore(resolved_storage_root), service.audit_degraded.append)
                 evidence_store = AuditedEvidenceStore(SQLiteEvidenceStore(service.sqlite_database), FileEvidenceStore(resolved_storage_root), service.audit_degraded.append)
+                service.code_map_evidence_store = evidence_store
                 state_store = SQLiteStateStore(service.sqlite_database)
                 preference_store = MemoryPreferenceStore(memory_store)
                 vector_memory = None
@@ -149,6 +151,7 @@ class DiagnosisApplicationService:
                 service.application_store = FileApplicationStore(resolved_storage_root)
                 service.conversation_store = FileConversationStore(resolved_storage_root)
                 event_store = evidence_store = state_store = memory_store = preference_store = None
+                service.code_map_evidence_store = None
                 candidate_retriever = None
             telemetry = Telemetry(
                 service_name="antisentinel.runtime",
@@ -298,9 +301,12 @@ class DiagnosisApplicationService:
         if not scope.allowed_repositories:
             return
         from antisentinel.code_map.query import CodeMapQuery
+        from antisentinel.code_map.source_context import SourceEvidenceService
         from antisentinel.code_map.tools import build_code_map_tools
 
-        for definition in build_code_map_tools(CodeMapQuery(self.code_map_store), lambda _: scope):
+        query = CodeMapQuery(self.code_map_store)
+        evidence_service = SourceEvidenceService(query, self.code_map_store, self.code_map_evidence_store) if self.code_map_evidence_store is not None else None
+        for definition in build_code_map_tools(query, lambda _: scope, evidence_service):
             if registry.resolve(definition.name) is None:
                 registry.register(definition)
 

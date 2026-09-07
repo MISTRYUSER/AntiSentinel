@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Callable
 
-from antisentinel.tools.manifest import ToolDefinition
+from antisentinel.tools.manifest import ToolDefinition, ToolExecutionResult
 
 
-def build_code_map_tools(query, scope_provider: Callable[[dict], object]) -> tuple[ToolDefinition, ...]:
+def build_code_map_tools(query, scope_provider: Callable[[dict], object], source_evidence_service=None) -> tuple[ToolDefinition, ...]:
     def result(envelope):
         return {
             "items": list(envelope.items), "snapshot_id": envelope.snapshot_id,
@@ -29,6 +29,11 @@ def build_code_map_tools(query, scope_provider: Callable[[dict], object]) -> tup
         return result(query.get_neighbors(scope_provider(arguments), arguments["repository_id"], arguments["snapshot_id"], arguments["node_id"], direction=arguments.get("direction", "outbound"), relations=tuple(arguments.get("relations", ["contains"])), depth=arguments.get("depth", 1), node_budget=arguments.get("node_budget", 50)))
 
     def read_source(arguments):
+        if source_evidence_service is not None:
+            scope = scope_provider(arguments)
+            source = source_evidence_service.read_source(scope.incident_id, arguments["repository_id"], arguments["snapshot_id"], arguments["chunk_id"])
+            evidence = source_evidence_service.evidence_store.get(source.evidence_id)
+            return ToolExecutionResult(status="succeeded", result={"items": [{"path": source.path, "content_hash": source.content_hash}], "source_context": source.__dict__}, result_summary=f"source: {source.path}", evidence=evidence)
         return result(query.read_source(scope_provider(arguments), arguments["repository_id"], arguments["snapshot_id"], arguments["chunk_id"]))
 
     common = {"type": "object", "additionalProperties": False}
