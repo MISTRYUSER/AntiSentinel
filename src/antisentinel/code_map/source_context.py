@@ -41,3 +41,22 @@ class SourceEvidenceService:
         )
         self.evidence_store.put_once(evidence, incident_id=incident_id)
         return SourceContextSlice(incident_id, str(evidence.evidence_id), repository_id, snapshot_id, result.indexed_commit or "", item["path"], item["content"], item["content_hash"])
+
+    def rehydrate(self, references: list[dict]) -> list[SourceContextSlice]:
+        restored: list[SourceContextSlice] = []
+        for reference in references:
+            evidence = self.evidence_store.get(reference["evidence_id"])
+            if evidence is None or evidence.kind != "source_code":
+                continue
+            metadata = evidence.metadata
+            incident_id = str(metadata["incident_id"])
+            repository_id = str(metadata["repository_id"])
+            snapshot_id = str(metadata["snapshot_id"])
+            chunk_id = str(metadata["chunk_id"])
+            scope = self.store.scope_for_incident(incident_id)
+            result = self.query.read_source(scope, repository_id, snapshot_id, chunk_id)
+            if result.error is not None or not result.items or result.items[0]["content_hash"] != evidence.content_hash:
+                continue
+            item = result.items[0]
+            restored.append(SourceContextSlice(incident_id, str(evidence.evidence_id), repository_id, snapshot_id, result.indexed_commit or "", item["path"], item["content"], item["content_hash"]))
+        return restored

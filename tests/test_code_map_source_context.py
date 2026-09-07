@@ -20,3 +20,7 @@ def test_source_evidence_requires_incident_binding_and_persists_hash_verified_sl
 
     assert source.content == "    def run(self):\n        return 1\n"
     assert evidence_store.get(source.evidence_id).content_hash == source.content_hash
+
+    restored = service.rehydrate([{"evidence_id": source.evidence_id}])
+    assert restored[0].content == source.content
+    assert restored[0].content_hash == source.content_hash
