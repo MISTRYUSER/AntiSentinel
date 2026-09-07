@@ -117,3 +117,24 @@ def test_builder_persists_file_blob_and_reads_chunk_source_by_snapshot(tmp_path)
 
     chunk = store.database.query("SELECT chunk_id FROM code_map_chunks LIMIT 1")[0]["chunk_id"]
     assert store.read_chunk_source("repo-a", commit, chunk) == source.encode()
+
+
+def test_builder_marks_unsupported_only_repository_partial():
+    from antisentinel.code_map.models import RepositoryBudget
+    from antisentinel.code_map.snapshot_builder import SnapshotBuilder
+    from antisentinel.code_map.store import JobLease
+    from datetime import datetime, timezone
+
+    class Entry:
+        included = True
+        path = "main.go"
+        object_id = "object"
+        byte_count = 20
+    class Reader:
+        def list_tree(self, commit, budget): return (Entry(),)
+        def read_blob(self, commit, object_id, max_bytes): return b"package main\n"
+
+    lease = JobLease("job", "repo", "a" * 40, "python-ast-v1", "rules", "worker", "token", datetime(2026, 9, 7, tzinfo=timezone.utc), 1)
+    result = SnapshotBuilder(Reader(), budget=RepositoryBudget()).build(lease)
+    assert result.snapshot.status == "partial"
+    assert result.snapshot.file_count == 0

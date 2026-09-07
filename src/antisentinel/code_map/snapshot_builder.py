@@ -37,10 +37,15 @@ class SnapshotBuilder:
         files = []
         logical_bytes = 0
         failed_files = []
+        included_files = 0
+        unsupported_files = 0
         cache_hits = 0
         for entry in self.reader.list_tree(lease.commit_sha, self.budget):
             if not entry.included or not entry.path.endswith(".py"):
+                if entry.included:
+                    unsupported_files += 1
                 continue
+            included_files += 1
             data = self.reader.read_blob(lease.commit_sha, entry.object_id, self.budget.max_file_bytes)
             key = AstFactKey(content_hash(data), entry.path, "", lease.parser_revision, lease.rules_digest)
             parsed = self.fact_cache.get(key) if self.fact_cache else None
@@ -68,7 +73,7 @@ class SnapshotBuilder:
         snapshot = MapSnapshot(
             snapshot_id=snapshot_id, repository_id=lease.repository_id, commit_sha=lease.commit_sha,
             parser_revision=lease.parser_revision, rules_digest=lease.rules_digest,
-            status="partial" if failed_files else "building", file_count=len(parsed_files),
+            status="partial" if failed_files or (unsupported_files and not parsed_files) else "building", file_count=len(parsed_files),
             failed_files=tuple(failed_files), logical_bytes=logical_bytes,
         )
         return BuildOutput(snapshot, StagedMapRows(nodes=nodes, edges=edges, chunks=chunks, blobs=tuple(blobs), files=tuple(files)), cache_hits, changes)
