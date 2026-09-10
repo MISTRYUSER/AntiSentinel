@@ -465,21 +465,56 @@ class SQLiteCodeMapStore:
                 raise DomainError('retry_not_allowed')
 
     def read_generation_chunk(self, repository_id, snapshot_id, generation, chunk_id):
+        chunk, blob, data, commit = self._generation_chunk_bytes(repository_id, snapshot_id, generation, chunk_id)
+        return {**chunk, 'content': data.decode(chunk['encoding']), 'commit_sha': commit}
+
+    def read_generation_utf8_chunk(self, repository_id, snapshot_id, generation, chunk_id):
+        """Derive UTF-8 ownership boundaries without changing archived chunk facts."""
+        chunk, blob, _, commit = self._generation_chunk_bytes(repository_id, snapshot_id, generation, chunk_id)
+        try:
+            import codecs
+            encoding = codecs.lookup(chunk['encoding']).name
+            if encoding not in ('utf-8', 'utf-8-sig', 'ascii'):
+                raise DomainError('unsupported_source_encoding')
+            if encoding == 'ascii':
+                blob.decode('ascii')
+            blob.decode('utf-8')
+        except (UnicodeDecodeError, LookupError, TypeError):
+            raise DomainError('unsupported_source_encoding') from None
+        start, end = chunk['byte_start'], chunk['byte_end']
+        # Snap both ends forward. Neighboring chunks then share the same boundary:
+        # the preceding chunk owns a code point cut by the original byte limit.
+        while start < len(blob) and blob[start] & 0xc0 == 0x80: start += 1
+        while end < len(blob) and blob[end] & 0xc0 == 0x80: end += 1
+        data = blob[start:end]
+        return {**chunk, 'parent_source_hash': chunk['content_hash'],
+            'parent_byte_start': chunk['byte_start'], 'parent_byte_end': chunk['byte_end'],
+            'byte_start': start, 'byte_end': end, 'content_hash': hashlib.sha256(data).hexdigest(),
+            'content': data.decode('utf-8'), 'encoding': 'utf-8', 'commit_sha': commit}
+
+    def _generation_chunk_bytes(self, repository_id, snapshot_id, generation, chunk_id):
         payload = self.read_generation(snapshot_id, generation)
-        if payload['snapshot']['repository_id'] != repository_id:
+        archived_generation = payload['snapshot'].get('published_generation') or payload['snapshot'].get('generation')
+        if payload['snapshot']['repository_id'] != repository_id or payload['snapshot']['snapshot_id'] != snapshot_id or archived_generation != generation:
             raise DomainError('scope_mismatch')
         chunk = next((c for c in payload['chunks'] if c['chunk_id'] == chunk_id), None)
         if chunk is None:
             raise DomainError('source_not_found')
+        if chunk['snapshot_id'] != snapshot_id or chunk['commit_sha'] != payload['snapshot']['commit_sha']:
+            raise DomainError('scope_mismatch')
         source_file = next(f for f in payload['files'] if f['path'] == chunk['path'])
+        if source_file['snapshot_id'] != snapshot_id:
+            raise DomainError('scope_mismatch')
         rows = self.database.query('SELECT content FROM code_map_blobs WHERE content_hash=?', (source_file['content_hash'],))
         if not rows:
             raise DomainError('source_not_found')
         blob = bytes(rows[0][0])
+        if type(chunk['byte_start']) is not int or type(chunk['byte_end']) is not int or not 0 <= chunk['byte_start'] < chunk['byte_end'] <= len(blob):
+            raise DomainError('source_range_mismatch')
         data = blob[chunk['byte_start']:chunk['byte_end']]
         if hashlib.sha256(blob).hexdigest() != source_file['content_hash'] or hashlib.sha256(data).hexdigest() != chunk['content_hash']:
             raise DomainError('hash_mismatch')
-        return {**chunk, 'content': data.decode(chunk['encoding']), 'commit_sha': payload['snapshot']['commit_sha']}
+        return chunk, blob, data, payload['snapshot']['commit_sha']
 
     def get_snapshot(self, snapshot_id: str) -> MapSnapshot | None:
         rows = self.database.query("SELECT * FROM code_map_snapshots WHERE snapshot_id=?", (snapshot_id,))

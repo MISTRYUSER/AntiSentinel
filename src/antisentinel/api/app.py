@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+from asyncio import to_thread
+
 from fastapi import FastAPI, Header, HTTPException
 from pathlib import Path
 import json
@@ -51,9 +54,23 @@ def _chat_content(result) -> str:
 
 
 def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
-    app = FastAPI(title="AntiSentinel Runtime API")
-    app.state.service = service or DiagnosisApplicationService.from_environment()
+    resolved_service = service or DiagnosisApplicationService.from_environment()
+    @asynccontextmanager
+    async def lifespan(app):
+        await to_thread(resolved_service.start_background_services)
+        try:
+            yield
+        finally:
+            await to_thread(resolved_service.stop_background_services)
+
+    app = FastAPI(title="AntiSentinel Runtime API", lifespan=lifespan)
+    app.state.service = resolved_service
     app.state.memory_metrics = app.state.service.memory_metrics or MemoryMetrics()
+    @app.get('/api/retrieval/status')
+    def retrieval_status():
+        coordinator = app.state.service.retrieval_coordinator
+        return {'state': 'disabled'} if coordinator is None else coordinator.health()
+
     frontend_dir = Path(__file__).resolve().parents[3] / "frontend"
     if frontend_dir.exists():
         app.mount("/static", StaticFiles(directory=frontend_dir), name="static")

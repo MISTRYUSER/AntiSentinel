@@ -483,11 +483,17 @@ class SQLiteDatabase:
         self.path = Path(path)
 
     def _connect(self) -> sqlite3.Connection:
+        from antisentinel.runtime.deadline import remaining_timeout, current_deadline
+        timeout = remaining_timeout(5.0)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        connection = sqlite3.connect(self.path, timeout=5.0)
+        connection = sqlite3.connect(self.path, timeout=timeout)
         connection.row_factory = sqlite3.Row
         connection.execute("PRAGMA foreign_keys = ON")
-        connection.execute("PRAGMA busy_timeout = 5000")
+        connection.execute(f"PRAGMA busy_timeout = {int(timeout * 1000)}")
+        deadline = current_deadline()
+        if deadline is not None:
+            import time
+            connection.set_progress_handler(lambda: int(time.monotonic() >= deadline.expires_at), 1000)
         return connection
 
     def initialize(self) -> None:
@@ -530,9 +536,15 @@ class SQLiteDatabase:
             connection.close()
 
     def query(self, sql: str, params: Sequence[object] = ()) -> list[sqlite3.Row]:
+        from antisentinel.runtime.deadline import check_deadline
         connection = self._connect()
         try:
-            return list(connection.execute(sql, tuple(params)).fetchall())
+            rows = list(connection.execute(sql, tuple(params)).fetchall())
+            check_deadline()
+            return rows
+        except sqlite3.OperationalError:
+            check_deadline()
+            raise
         finally:
             connection.close()
 
