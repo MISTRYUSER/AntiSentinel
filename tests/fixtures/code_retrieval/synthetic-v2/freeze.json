@@ -1,0 +1,46 @@
+{
+  "inspection": {
+    "query_count": 24,
+    "unique_queries": 24,
+    "sample_sufficient": true,
+    "sample_minimum": 20,
+    "answerable_count": 20,
+    "no_answer_count": 4,
+    "precision_ceiling": 0.2,
+    "precision_goal_feasible": false,
+    "categories": {
+      "container": 5,
+      "class_overview": 4,
+      "semantic": 10,
+      "nested_function": 1,
+      "no_answer": 4
+    },
+    "errors": [],
+    "documents": 82,
+    "input_bytes": 50833,
+    "fingerprints": {
+      "corpus_version": "code-retrieval-local-v1",
+      "query_version": "synthetic-unseen-v2-20260910",
+      "source_count": 10,
+      "commits": {
+        "current": "c89b679db7080b25590ef3cc99e4cb4116f41f95",
+        "previous": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+      },
+      "manifest_sha256": "5c280c10a43b882c2623c8edd0e7a46520bbceac7704ef1793ba230d4ce8bc03",
+      "corpus_sha256": "90257f8335c25f7d3ad6a1b65c460d02d263642fbe928bd9e50264299464bafe",
+      "queries_sha256": "e312d32f575600fc4dc5c9a8d2b6dea5e345f534df6895b26ee670748304ecd1",
+      "resolved_labels_sha256": "1be79783020c6abda92baf01d56442f58827f5d6c12fbd684e07b366b88f2453",
+      "label_status": "proposed_for_user_review",
+      "top_k": 5,
+      "random_seed": null
+    },
+    "label_status": "proposed_for_user_review"
+  },
+  "exact_normalized_overlap": 0,
+  "shared_relevant_targets": [],
+  "policy_hashes": {
+    "src/antisentinel/retrieval/engine.py": "e2f428729dce53fbbb0ee824ce64076031e6a9db3ae402bb2236da3c9621f713",
+    "src/antisentinel/retrieval/graph.py": "679cd96fb8a53683f42cb82ff1bdc0a3daedb04e80f60afc6b47224a76f848a7"
+  },
+  "retrieval_observed_before_freeze": false
+}

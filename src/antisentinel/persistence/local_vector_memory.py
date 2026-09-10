@@ -117,7 +117,7 @@ class QwenFlashEmbedder:
     def __init__(
         self, *, base_url: str, api_key: str, dimension: int = 1024,
         batch_size: int = 20, timeout: float = 30.0, max_retries: int = 2,
-        client: httpx.Client | None = None,
+        client: httpx.Client | None = None, async_client_factory=None,
     ) -> None:
         if not api_key.strip():
             raise ValueError("DASHSCOPE_API_KEY is required")
@@ -140,6 +140,9 @@ class QwenFlashEmbedder:
         self.max_retries = max_retries
         self._api_key = api_key
         self._owns_client = client is None
+        if async_client_factory is not None and not callable(async_client_factory):
+            raise ValueError('async_client_factory must be callable')
+        self._query_client_factory = async_client_factory
         self.client = client if client is not None else httpx.Client(timeout=timeout, follow_redirects=False)
 
     @classmethod
@@ -167,6 +170,37 @@ class QwenFlashEmbedder:
         return self.embed(texts)
 
     def embed_query(self, texts: list[str]) -> list[list[float]]:
+        from antisentinel.runtime.deadline import current_deadline
+        deadline = current_deadline()
+        if deadline is not None:
+            # Query calls get their own cancellable client; the shared worker client
+            # must never be closed or reconfigured by a query timeout.
+            import asyncio
+            if not self._owns_client and self._query_client_factory is None:
+                raise ValueError('budgeted query requires async transport for a custom client')
+            if not isinstance(texts, list) or any(not isinstance(text, str) or not text.strip() for text in texts):
+                raise ValueError('embedding input must be a list of non-empty strings')
+            async def request():
+                phase_budget = min(self.timeout, deadline.remaining() * .8)
+                async with asyncio.timeout(phase_budget):
+                    factory = self._query_client_factory or httpx.AsyncClient
+                    async with factory(timeout=phase_budget, follow_redirects=False) as client:
+                        values = []
+                        for start in range(0, len(texts), self.batch_size):
+                            deadline.remaining()
+                            batch = texts[start:start + self.batch_size]
+                            response = await client.post(self.endpoint,
+                                headers={'Authorization': f'Bearer {self._api_key}'},
+                                json={'model': self.model_name, 'input': batch, 'dimensions': self.dimension, 'encoding_format': 'float'})
+                            if response.status_code != 200:
+                                raise RuntimeError(f'embedding_http_{response.status_code}')
+                            values.extend(self._parse(response, len(batch)))
+                        deadline.remaining()
+                        return values
+            try:
+                return asyncio.run(request())
+            except httpx.TransportError:
+                raise RuntimeError('embedding_transport_error') from None
         return self.embed(texts)
 
     def embed(self, texts: list[str]) -> list[list[float]]:

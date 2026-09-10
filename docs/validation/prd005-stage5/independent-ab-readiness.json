@@ -1,0 +1,18 @@
+{
+  "state": "synthetic_ab_completed_not_business_holdout",
+  "default_changed": false,
+  "new_experiment_runs": 1,
+  "available_query_count": 24,
+  "already_used_for_tuning": 24,
+  "independent_queries_verified": 0,
+  "label_status": "proposed_for_user_review",
+  "manifest_sha256": "6473b9ae5f596fb3dc2287a747ad24f97da15165ce7fc77f7a1cd97d2adab3d0",
+  "frozen_policy_hashes": {
+    "src/antisentinel/retrieval/engine.py": "e2f428729dce53fbbb0ee824ce64076031e6a9db3ae402bb2236da3c9621f713",
+    "src/antisentinel/retrieval/graph.py": "679cd96fb8a53683f42cb82ff1bdc0a3daedb04e80f60afc6b47224a76f848a7"
+  },
+  "previous_authorized_corpus_present": false,
+  "synthetic_new_queries": 24,
+  "new_manifest": "tests/fixtures/code_retrieval/synthetic-v2/manifest.json",
+  "new_manifest_sha256": "5c280c10a43b882c2623c8edd0e7a46520bbceac7704ef1793ba230d4ce8bc03"
+}

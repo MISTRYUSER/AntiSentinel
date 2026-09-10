@@ -52,6 +52,8 @@ class DiagnosisApplicationService:
     sqlite_database: Any | None = None
     code_map_store: Any | None = None
     code_map_evidence_store: Any | None = None
+    retrieval_tools: Any | None = None
+    retrieval_coordinator: Any | None = None
     audit_degraded: list[str] = field(default_factory=list)
     skill_runtime_factory: Callable[[ToolRegistry, str, str, str | None], object] | None = None
 
@@ -222,7 +224,19 @@ class DiagnosisApplicationService:
                     model=os.getenv("ANTISENTINEL_MEMORY_MODEL_NAME", model_name),
                     timeout=timeout,
                 )
+        from antisentinel.retrieval.config import coordinator_from_environment
+        service.retrieval_coordinator = coordinator_from_environment(service)
+        if service.retrieval_coordinator is not None:
+            service.retrieval_tools = service.retrieval_coordinator
         return service
+
+    def start_background_services(self) -> None:
+        if self.retrieval_coordinator is not None:
+            self.retrieval_coordinator.start()
+
+    def stop_background_services(self) -> None:
+        if self.retrieval_coordinator is not None:
+            self.retrieval_coordinator.stop()
 
     def create_incident(self, *, title: str, summary: str | None, source: str) -> Incident:
         incident = Incident.create(title=title, source=source, summary=summary)
@@ -268,6 +282,11 @@ class DiagnosisApplicationService:
                     model = model_factory()
                 registry = self.registry_factory()
             self._bind_code_map_tools(registry, incident)
+            if self.retrieval_tools is not None:
+                for definition in self.retrieval_tools.for_incident(str(incident.incident_id)):
+                    if registry.resolve(definition.name) is not None:
+                        raise InvalidInputError('duplicate_retrieval_tool')
+                    registry.register(definition)
             session = Session.create(incident_id=incident.incident_id, participant_ids=participant_ids)
             session_id = str(session.session_id)
             skill_runtime = None

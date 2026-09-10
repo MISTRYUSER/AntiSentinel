@@ -81,6 +81,9 @@ class ContextBuilder:
                     "path": item.path,
                     "content": content,
                     "content_hash": item.content_hash,
+                    "byte_start": item.byte_start,
+                    "byte_end": item.byte_end,
+                    "published_generation": item.published_generation,
                 })
                 budget -= size
             if slices:

@@ -1,0 +1,65 @@
+# Local Standalone acceptance stack, based on the upstream v3.0.1 release.
+# Use a unique Compose project name. This does not start the application.
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.25
+    command: ["etcd", "--advertise-client-urls=http://etcd:2379", "--listen-client-urls=http://0.0.0.0:2379", "--data-dir=/etcd"]
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    volumes:
+      - etcd_data:/etcd
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  minio:
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
+    command: ["minio", "server", "/minio_data"]
+    environment:
+      MINIO_ROOT_USER: ${MILVUS_OBJECT_USER:?set object store user}
+      MINIO_ROOT_PASSWORD: ${MILVUS_OBJECT_PASSWORD:?set object store password}
+    volumes:
+      - minio_data:/minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  standalone:
+    image: milvusdb/milvus:v3.0.1
+    command: ["milvus", "run", "standalone"]
+    security_opt:
+      - seccomp:unconfined
+    cpus: 4
+    mem_limit: ${MILVUS_MEMORY_LIMIT:-8g}
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+      MINIO_ACCESS_KEY_ID: ${MILVUS_OBJECT_USER:?set object store user}
+      MINIO_SECRET_ACCESS_KEY: ${MILVUS_OBJECT_PASSWORD:?set object store password}
+      MQ_TYPE: woodpecker
+    ports:
+      - "127.0.0.1:${MILVUS_CASE_PORT:-19530}:19530"
+      - "127.0.0.1:${MILVUS_CASE_HEALTH_PORT:-9091}:9091"
+    volumes:
+      - milvus_data:/var/lib/milvus
+      - ./user.yaml:/milvus/configs/user.yaml:ro
+    depends_on:
+      etcd:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 5s
+      timeout: 5s
+      start_period: 90s
+      retries: 30
+volumes:
+  etcd_data:
+  minio_data:
+  milvus_data:

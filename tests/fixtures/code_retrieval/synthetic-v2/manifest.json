@@ -1,0 +1,366 @@
+{
+  "schema_version": 1,
+  "corpus_version": "code-retrieval-local-v1",
+  "query_version": "synthetic-unseen-v2-20260910",
+  "top_k": 5,
+  "repository_id": "antisentinel-evaluation",
+  "commits": {
+    "current": "c89b679db7080b25590ef3cc99e4cb4116f41f95",
+    "previous": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+  },
+  "label_status": "proposed_for_user_review",
+  "label_rule": "A label denotes the requested definition itself. Explicit whole-class requests label the class, not its children; helper-function requests label that helper, not its enclosing class/function. All chunks of the named definition are relevant.",
+  "sources": [
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/worker.py",
+      "sha256": "bebb7ad789ae3fb8dd78b9489279cb2437ecc5d08a896e4bc487d32fd951098d"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/query.py",
+      "sha256": "d1813cb7ef48a1857b57f0a419e57659cf2ed2653f029cc88e0dcafb5554b0a0"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/git_reader.py",
+      "sha256": "fc4c17a7a9a7060217ec661fd4c18049b4c63122efe6d254e9bdea8d577cd926"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/source_context.py",
+      "sha256": "d75e2b777d1f6f2449c436955b4d2fc86acd70998392ea387403a218e6f9e6d5"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/identity.py",
+      "sha256": "b2f60504d0cb4e23196dea6f98cc69aa898327ef93ca37db73b76080899279c1"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/worker.py",
+      "sha256": "b01669c1e68879c8e5f0c6eea685a17b88ec44f30b2464978a58f1b8e311e53d"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/query.py",
+      "sha256": "d1813cb7ef48a1857b57f0a419e57659cf2ed2653f029cc88e0dcafb5554b0a0"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/git_reader.py",
+      "sha256": "fc4c17a7a9a7060217ec661fd4c18049b4c63122efe6d254e9bdea8d577cd926"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/source_context.py",
+      "sha256": "d75e2b777d1f6f2449c436955b4d2fc86acd70998392ea387403a218e6f9e6d5"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/identity.py",
+      "sha256": "b2f60504d0cb4e23196dea6f98cc69aa898327ef93ca37db73b76080899279c1"
+    }
+  ],
+  "queries": [
+    {
+      "id": "s01",
+      "query": "构建工作器返回的不可变结果对象有哪些状态、任务编号和错误字段？",
+      "category": "container",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "WorkerResult"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s02",
+      "query": "诊断查询的权限对象在哪里同时保存 incident_id 和允许访问的仓库集合？",
+      "category": "container",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "QueryScope"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s03",
+      "query": "哪一个返回对象同时携带 requested_commit、indexed_commit 和 incomplete 标记？",
+      "category": "container",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "QueryEnvelope"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s04",
+      "query": "Git 目录条目的数据结构怎样表示文件是否被纳入以及被排除的原因？",
+      "category": "container",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "TreeEntry"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s05",
+      "query": "用于传给上下文的源码切片对象包含哪些身份字段和正文？请找对象定义。",
+      "category": "container",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceContextSlice"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s06",
+      "query": "请找整个 CodeMapQuery 类的定义，以概览快照、符号、邻居和源码查询接口。",
+      "category": "class_overview",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s07",
+      "query": "请定位 SubprocessGitReader 整类定义，查看同步、读取、差异和缓存管理的完整接口。",
+      "category": "class_overview",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s08",
+      "query": "请定位 SourceEvidenceService 的整个类，比较存证和恢复两个入口。",
+      "category": "class_overview",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s09",
+      "query": "请返回 CodeMapWorker 整类定义，需要同时查看初始化配置和执行入口。",
+      "category": "class_overview",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s10",
+      "query": "生成稳定摘要时，哪个辅助函数固定 JSON 键顺序、紧凑分隔符并保留中文？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/identity.py",
+          "symbol": "_digest"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s11",
+      "query": "源码节点的摘要为什么会随起止行号变化？请找组装节点身份字段的函数。",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/identity.py",
+          "symbol": "node_id_for"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s12",
+      "query": "哪个内容摘要函数会拒绝 str，并要求传入 bytes？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/identity.py",
+          "symbol": "content_hash"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s13",
+      "query": "哪个上下文管理器在 finally 中释放 flock 排他锁？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._cache_lock"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s14",
+      "query": "本地 bare 仓库还不存在时在哪里初始化，并根据 origin 是否存在添加或更新远端？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._ensure_cache"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s15",
+      "query": "已经持有缓存锁时，哪个内部函数通过 update-ref 写入固定提交引用？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._pin_locked"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s16",
+      "query": "对外固定 commit 的入口在哪里取得缓存锁后委托给内部固定引用函数？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.pin"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s17",
+      "query": "哪个同步入口先 fetch 再解析 FETCH_HEAD，并只把网络和超时故障标为可重试？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.sync_ref"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s18",
+      "query": "Git 子进程的 TimeoutExpired 和 CalledProcessError 分别在哪里转换成领域异常？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._run"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s19",
+      "query": "Git 读取器在哪里建立对象大小缓存和已验证提交集合，然后立即检查远端配置？",
+      "category": "semantic",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.__init__"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s20",
+      "query": "续租用的后台 watch 函数怎样限制等待间隔，并在 heartbeat 失败时退出？",
+      "category": "nested_function",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once.watch"
+        }
+      ],
+      "rationale": "请求明确对应此定义；根据冻结 Git 源码字段或函数体标注，未查看检索输出。"
+    },
+    {
+      "id": "s21",
+      "query": "本模块哪里实现 Git LFS 大文件下载与缓存？",
+      "category": "no_answer",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "冻结的五个源码文件中不存在所问功能；检索范围仅限此语料。"
+    },
+    {
+      "id": "s22",
+      "query": "这份代码怎样自动解决 git merge 的文本冲突？",
+      "category": "no_answer",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "冻结的五个源码文件中不存在所问功能；检索范围仅限此语料。"
+    },
+    {
+      "id": "s23",
+      "query": "查询结果如何根据用户点击反馈训练排序模型？",
+      "category": "no_answer",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "冻结的五个源码文件中不存在所问功能；检索范围仅限此语料。"
+    },
+    {
+      "id": "s24",
+      "query": "源码读取失败后在哪里发送企业微信通知？",
+      "category": "no_answer",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "冻结的五个源码文件中不存在所问功能；检索范围仅限此语料。"
+    }
+  ],
+  "query_provenance": {
+    "kind": "assistant_constructed_after_policy_freeze",
+    "real_user_logs": false,
+    "held_out": false,
+    "target_disjoint_from_v1": true,
+    "note": "New task formulations, same known source corpus; semantic relatedness and author exposure prevent a claim of independent business generalization."
+  }
+}

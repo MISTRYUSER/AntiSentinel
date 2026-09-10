@@ -52,6 +52,7 @@ class ToolExecutionResult:
     result_summary: str | None = None
     evidence: Evidence | None = None
     error: dict[str, Any] | None = None
+    evidences: tuple[Evidence, ...] = ()
 
     def __post_init__(self) -> None:
         if self.status not in {"succeeded", "failed", "rejected", "waiting_approval"}:
@@ -62,6 +63,8 @@ class ToolExecutionResult:
             require_json(self.error, "error")
         if self.evidence is not None and not isinstance(self.evidence, Evidence):
             raise InvalidInputError("evidence must be an Evidence")
+        if not isinstance(self.evidences, tuple) or any(not isinstance(e, Evidence) for e in self.evidences):
+            raise InvalidInputError('evidences must contain Evidence values')
 
 
 def tool(

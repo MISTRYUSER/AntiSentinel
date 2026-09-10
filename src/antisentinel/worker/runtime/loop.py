@@ -282,6 +282,17 @@ class RuntimeLoop:
                     invocation_key = _invocation_key(planned_call.tool_name, planned_call.arguments, planned_call.target_ref)
                     tool_started = monotonic()
                     rejected = executor.preflight(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
+                    execution_arguments = planned_call.arguments
+                    if rejected is None and planned_call.tool_name == 'code_retrieval.read_evidence':
+                        remaining_fragments = 4 - len(source_context)
+                        remaining_bytes = 32 * 1024 - sum(len(s.content.encode('utf-8')) for s in source_context)
+                        if remaining_fragments <= 0 or remaining_bytes <= 0:
+                            from antisentinel.tools.manifest import ToolExecutionResult
+                            rejected = ToolExecutionResult(status='rejected', error={'code': 'source_budget_exceeded', 'message': 'source context budget exhausted'})
+                        else:
+                            execution_arguments = {**planned_call.arguments,
+                                'max_fragments': min(remaining_fragments, planned_call.arguments.get('max_fragments', 4)),
+                                'max_bytes': min(remaining_bytes, planned_call.arguments.get('max_bytes', 32 * 1024))}
                     cached = completed_invocations.get(invocation_key) if rejected is None else None
                     if rejected is not None:
                         result = rejected
@@ -298,9 +309,9 @@ class RuntimeLoop:
                         tool_context = turn_context.child(request_id=f"tool-{tool_call.tool_call_id}") if turn_context else None
                         if tool_context:
                             with self.telemetry.span("tool_call.execute", context=tool_context, tool_name=planned_call.tool_name):
-                                result = executor.execute(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
+                                result = executor.execute(planned_call.tool_name, execution_arguments, scope=turn_scope)
                         else:
-                            result = executor.execute(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
+                            result = executor.execute(planned_call.tool_name, execution_arguments, scope=turn_scope)
                     metrics.observe("tool_latency_ms", (monotonic() - tool_started) * 1000)
                     if skill_runtime is not None and planned_call.tool_name in {"skill.load", "skill.read_reference"}:
                         if planned_call.tool_name == "skill.load":
@@ -340,7 +351,7 @@ class RuntimeLoop:
                     if result.status == "succeeded":
                         successful_tool_names.append(planned_call.tool_name)
                         metrics.increment("tool_successes")
-                        for evidence in [result.evidence] if result.evidence else []:
+                        for evidence in ((result.evidence,) if result.evidence else ()) + result.evidences:
                             from antisentinel.domain.evidence import EvidenceRef
 
                             ref = EvidenceRef(evidence_id=evidence.evidence_id, role="tool_result")
@@ -348,6 +359,13 @@ class RuntimeLoop:
                             evidence_refs.append(ref)
                             session_task_summary["evidence_refs"].append({"evidence_id": ref.evidence_id, "role": ref.role})
                             evidences.append(evidence)
+                        if planned_call.tool_name == 'code_retrieval.read_evidence' and isinstance(result.result, dict):
+                            from antisentinel.code_map.source_context import SourceContextSlice
+                            for raw in result.result.get('slices', []):
+                                matching = next((e for e in result.evidences if str(e.evidence_id) == raw.get('evidence_id')), None)
+                                if matching is None or matching.content_hash != raw.get('content_hash'):
+                                    raise ValueError('source_evidence_mismatch')
+                                source_context.append(SourceContextSlice(**raw))
                         if planned_call.tool_name == "code_map.read_source" and isinstance(result.result, dict):
                             raw_source = result.result.get("source_context")
                             if raw_source and result.evidence is not None and raw_source.get("evidence_id") == str(result.evidence.evidence_id):

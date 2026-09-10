@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "corpus_version": "code-retrieval-local-v1",
+  "query_version": "queries-v1-proposed",
+  "top_k": 5,
+  "repository_id": "antisentinel-evaluation",
+  "commits": {
+    "current": "c89b679db7080b25590ef3cc99e4cb4116f41f95",
+    "previous": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+  },
+  "label_status": "proposed_for_user_review",
+  "label_rule": "Relevant means the labeled function directly implements the requested behavior within these five files and the selected commit. Labels are assistant proposals based on source inspection, not human-certified ground truth. All chunks of a labeled symbol count as relevant; parent class chunks do not inherit method labels.",
+  "sources": [
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/worker.py",
+      "sha256": "bebb7ad789ae3fb8dd78b9489279cb2437ecc5d08a896e4bc487d32fd951098d"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/query.py",
+      "sha256": "d1813cb7ef48a1857b57f0a419e57659cf2ed2653f029cc88e0dcafb5554b0a0"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/git_reader.py",
+      "sha256": "fc4c17a7a9a7060217ec661fd4c18049b4c63122efe6d254e9bdea8d577cd926"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/source_context.py",
+      "sha256": "d75e2b777d1f6f2449c436955b4d2fc86acd70998392ea387403a218e6f9e6d5"
+    },
+    {
+      "revision": "current",
+      "path": "src/antisentinel/code_map/identity.py",
+      "sha256": "b2f60504d0cb4e23196dea6f98cc69aa898327ef93ca37db73b76080899279c1"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/worker.py",
+      "sha256": "b01669c1e68879c8e5f0c6eea685a17b88ec44f30b2464978a58f1b8e311e53d"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/query.py",
+      "sha256": "d1813cb7ef48a1857b57f0a419e57659cf2ed2653f029cc88e0dcafb5554b0a0"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/git_reader.py",
+      "sha256": "fc4c17a7a9a7060217ec661fd4c18049b4c63122efe6d254e9bdea8d577cd926"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/source_context.py",
+      "sha256": "d75e2b777d1f6f2449c436955b4d2fc86acd70998392ea387403a218e6f9e6d5"
+    },
+    {
+      "revision": "previous",
+      "path": "src/antisentinel/code_map/identity.py",
+      "sha256": "b2f60504d0cb4e23196dea6f98cc69aa898327ef93ca37db73b76080899279c1"
+    }
+  ],
+  "queries": [
+    {
+      "id": "q01",
+      "category": "exact",
+      "query": "CodeMapWorker.run_once",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once"
+        }
+      ],
+      "rationale": "执行单个构建任务"
+    },
+    {
+      "id": "q02",
+      "category": "exact",
+      "query": "CodeMapQuery.find_symbols",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery.find_symbols"
+        }
+      ],
+      "rationale": "完整符号定位"
+    },
+    {
+      "id": "q03",
+      "category": "exact",
+      "query": "SubprocessGitReader.read_blob",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.read_blob"
+        }
+      ],
+      "rationale": "Git blob回读"
+    },
+    {
+      "id": "q04",
+      "category": "exact",
+      "query": "SourceEvidenceService.rehydrate",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService.rehydrate"
+        }
+      ],
+      "rationale": "源码Evidence恢复"
+    },
+    {
+      "id": "q05",
+      "category": "exact",
+      "query": "snapshot_id_for",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/identity.py",
+          "symbol": "snapshot_id_for"
+        }
+      ],
+      "rationale": "生成快照身份"
+    },
+    {
+      "id": "q06",
+      "category": "error_code",
+      "query": "build_timeout",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once"
+        }
+      ],
+      "rationale": "构建超时处理分支"
+    },
+    {
+      "id": "q07",
+      "category": "error_code",
+      "query": "source_not_found",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery.read_source"
+        }
+      ],
+      "rationale": "缺失chunk的错误分支"
+    },
+    {
+      "id": "q08",
+      "category": "error_code",
+      "query": "remote_not_allowed",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._validate_remote"
+        }
+      ],
+      "rationale": "远端白名单拒绝"
+    },
+    {
+      "id": "q09",
+      "category": "error_code",
+      "query": "budget_exceeded",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.list_tree"
+        },
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.read_blob"
+        }
+      ],
+      "rationale": "文件与blob预算检查"
+    },
+    {
+      "id": "q10",
+      "category": "error_code",
+      "query": "scope_mismatch",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery._scope_error"
+        },
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery._snapshot_scope_error"
+        },
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService.read_source"
+        }
+      ],
+      "rationale": "权限与源码绑定错误检查"
+    },
+    {
+      "id": "q11",
+      "category": "semantic_zh",
+      "query": "如何读取固定提交中的文件内容？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.read_blob"
+        },
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader._require_commit"
+        }
+      ],
+      "rationale": "先验证提交再读blob"
+    },
+    {
+      "id": "q12",
+      "category": "semantic_zh",
+      "query": "用哪些条件校验诊断绑定后才能读取代码？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService.read_source"
+        }
+      ],
+      "rationale": "检查incident绑定再按generation回读"
+    },
+    {
+      "id": "q13",
+      "category": "cross_function",
+      "query": "怎样判断回读源码有没有被改动？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery.read_source"
+        },
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService.rehydrate"
+        }
+      ],
+      "rationale": "直接读取和恢复路径各自检查hash"
+    },
+    {
+      "id": "q14",
+      "category": "semantic_zh",
+      "query": "当构建进程不响应终止信号时如何处理？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once"
+        }
+      ],
+      "rationale": "terminate后kill及失败持久化"
+    },
+    {
+      "id": "q15",
+      "category": "semantic_zh",
+      "query": "代码地图 ID 包含哪些版本字段？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/identity.py",
+          "symbol": "snapshot_id_for"
+        }
+      ],
+      "rationale": "快照ID包含commit/parser/rules"
+    },
+    {
+      "id": "q16",
+      "category": "semantic_en",
+      "query": "How are renamed files detected between two commits?",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/git_reader.py",
+          "symbol": "SubprocessGitReader.diff_paths"
+        }
+      ],
+      "rationale": "Git -M处理重命名"
+    },
+    {
+      "id": "q17",
+      "category": "version",
+      "query": "旧提交中的 Worker 如何领取构建任务？",
+      "revision": "previous",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once"
+        }
+      ],
+      "rationale": "限定previous版本任务领取"
+    },
+    {
+      "id": "q18",
+      "category": "version",
+      "query": "构建结果何时从子进程队列读取？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/worker.py",
+          "symbol": "CodeMapWorker.run_once"
+        }
+      ],
+      "rationale": "限定current版本排空队列"
+    },
+    {
+      "id": "q19",
+      "category": "version",
+      "query": "旧提交中的源码恢复是否重新验证内容哈希？",
+      "revision": "previous",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/source_context.py",
+          "symbol": "SourceEvidenceService.rehydrate"
+        }
+      ],
+      "rationale": "限定previous版本恢复校验"
+    },
+    {
+      "id": "q20",
+      "category": "cross_function",
+      "query": "查找入边和出边时如何避免循环？",
+      "revision": "current",
+      "relevant": [
+        {
+          "path": "src/antisentinel/code_map/query.py",
+          "symbol": "CodeMapQuery.get_neighbors"
+        }
+      ],
+      "rationale": "visited与frontier控制遍历"
+    },
+    {
+      "id": "q21",
+      "category": "no_answer",
+      "query": "QQQ_NONEXISTENT_ERROR_90001",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "限定语料没有该错误码"
+    },
+    {
+      "id": "q22",
+      "category": "no_answer",
+      "query": "KAFKA_CONSUMER_REBALANCE_XYZ",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "限定语料没有Kafka消费实现"
+    },
+    {
+      "id": "q23",
+      "category": "no_answer",
+      "query": "支付退款金额如何转成人民币？",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "限定语料没有支付或货币转换"
+    },
+    {
+      "id": "q24",
+      "category": "no_answer",
+      "query": "登录短信验证码如何切换供应商？",
+      "revision": "current",
+      "relevant": [],
+      "rationale": "限定语料没有短信服务"
+    }
+  ]
+}
