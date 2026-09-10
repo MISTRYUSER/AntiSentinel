@@ -14,28 +14,27 @@ from antisentinel.adapters.llm.openai_compatible import OpenAICompatibleModelAda
 from antisentinel.domain.incident import Incident
 from antisentinel.domain.session import Session
 from antisentinel.evaluation.skillsbench_adapter import TaskSandbox
-from antisentinel.ports.model import ModelRequest
 from antisentinel.tools.registry import ToolRegistry
 from antisentinel.worker.execution.tool_executor import ToolExecutionScope
+from antisentinel.worker.runtime.context import ContextBuilder
 from antisentinel.worker.runtime.engine import RuntimeConfig, RuntimeEngine
+from antisentinel.worker.runtime.loop import RuntimeLoop
 
 
 ALLOWED_COMMANDS = frozenset({"bash", "sh", "python", "python3", "pip", "pip3", "pytest", "ls", "cat", "grep", "find", "sort", "head", "tail", "wc", "sed", "cp", "mv", "mkdir", "node", "npm", "npx", "java", "mvn", "gradle", "make", "gcc", "g++", "dot"})
 
+BENCHMARK_SYSTEM_PROMPT = (
+    "Complete the benchmark task inside the isolated workspace. Use sandbox tools to inspect, "
+    "implement, test, and create every requested artifact. Do not merely describe file contents "
+    "in the final response: write them with sandbox.write_file or sandbox.execute. Reuse prior "
+    "results instead of repeating calls. Return the normal AntiSentinel final JSON only after "
+    "the requested artifacts exist. Never access paths outside the workspace."
+)
 
-class BenchmarkContextBuilder:
-    def __init__(self) -> None:
-        self._result_history: list[dict[str, Any]] = []
 
-    def build(self, incident, session, turn, *, prior_turns, task_results, tools, memory_context=None, skill_context=None):
-        messages: list[dict[str, Any]] = [{"role": "system", "content": "Complete the benchmark task inside the isolated workspace. Use sandbox tools to inspect, implement, test, and create every requested artifact. Do not merely describe file contents in the final response: write them with sandbox.write_file or sandbox.execute. Reuse prior results instead of repeating calls. Return the normal AntiSentinel final JSON only after the requested artifacts exist. Never access paths outside the workspace."}, {"role": "user", "content": incident.summary or incident.title}]
-        if skill_context:
-            messages.extend({"role": "skill", **item} for item in skill_context.get("active_skills", []))
-        if task_results:
-            self._result_history.extend(task_results)
-        if self._result_history:
-            messages.append({"role": "tool", "task_results": self._result_history})
-        return ModelRequest(str(incident.incident_id), str(session.session_id), str(turn.turn_id), messages, tools)
+def make_benchmark_context_builder() -> ContextBuilder:
+    """SkillsBench shares production pack; continuity comes from Loop Working Set."""
+    return ContextBuilder(system_override=BENCHMARK_SYSTEM_PROMPT, benchmark_user_prompt=True)
 
 
 @dataclass
@@ -78,7 +77,7 @@ class AntiSentinelSkillsBenchSession:
         runtime = PreloadedBenchmarkSkills(skills) if skills else None
         incident = Incident.create(title="SkillsBench task", source="benchflow", summary=text)
         session = Session.create(incident_id=incident.incident_id, participant_ids=["benchflow"])
-        engine = RuntimeEngine(loop=__import__("antisentinel.worker.runtime.loop", fromlist=["RuntimeLoop"]).RuntimeLoop(context_builder=BenchmarkContextBuilder()))
+        engine = RuntimeEngine(loop=RuntimeLoop(context_builder=make_benchmark_context_builder()))
         result = await asyncio.to_thread(engine.run, incident, session, model, registry=registry, config=RuntimeConfig(max_turns=16, max_tasks=8, max_tool_calls=8, max_total_tool_calls=48), skill_runtime=runtime)
         final_text = result.final.summary if result.final else str(result.error)
         self.steps.append({"type": "agent_message", "content": final_text, "status": result.status, "skill_usage": result.skill_usage})

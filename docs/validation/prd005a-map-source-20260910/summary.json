@@ -1,0 +1,36 @@
+{
+  "snapshot": {
+    "case": "snapshot",
+    "case_pass": true,
+    "output_nodes": 4,
+    "output_edges": 3,
+    "output_chunks": 4,
+    "persisted_nodes": 4,
+    "persisted_chunks": 4,
+    "integrity_checked": 12,
+    "integrity_failed": 0,
+    "hard_gates": {
+      "ready": true,
+      "fixed_commit": true,
+      "expected_map": true
+    },
+    "business_completed": true
+  },
+  "loop": {
+    "case": "loop",
+    "case_pass": true,
+    "output_nodes": 4,
+    "output_edges": 3,
+    "output_chunks": 4,
+    "persisted_nodes": 4,
+    "persisted_chunks": 4,
+    "integrity_checked": 11,
+    "integrity_failed": 0,
+    "hard_gates": {
+      "loop_completed": true,
+      "source_context": true,
+      "evidence_refs": true
+    },
+    "business_completed": true
+  }
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
 import json
 from time import monotonic
 from typing import Any, Callable, Literal
@@ -30,7 +31,9 @@ from antisentinel.worker.execution.tool_executor import ToolExecutor
 from antisentinel.worker.execution.tool_executor import ToolExecutionScope
 
 from .context import ContextBuilder
-from .checkpoint import CheckpointStore, RuntimeSnapshot
+from .checkpoint import CheckpointStore, RuntimeSnapshot, rebuild_working_set
+from .messages import summarize_plan, summarize_tool_result, summarize_turn_outcome
+from .working_set import ToolEvent, TurnRecord, create_empty
 from antisentinel.tracing.telemetry import Telemetry, TraceContext
 
 _current_skill_runtime: ContextVar[Any | None] = ContextVar("antisentinel_skill_runtime", default=None)
@@ -42,6 +45,25 @@ class RuntimeConfig:
     max_tasks: int = 8
     max_tool_calls: int = 8
     max_total_tool_calls: int = 8
+    recent_turn_limit: int = 3
+    # Phase A comparison switch: False restores pre-Working-Set "last turn only" continuity.
+    enable_working_set: bool = True
+    max_older_digest_tokens: int = 2048
+    # 0 = auto-resolve from model context window; >0 = explicit override.
+    max_context_tokens: int = 0
+    model_context_window: int | None = None
+    max_output_tokens_reserve: int = 4096
+    context_input_ratio: float = 0.85
+    context_strict: bool = True
+    min_recent_turns: int = 1
+    source_window_radius: int = 40
+    tools_min_share: float = 0.08
+    tools_core_limit: int = 8
+    target_fill_ratio: float = 0.65
+    # CodeMap-first: ephemeral bodies (TTL packs) vs sticky_bodies (legacy full re-pin).
+    source_pin_policy: str = "ephemeral"
+    source_body_ttl_turns: int = 1
+    max_source_pins: int = 8
 
     def __post_init__(self) -> None:
         for name in ("max_tasks", "max_tool_calls"):
@@ -52,7 +74,117 @@ class RuntimeConfig:
             raise ValueError("max_turns must be an integer between 1 and 32")
         if isinstance(self.max_total_tool_calls, bool) or not isinstance(self.max_total_tool_calls, int) or not 1 <= self.max_total_tool_calls <= 64:
             raise ValueError("max_total_tool_calls must be an integer between 1 and 64")
+        if (
+            isinstance(self.recent_turn_limit, bool)
+            or not isinstance(self.recent_turn_limit, int)
+            or not 1 <= self.recent_turn_limit <= 32
+        ):
+            raise ValueError("recent_turn_limit must be an integer between 1 and 32")
+        if not isinstance(self.enable_working_set, bool):
+            raise ValueError("enable_working_set must be a boolean")
+        if (
+            isinstance(self.max_older_digest_tokens, bool)
+            or not isinstance(self.max_older_digest_tokens, int)
+            or self.max_older_digest_tokens < 0
+        ):
+            raise ValueError("max_older_digest_tokens must be a non-negative integer")
+        if (
+            isinstance(self.max_context_tokens, bool)
+            or not isinstance(self.max_context_tokens, int)
+            or self.max_context_tokens < 0
+        ):
+            raise ValueError("max_context_tokens must be a non-negative integer (0 = auto from model)")
+        if self.model_context_window is not None and (
+            isinstance(self.model_context_window, bool)
+            or not isinstance(self.model_context_window, int)
+            or self.model_context_window < 1
+        ):
+            raise ValueError("model_context_window must be a positive integer when set")
+        if (
+            isinstance(self.max_output_tokens_reserve, bool)
+            or not isinstance(self.max_output_tokens_reserve, int)
+            or self.max_output_tokens_reserve < 0
+        ):
+            raise ValueError("max_output_tokens_reserve must be a non-negative integer")
+        if not isinstance(self.context_input_ratio, (int, float)) or isinstance(self.context_input_ratio, bool):
+            raise ValueError("context_input_ratio must be a float")
+        if not 0.0 < float(self.context_input_ratio) <= 1.0:
+            raise ValueError("context_input_ratio must be in (0, 1]")
+        if not isinstance(self.context_strict, bool):
+            raise ValueError("context_strict must be a boolean")
+        if (
+            isinstance(self.min_recent_turns, bool)
+            or not isinstance(self.min_recent_turns, int)
+            or self.min_recent_turns < 1
+        ):
+            raise ValueError("min_recent_turns must be >= 1")
+        if self.min_recent_turns > self.recent_turn_limit:
+            raise ValueError("min_recent_turns cannot exceed recent_turn_limit")
+        if (
+            isinstance(self.source_window_radius, bool)
+            or not isinstance(self.source_window_radius, int)
+            or self.source_window_radius < 1
+        ):
+            raise ValueError("source_window_radius must be a positive integer")
+        if not 0 <= self.tools_min_share < 1:
+            raise ValueError("tools_min_share must be in [0, 1)")
+        if (
+            isinstance(self.tools_core_limit, bool)
+            or not isinstance(self.tools_core_limit, int)
+            or self.tools_core_limit < 0
+        ):
+            raise ValueError("tools_core_limit must be a non-negative integer")
+        if not isinstance(self.target_fill_ratio, (int, float)) or isinstance(self.target_fill_ratio, bool):
+            raise ValueError("target_fill_ratio must be a float")
+        if not 0.0 < float(self.target_fill_ratio) <= 1.0:
+            raise ValueError("target_fill_ratio must be in (0, 1]")
+        if self.source_pin_policy not in {"ephemeral", "sticky_bodies"}:
+            raise ValueError("source_pin_policy must be 'ephemeral' or 'sticky_bodies'")
+        if (
+            isinstance(self.source_body_ttl_turns, bool)
+            or not isinstance(self.source_body_ttl_turns, int)
+            or self.source_body_ttl_turns < 0
+        ):
+            raise ValueError("source_body_ttl_turns must be a non-negative integer")
+        if (
+            isinstance(self.max_source_pins, bool)
+            or not isinstance(self.max_source_pins, int)
+            or self.max_source_pins < 1
+        ):
+            raise ValueError("max_source_pins must be a positive integer")
 
+    def resolved_max_context_tokens(self, *, model: str | None = None) -> int:
+        from .model_profile import resolve_max_context_tokens
+
+        return resolve_max_context_tokens(
+            model=model,
+            override=self.max_context_tokens if self.max_context_tokens > 0 else None,
+            context_window=self.model_context_window,
+            max_output_tokens=self.max_output_tokens_reserve,
+            input_ratio=float(self.context_input_ratio),
+        )
+
+    def context_budget(self, *, model: str | None = None):
+        from .budget import ContextBudget, default_budget
+
+        max_tokens = self.resolved_max_context_tokens(model=model)
+        budget = default_budget(max_context_tokens=max_tokens)
+        return ContextBudget(
+            max_context_tokens=max_tokens,
+            recent_turn_limit=self.recent_turn_limit,
+            min_recent_turns=self.min_recent_turns,
+            strict=self.context_strict,
+            source_window_radius=self.source_window_radius,
+            source_window_by_suffix=budget.source_window_by_suffix,
+            max_older_digest_tokens=self.max_older_digest_tokens,
+            tools_min_share=self.tools_min_share,
+            tools_core_limit=self.tools_core_limit,
+            target_fill_ratio=float(self.target_fill_ratio),
+            source_pin_policy=self.source_pin_policy,
+            source_body_ttl_turns=self.source_body_ttl_turns,
+            max_source_pins=self.max_source_pins,
+            max_source_slices=min(4, self.max_source_pins),
+        )
 
 @dataclass(frozen=True)
 class RuntimeResult:
@@ -125,10 +257,73 @@ class RuntimeLoop:
         evidences: list[Any] = []
         token_usage = TokenUsage()
         final: FinalDiagnosis | None = None
-        pending_results: list[dict[str, Any]] = list(resume_snapshot.pending_results) if resume_snapshot else []
-        source_context: list[Any] = source_context_rehydrator(resume_snapshot.source_context_refs) if resume_snapshot and source_context_rehydrator else []
+        use_working_set = config.enable_working_set
+        if use_working_set and resume_snapshot is not None and resume_snapshot.working_set is not None:
+            working_set = rebuild_working_set(resume_snapshot, recent_turn_limit=config.recent_turn_limit)
+            working_set.max_older_digest_tokens = config.max_older_digest_tokens
+            working_set.compact_older(config.max_older_digest_tokens)
+        else:
+            working_set = create_empty(
+                recent_turn_limit=config.recent_turn_limit,
+                max_older_digest_tokens=config.max_older_digest_tokens,
+            )
+        if use_working_set:
+            pending_results: list[dict[str, Any]] = working_set.export_task_results()
+            if not pending_results and resume_snapshot is not None:
+                pending_results = list(resume_snapshot.pending_results)
+        else:
+            pending_results = list(resume_snapshot.pending_results) if resume_snapshot else []
+        from .source_pins import (
+            decay_packed_bodies,
+            materialize_for_pack,
+            pin_from_slice,
+            pins_from_refs,
+            refs_from_pins,
+            upsert_pin,
+        )
+
+        source_pins: list[Any] = []
+        if resume_snapshot and resume_snapshot.source_context_refs:
+            if config.source_pin_policy == "sticky_bodies" and source_context_rehydrator is not None:
+                hydrated = source_context_rehydrator(resume_snapshot.source_context_refs)
+                source_pins = [
+                    pin_from_slice(item, body_ttl=max(1, config.source_body_ttl_turns))
+                    for item in hydrated
+                ]
+            else:
+                # CodeMap-first default: resume as pointers only (re-call read_source for bodies).
+                source_pins = pins_from_refs(
+                    resume_snapshot.source_context_refs,
+                    incident_id=str(incident.incident_id),
+                    body_ttl=0,
+                )
         completed_invocations = dict(resume_snapshot.completed_invocations) if resume_snapshot else {}
         duplicate_only_turns = 0
+        model_name = getattr(model, "model", None)
+        context_budget = config.context_budget(model=model_name if isinstance(model_name, str) else None)
+        try:
+            from .messages import build_system_message
+
+            override = getattr(self.context_builder, "system_override", None)
+            context_budget.preflight_system(override if override is not None else build_system_message()["content"])
+        except ValueError as exc:
+            bootstrap = Turn.create(session_id=session.session_id)
+            return self._fail(
+                incident,
+                session,
+                bootstrap,
+                [bootstrap],
+                tasks,
+                tool_calls,
+                attempts,
+                runtime_events,
+                {"code": "context_system_over_budget", "message": str(exc)[:2000]},
+                task_summaries,
+                evidence_refs,
+                failure_event="context.preflight_failed",
+                token_usage=token_usage,
+            )
+        last_compacted_turns = working_set.compacted_turns if use_working_set else 0
 
         for turn_number in range(1, config.max_turns + 1):
             turn_had_tool_call = False
@@ -146,17 +341,71 @@ class RuntimeLoop:
                 else ToolExecutionScope(skill_runtime.visible_tool_names()) if skill_runtime is not None else None
             )
             visible_tools = skill_runtime.manifests(registry) if skill_runtime is not None else registry.manifests()
-            request = self.context_builder.build(
-                incident,
-                session,
-                turn,
-                prior_turns=turns[:-1],
-                task_results=pending_results,
-                tools=visible_tools,
-                memory_context=memory_context_provider(incident, session, turn) if memory_context_provider else None,
-                skill_context=skill_runtime.context_payload() if skill_runtime is not None else None,
-                source_context=source_context,
-            )
+            budget_holder: list[Any] = []
+
+            def _on_budget_report(report, _holder=budget_holder) -> None:
+                _holder.append(report)
+
+            try:
+                pack_slices = materialize_for_pack(source_pins)
+                request = self.context_builder.build(
+                    incident,
+                    session,
+                    turn,
+                    prior_turns=turns[:-1],
+                    task_results=pending_results,
+                    tools=visible_tools,
+                    memory_context=memory_context_provider(incident, session, turn) if memory_context_provider else None,
+                    skill_context=skill_runtime.context_payload() if skill_runtime is not None else None,
+                    source_context=pack_slices,
+                    working_set=working_set if use_working_set else None,
+                    budget=context_budget,
+                    on_budget_report=_on_budget_report,
+                )
+                decay_packed_bodies(source_pins, pack_slices)
+            except ValueError as exc:
+                message = str(exc)
+                code = "context_pack_exceeded" if "context_pack_exceeded" in message else "context_build_failed"
+                return self._fail(
+                    incident,
+                    session,
+                    turn,
+                    turns,
+                    tasks,
+                    tool_calls,
+                    attempts,
+                    runtime_events,
+                    {"code": code, "message": message[:2000]},
+                    task_summaries,
+                    evidence_refs,
+                    failure_event="context.pack_failed",
+                    token_usage=token_usage,
+                )
+            if budget_holder:
+                report = budget_holder[-1]
+                self._publish(
+                    runtime_events,
+                    self._event("context.built", incident, session, turn, extra=report.to_event_payload()),
+                    event_sink,
+                )
+                if observability_metrics is not None and hasattr(observability_metrics, "observe_context_budget"):
+                    observability_metrics.observe_context_budget(report)
+                if use_working_set and report.compacted_turns > last_compacted_turns:
+                    self._publish(
+                        runtime_events,
+                        self._event(
+                            "context.compacted",
+                            incident,
+                            session,
+                            turn,
+                            extra={
+                                "compacted_turns": report.compacted_turns,
+                                "recent_turn_count": report.recent_turn_count,
+                            },
+                        ),
+                        event_sink,
+                    )
+                    last_compacted_turns = report.compacted_turns
             self._publish(runtime_events, self._event("model.started", incident, session, turn), event_sink)
             self._publish(runtime_events, self._event("model.called", incident, session, turn), event_sink)
             metrics.increment("model_calls")
@@ -240,8 +489,10 @@ class RuntimeLoop:
                     {"code": "max_tasks_exceeded", "message": "model returned too many tasks"},
                     task_summaries, evidence_refs,
                 )
+            turn_tool_events: list[ToolEvent] = []
             turn_results: list[dict[str, Any]] = []
             successful_tool_names: list[str] = []
+            plan_summary = summarize_plan(response.tasks)
             for task_plan in response.tasks:
                 task = Task.create(turn_id=turn.turn_id, task_id=task_plan.task_id, objective=task_plan.objective)
                 session_task_summary: dict[str, Any] = {
@@ -353,7 +604,19 @@ class RuntimeLoop:
                             if raw_source and result.evidence is not None and raw_source.get("evidence_id") == str(result.evidence.evidence_id):
                                 from antisentinel.code_map.source_context import SourceContextSlice
 
-                                source_context.append(SourceContextSlice(**raw_source))
+                                slice_obj = SourceContextSlice(**raw_source)
+                                ttl = (
+                                    max(1, config.source_body_ttl_turns)
+                                    if config.source_pin_policy == "ephemeral"
+                                    else max(config.source_body_ttl_turns, 32)
+                                )
+                                if config.source_pin_policy == "sticky_bodies":
+                                    ttl = max(ttl, 64)
+                                source_pins = upsert_pin(
+                                    source_pins,
+                                    pin_from_slice(slice_obj, body_ttl=ttl),
+                                    max_pins=config.max_source_pins,
+                                )
                         attempt.succeed(
                             result=result.result,
                             result_summary=result.result_summary,
@@ -378,6 +641,21 @@ class RuntimeLoop:
                         "summary": result.result_summary,
                         "error": result.error,
                     })
+                    event_summary = summarize_tool_result(
+                        tool_name=planned_call.tool_name,
+                        status=result.status,
+                        result_summary=result.result_summary,
+                        error=result.error,
+                    )
+                    turn_tool_events.append(
+                        ToolEvent(
+                            tool_name=planned_call.tool_name,
+                            args_fingerprint=_args_fingerprint(planned_call.arguments),
+                            status=result.status,
+                            result_summary=event_summary,
+                            evidence_refs=[str(ref.evidence_id) for ref in attempt.evidence_refs],
+                        )
+                    )
                     self._publish(runtime_events, self._event("tool.completed", incident, session, turn, task, tool_call), event_sink)
                     self._publish(runtime_events, self._event("tool_call.result_received", incident, session, turn, task, tool_call), event_sink)
                     if result.status != "succeeded":
@@ -386,7 +664,7 @@ class RuntimeLoop:
                     task.succeed(session_task_summary["summary"])
                     self._publish(runtime_events, self._event("task.completed", incident, session, turn, task), event_sink)
                 task_summaries.append(session_task_summary)
-                turn_results.append(task_summaries[-1])
+                turn_results.append(session_task_summary)
             if turn_had_tool_call and not turn_had_fresh_tool_call:
                 duplicate_only_turns += 1
                 if duplicate_only_turns >= 2:
@@ -398,10 +676,38 @@ class RuntimeLoop:
                     )
             else:
                 duplicate_only_turns = 0
-            turn.complete(ModelOutputKind.TOOL_CALL, "tool calls completed")
-            pending_results = turn_results
+            if use_working_set:
+                outcome = summarize_turn_outcome(turn_tool_events, plan_summary=plan_summary)
+                turn.complete(ModelOutputKind.TOOL_CALL, outcome)
+                working_set.append_turn(
+                    TurnRecord(
+                        turn_index=turn_number,
+                        plan_summary=plan_summary,
+                        tool_events=turn_tool_events,
+                        outcome=outcome,
+                    )
+                )
+                if source_pins:
+                    working_set.update_sticky(
+                        source_slice_refs=refs_from_pins(source_pins, max_pins=config.max_source_pins)
+                    )
+                pending_results = working_set.export_task_results()
+            else:
+                # Legacy Phase-A-OFF behavior: overwrite with this turn only; hollow turn summary.
+                turn.complete(ModelOutputKind.TOOL_CALL, "tool calls completed")
+                pending_results = turn_results
             if skill_runtime is not None:
                 skill_runtime.note_turn_results(successful_tool_names)
+                if use_working_set:
+                    usage = skill_runtime.usage()
+                    skill_id = usage.get("selected_skill_id")
+                    if skill_id:
+                        working_set.update_sticky(
+                            active_skill={
+                                "id": str(skill_id),
+                                "version": str(usage.get("selected_skill_version") or ""),
+                            }
+                        )
             if checkpoint_store is not None:
                 checkpoint_store.save(RuntimeSnapshot(
                     session_id=session.session_id,
@@ -412,11 +718,7 @@ class RuntimeLoop:
                     tool_calls=[item.to_dict() for item in tool_calls],
                     attempts=[item.to_dict() for item in attempts],
                     messages=request.messages,
-                    source_context_refs=[
-                        {"evidence_id": item.evidence_id, "repository_id": item.repository_id, "snapshot_id": item.snapshot_id,
-                         "commit_sha": item.commit_sha, "path": item.path, "content_hash": item.content_hash}
-                        for item in source_context
-                    ],
+                    source_context_refs=refs_from_pins(source_pins, max_pins=config.max_source_pins),
                     turn_count=len(turns),
                     current_task_index=None,
                     current_tool_call_index=None,
@@ -427,6 +729,7 @@ class RuntimeLoop:
                     pending_results=pending_results,
                     completed_invocations=completed_invocations,
                     skill_state=skill_runtime.snapshot() if skill_runtime is not None else None,
+                    working_set=working_set.to_dict() if use_working_set else None,
                 ))
 
         metrics.increment("max_turn_failures")
@@ -499,3 +802,9 @@ class RuntimeLoop:
 def _invocation_key(tool_name: str, arguments: dict[str, Any], target_ref: str | None = None) -> str:
     encoded = json.dumps(arguments, sort_keys=True, separators=(",", ":"))
     return f"{tool_name}:{target_ref or ''}:{encoded}"
+
+
+def _args_fingerprint(arguments: dict[str, Any]) -> str:
+    encoded = json.dumps(arguments, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    # Short stable fingerprint without leaking large argument bodies into Working Set.
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]

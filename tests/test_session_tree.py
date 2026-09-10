@@ -39,13 +39,15 @@ def test_session_tree_builds_turn_task_tool_attempt_parent_chain_and_parallel_br
 
 
 def test_session_tree_rebuild_is_idempotent_and_digest_is_bounded():
+    from antisentinel.worker.runtime.budget import estimate_tokens
+
     tree = SessionTimelineTree("session-1")
     events = [event(f"event-{index}", "turn.started", "Turn", f"turn-{index}", {"session_id": "session-1"}, "x" * 30) for index in range(6)]
 
     tree.rebuild(events)
-    first = tree.digest(token_budget=10)
+    first = tree.digest(token_budget=20)
     tree.rebuild(events)
 
     assert len(tree.nodes()) == len(events)
-    assert len(first["summary"]) <= 40
+    assert estimate_tokens(first["summary"]) <= 20
     assert first["node_count"] == len(events)

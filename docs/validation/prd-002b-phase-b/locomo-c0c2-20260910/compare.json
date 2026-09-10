@@ -1,0 +1,2402 @@
+{
+  "rows": [
+    {
+      "C0": {
+        "case_id": "conv-26:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 21645,
+          "full_history_estimated_tokens": 21645,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19"
+          ],
+          "overflow": false,
+          "sessions_kept": 19,
+          "sessions_total": 19,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:3"
+        ],
+        "gold_answer": "7 May 2023",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8388,
+          "total_estimated": 26841,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Yesterday (the day before she told Melanie about it)\nYesterday (the day before she told Melanie about it)",
+          "error": null,
+          "input_tokens": 16510,
+          "latency_ms": 724.9,
+          "ok": true,
+          "output_tokens": 48
+        },
+        "sample_id": "conv-26",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-26:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 6836,
+          "full_history_estimated_tokens": 21645,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_10",
+            "session_1",
+            "session_13",
+            "session_12",
+            "session_15"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 19,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:3"
+        ],
+        "gold_answer": "7 May 2023",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2735,
+          "total_estimated": 8751,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Caroline went to the LGBTQ support group yesterday (as she told Melanie in session 1, she went yesterday).\nCaroline went to the LGBTQ support group yesterday (as she told Melanie in session 1, she went yesterday).",
+          "error": null,
+          "input_tokens": 5600,
+          "latency_ms": 1225.0,
+          "ok": true,
+          "output_tokens": 76
+        },
+        "sample_id": "conv-26",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-26:0",
+      "category": "2",
+      "question": "When did Caroline go to the LGBTQ support group?",
+      "sample_id": "conv-26"
+    },
+    {
+      "C0": {
+        "case_id": "conv-30:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 16162,
+          "full_history_estimated_tokens": 16162,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19"
+          ],
+          "overflow": false,
+          "sessions_kept": 19,
+          "sessions_total": 19,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "19 January, 2023",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.6316,
+          "total_estimated": 20211,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Jon lost his job as a banker yesterday, as stated in session 1 (D1:2).\nJon lost his job as a banker yesterday, as stated in session 1 (D1:2).",
+          "error": null,
+          "input_tokens": 13329,
+          "latency_ms": 1433.2,
+          "ok": true,
+          "output_tokens": 68
+        },
+        "sample_id": "conv-30",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-30:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 5840,
+          "full_history_estimated_tokens": 16162,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_11",
+            "session_14",
+            "session_16",
+            "session_17"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 19,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "19 January, 2023",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.236,
+          "total_estimated": 7553,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Jon lost his job as a banker yesterday (the day before session_1, when he told Gina).\nJon lost his job as a banker yesterday (the day before session_1, when he told Gina).",
+          "error": null,
+          "input_tokens": 5202,
+          "latency_ms": 1531.3,
+          "ok": true,
+          "output_tokens": 68
+        },
+        "sample_id": "conv-30",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-30:0",
+      "category": "2",
+      "question": "When Jon has lost his job as a banker?",
+      "sample_id": "conv-30"
+    },
+    {
+      "C0": {
+        "case_id": "conv-41:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22765,
+          "full_history_estimated_tokens": 33109,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30",
+            "session_31",
+            "session_32"
+          ],
+          "overflow": true,
+          "sessions_kept": 22,
+          "sessions_total": 32,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D13:16"
+        ],
+        "gold_answer": "her mother",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8824,
+          "total_estimated": 28238,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "friends from the gym\nfriends from the gym",
+          "error": null,
+          "input_tokens": 17672,
+          "latency_ms": 1536.2,
+          "ok": true,
+          "output_tokens": 34
+        },
+        "sample_id": "conv-41",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-41:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 8845,
+          "full_history_estimated_tokens": 33109,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_2",
+            "session_10",
+            "session_12",
+            "session_13",
+            "session_29"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 32,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D13:16"
+        ],
+        "gold_answer": "her mother",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3497,
+          "total_estimated": 11190,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided context does not include any information about Maria having dinner on May 3, 2023.\nThe provided context does not include any information about Maria having dinner on May 3, 2023.",
+          "error": null,
+          "input_tokens": 7029,
+          "latency_ms": 722.0,
+          "ok": true,
+          "output_tokens": 64
+        },
+        "sample_id": "conv-41",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-41:0",
+      "category": "2",
+      "question": "Who did Maria have dinner with on May 3, 2023?",
+      "sample_id": "conv-41"
+    },
+    {
+      "C0": {
+        "case_id": "conv-42:0",
+        "category": "3",
+        "context_meta": {
+          "digest_estimated_tokens": 22600,
+          "full_history_estimated_tokens": 27079,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 29,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:7"
+        ],
+        "gold_answer": "Yesteammates on hisvideo game team.",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8784,
+          "total_estimated": 28110,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Yes, Nate likely has friends besides Joanna. He repeatedly mentions connecting with other people: he met a couple on a dog walk and set up doggy playdates (session 13), met new people and old friends/teammates at gaming tournaments (session 14), invited tournament friends plus old friends and teammates to his gaming party where 7 people attended and 6 wanted to do it again (sessions 14, 16), made friends at a game convention and planned gaming sessions with them (session 23), and mentioned playi",
+          "error": null,
+          "input_tokens": 18089,
+          "latency_ms": 2412.8,
+          "ok": true,
+          "output_tokens": 288
+        },
+        "sample_id": "conv-42",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0597,
+          "token_recall": 0.4
+        }
+      },
+      "C2": {
+        "case_id": "conv-42:0",
+        "category": "3",
+        "context_meta": {
+          "digest_estimated_tokens": 7230,
+          "full_history_estimated_tokens": 27079,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_10",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_23"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 29,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:7"
+        ],
+        "gold_answer": "Yesteammates on hisvideo game team.",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2893,
+          "total_estimated": 9258,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Yes. Nate mentions interacting with several other people besides Joanna: he plays Street Fighter with friends, met new gamers at a regional tournament and made plans to hang out with them, plans a gaming party for tournament friends, old friends, and teammates, and met new people at a game convention with whom he set up a gaming session.\nYes. Nate mentions interacting with several other people besides Joanna: he plays Street Fighter with friends, met new gamers at a regional tournament and made ",
+          "error": null,
+          "input_tokens": 6086,
+          "latency_ms": 1397.2,
+          "ok": true,
+          "output_tokens": 174
+        },
+        "sample_id": "conv-42",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0444,
+          "token_recall": 0.2
+        }
+      },
+      "case_id": "conv-42:0",
+      "category": "3",
+      "question": "Is it likely that Nate has friends besides Joanna?",
+      "sample_id": "conv-42"
+    },
+    {
+      "C0": {
+        "case_id": "conv-43:0",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22819,
+          "full_history_estimated_tokens": 31808,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.3333333333333333,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29"
+          ],
+          "overflow": true,
+          "sessions_kept": 21,
+          "sessions_total": 29,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:9",
+          "D6:15",
+          "D11:17"
+        ],
+        "gold_answer": "improve shooting percentage, win a championship",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8859,
+          "total_estimated": 28349,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "John's basketball-career goals are to improve his shooting and make more of an impact on the court, become known as a consistent performer, help his team, and off the court pursue more endorsements and build his brand—while thinking about life after basketball, where he wants to use his platform to make a positive difference, inspire others, and perhaps start a foundation/charity work to leave a meaningful legacy.\nJohn's basketball-career goals are to improve his shooting and make more of an imp",
+          "error": null,
+          "input_tokens": 17998,
+          "latency_ms": 1334.0,
+          "ok": true,
+          "output_tokens": 192
+        },
+        "sample_id": "conv-43",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1017,
+          "token_recall": 0.5
+        }
+      },
+      "C2": {
+        "case_id": "conv-43:0",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 9119,
+          "full_history_estimated_tokens": 31808,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.6666666666666666,
+          "kept_session_ids": [
+            "session_11",
+            "session_6",
+            "session_12",
+            "session_19",
+            "session_26"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 29,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:9",
+          "D6:15",
+          "D11:17"
+        ],
+        "gold_answer": "improve shooting percentage, win a championship",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3605,
+          "total_estimated": 11536,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "John's basketball career goals are to win a championship, improve his shooting and make more of an impact on the court, become known as a consistent performer who helps his team, and—off the court—pursue more endorsements and build his brand while thinking about life after basketball, using his platform to inspire others and give back through charity work.\nJohn's basketball career goals are to win a championship, improve his shooting and make more of an impact on the court, become known as a con",
+          "error": null,
+          "input_tokens": 7368,
+          "latency_ms": 1432.3,
+          "ok": true,
+          "output_tokens": 172
+        },
+        "sample_id": "conv-43",
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.1852,
+          "token_recall": 0.8333
+        }
+      },
+      "case_id": "conv-43:0",
+      "category": "1",
+      "question": "what are John's goals with regards to his basketball career?",
+      "sample_id": "conv-43"
+    },
+    {
+      "C0": {
+        "case_id": "conv-44:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22399,
+          "full_history_estimated_tokens": 30315,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28"
+          ],
+          "overflow": true,
+          "sessions_kept": 20,
+          "sessions_total": 28,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:7"
+        ],
+        "gold_answer": "2020",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8688,
+          "total_estimated": 27802,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided context does not state the year Audrey adopted her first three dogs.\nThe provided context does not state the year Audrey adopted her first three dogs.",
+          "error": null,
+          "input_tokens": 17900,
+          "latency_ms": 1803.0,
+          "ok": true,
+          "output_tokens": 52
+        },
+        "sample_id": "conv-44",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-44:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 8118,
+          "full_history_estimated_tokens": 30315,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_26",
+            "session_11",
+            "session_12",
+            "session_19",
+            "session_2"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 28,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:7"
+        ],
+        "gold_answer": "2020",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3228,
+          "total_estimated": 10330,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The context does not specify the year Audrey adopted her first three dogs.\nThe context does not specify the year Audrey adopted her first three dogs.",
+          "error": null,
+          "input_tokens": 6879,
+          "latency_ms": 1891.6,
+          "ok": true,
+          "output_tokens": 70
+        },
+        "sample_id": "conv-44",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-44:0",
+      "category": "2",
+      "question": "Which year did Audrey adopt the first three of her dogs?",
+      "sample_id": "conv-44"
+    },
+    {
+      "C0": {
+        "case_id": "conv-47:0",
+        "category": "3",
+        "context_meta": {
+          "digest_estimated_tokens": 21559,
+          "full_history_estimated_tokens": 30304,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30",
+            "session_31"
+          ],
+          "overflow": true,
+          "sessions_kept": 23,
+          "sessions_total": 31,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:27"
+        ],
+        "gold_answer": "Obesity",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8384,
+          "total_estimated": 26830,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "No suspected health problems for John are mentioned in the provided dialogues; the context only describes emotional/stress-related struggles (feeling overwhelmed and stressed, going through difficult times), not any health problems.\nNo suspected health problems for John are mentioned in the provided dialogues; the context only describes emotional/stress-related struggles (feeling overwhelmed and stressed, going through difficult times), not any health problems.",
+          "error": null,
+          "input_tokens": 17120,
+          "latency_ms": 1138.6,
+          "ok": true,
+          "output_tokens": 112
+        },
+        "sample_id": "conv-47",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-47:0",
+        "category": "3",
+        "context_meta": {
+          "digest_estimated_tokens": 7808,
+          "full_history_estimated_tokens": 30304,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_14"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 31,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:27"
+        ],
+        "gold_answer": "Obesity",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3108,
+          "total_estimated": 9944,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided dialogues do not mention any suspected health problems for John.\nThe provided dialogues do not mention any suspected health problems for John.",
+          "error": null,
+          "input_tokens": 6463,
+          "latency_ms": 630.2,
+          "ok": true,
+          "output_tokens": 48
+        },
+        "sample_id": "conv-47",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-47:0",
+      "category": "3",
+      "question": "What are John's suspected health problems?",
+      "sample_id": "conv-47"
+    },
+    {
+      "C0": {
+        "case_id": "conv-48:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22616,
+          "full_history_estimated_tokens": 28144,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 30,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "electricity engineering project",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.88,
+          "total_estimated": 28161,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "A tough engineering project that she eventually wrapped up last month\nA tough engineering project that she eventually wrapped up last month",
+          "error": null,
+          "input_tokens": 18012,
+          "latency_ms": 1331.9,
+          "ok": true,
+          "output_tokens": 48
+        },
+        "sample_id": "conv-48",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.2857,
+          "token_recall": 0.6667
+        }
+      },
+      "C2": {
+        "case_id": "conv-48:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 7109,
+          "full_history_estimated_tokens": 28144,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_12",
+            "session_13",
+            "session_1",
+            "session_16",
+            "session_19"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 30,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "electricity engineering project",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2845,
+          "total_estimated": 9104,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "In the beginning of January 2023, Jolene was working on a tough engineering project.\nIn the beginning of January 2023, Jolene was working on a tough engineering project.",
+          "error": null,
+          "input_tokens": 5963,
+          "latency_ms": 1039.5,
+          "ok": true,
+          "output_tokens": 68
+        },
+        "sample_id": "conv-48",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.2353,
+          "token_recall": 0.6667
+        }
+      },
+      "case_id": "conv-48:0",
+      "category": "2",
+      "question": "What kind of project was Jolene working on in the beginning of January 2023?",
+      "sample_id": "conv-48"
+    },
+    {
+      "C0": {
+        "case_id": "conv-49:0",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22426,
+          "full_history_estimated_tokens": 23091,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.6666666666666666,
+          "kept_session_ids": [
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 25,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:2",
+          "D1:4",
+          "D18:1",
+          "D18:3",
+          "D22:2"
+        ],
+        "gold_answer": "Prius",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8708,
+          "total_estimated": 27864,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Evan drives a Prius.\nEvan drives a Prius.",
+          "error": null,
+          "input_tokens": 18191,
+          "latency_ms": 2235.9,
+          "ok": true,
+          "output_tokens": 44
+        },
+        "sample_id": "conv-49",
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 0.4,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-49:0",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 7072,
+          "full_history_estimated_tokens": 23091,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_10",
+            "session_11",
+            "session_16",
+            "session_17",
+            "session_20"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 25,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:2",
+          "D1:4",
+          "D18:1",
+          "D18:3",
+          "D22:2"
+        ],
+        "gold_answer": "Prius",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2823,
+          "total_estimated": 9034,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Prius\nPrius",
+          "error": null,
+          "input_tokens": 6050,
+          "latency_ms": 651.4,
+          "ok": true,
+          "output_tokens": 38
+        },
+        "sample_id": "conv-49",
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "case_id": "conv-49:0",
+      "category": "1",
+      "question": "What kind of car does Evan drive?",
+      "sample_id": "conv-49"
+    },
+    {
+      "C0": {
+        "case_id": "conv-50:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22215,
+          "full_history_estimated_tokens": 29750,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30"
+          ],
+          "overflow": true,
+          "sessions_kept": 22,
+          "sessions_total": 30,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D3:1"
+        ],
+        "gold_answer": "between 26 March and 20 April 2023",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.861,
+          "total_estimated": 27551,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Calvin first traveled to Tokyo during his tour with Frank Ocean, when the tour ended with a show in Tokyo and he then explored his new place in Japan.\nCalvin first traveled to Tokyo during his tour with Frank Ocean, when the tour ended with a show in Tokyo and he then explored his new place in Japan.",
+          "error": null,
+          "input_tokens": 17315,
+          "latency_ms": 1478.3,
+          "ok": true,
+          "output_tokens": 98
+        },
+        "sample_id": "conv-50",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0645,
+          "token_recall": 0.1429
+        }
+      },
+      "C2": {
+        "case_id": "conv-50:0",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 7236,
+          "full_history_estimated_tokens": 29750,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_14",
+            "session_15",
+            "session_2",
+            "session_24",
+            "session_26"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 30,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D3:1"
+        ],
+        "gold_answer": "between 26 March and 20 April 2023",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2883,
+          "total_estimated": 9226,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Calvin's first mentioned trip to Tokyo was for a music festival before his Frank Ocean tour, referenced in session_3 (\"I just went to an awesome music thingy in Tokyo\") and session_15 where he met Frank Ocean at a music festival in Tokyo; the context does not give an exact date for this first visit. Later, in session_24, he says he is going to Tokyo next month after the tour ends.\nCalvin's first mentioned trip to Tokyo was for a music festival before his Frank Ocean tour, referenced in session_3",
+          "error": null,
+          "input_tokens": 6032,
+          "latency_ms": 1521.5,
+          "ok": true,
+          "output_tokens": 212
+        },
+        "sample_id": "conv-50",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0351,
+          "token_recall": 0.1429
+        }
+      },
+      "case_id": "conv-50:0",
+      "category": "2",
+      "question": "When did Calvin first travel to Tokyo?",
+      "sample_id": "conv-50"
+    },
+    {
+      "C0": {
+        "case_id": "conv-26:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 21645,
+          "full_history_estimated_tokens": 21645,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19"
+          ],
+          "overflow": false,
+          "sessions_kept": 19,
+          "sessions_total": 19,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:12"
+        ],
+        "gold_answer": "2022",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8386,
+          "total_estimated": 26835,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Melanie painted a lake sunrise last year.\nMelanie painted a lake sunrise last year.",
+          "error": null,
+          "input_tokens": 16505,
+          "latency_ms": 936.8,
+          "ok": true,
+          "output_tokens": 45
+        },
+        "sample_id": "conv-26",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-26:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 7147,
+          "full_history_estimated_tokens": 21645,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_13",
+            "session_14",
+            "session_1",
+            "session_10",
+            "session_15"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 19,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:12"
+        ],
+        "gold_answer": "2022",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.285,
+          "total_estimated": 9120,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Melanie painted a lake sunrise last year.\nMelanie painted a lake sunrise last year.",
+          "error": null,
+          "input_tokens": 5803,
+          "latency_ms": 908.5,
+          "ok": true,
+          "output_tokens": 48
+        },
+        "sample_id": "conv-26",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-26:1",
+      "category": "2",
+      "question": "When did Melanie paint a sunrise?",
+      "sample_id": "conv-26"
+    },
+    {
+      "C0": {
+        "case_id": "conv-30:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 16162,
+          "full_history_estimated_tokens": 16162,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19"
+          ],
+          "overflow": false,
+          "sessions_kept": 19,
+          "sessions_total": 19,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:3"
+        ],
+        "gold_answer": "January, 2023",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.6316,
+          "total_estimated": 20211,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Gina lost her job at Door Dash in the same month she and Jon first reconnected (session_1), which she later recalls in session_6; no specific calendar date is given.\nGina lost her job at Door Dash in the same month she and Jon first reconnected (session_1), which she later recalls in session_6; no specific calendar date is given.",
+          "error": null,
+          "input_tokens": 13322,
+          "latency_ms": 1108.6,
+          "ok": true,
+          "output_tokens": 108
+        },
+        "sample_id": "conv-30",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-30:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 5727,
+          "full_history_estimated_tokens": 16162,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_6",
+            "session_4",
+            "session_9",
+            "session_14"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 19,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:3"
+        ],
+        "gold_answer": "January, 2023",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2316,
+          "total_estimated": 7412,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Gina lost her job at Door Dash this month (mentioned in session 1, around the time Jon lost his banking job).\nGina lost her job at Door Dash this month (mentioned in session 1, around the time Jon lost his banking job).",
+          "error": null,
+          "input_tokens": 5144,
+          "latency_ms": 1043.5,
+          "ok": true,
+          "output_tokens": 82
+        },
+        "sample_id": "conv-30",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-30:1",
+      "category": "2",
+      "question": "When Gina has lost her job at Door Dash?",
+      "sample_id": "conv-30"
+    },
+    {
+      "C0": {
+        "case_id": "conv-41:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22765,
+          "full_history_estimated_tokens": 33109,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30",
+            "session_31",
+            "session_32"
+          ],
+          "overflow": true,
+          "sessions_kept": 22,
+          "sessions_total": 32,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D2:1"
+        ],
+        "gold_answer": "21 December 2022",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8822,
+          "total_estimated": 28230,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided memory does not contain any information about Maria donating a car.\nThe provided memory does not contain any information about Maria donating a car.",
+          "error": null,
+          "input_tokens": 17646,
+          "latency_ms": 1297.9,
+          "ok": true,
+          "output_tokens": 50
+        },
+        "sample_id": "conv-41",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-41:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 8392,
+          "full_history_estimated_tokens": 33109,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_2",
+            "session_31",
+            "session_7",
+            "session_11",
+            "session_13"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 32,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D2:1"
+        ],
+        "gold_answer": "21 December 2022",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3325,
+          "total_estimated": 10641,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Yesterday, according to session 2 (D2:1)\nYesterday, according to session 2 (D2:1)",
+          "error": null,
+          "input_tokens": 6799,
+          "latency_ms": 808.1,
+          "ok": true,
+          "output_tokens": 56
+        },
+        "sample_id": "conv-41",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-41:1",
+      "category": "2",
+      "question": "When did Maria donate her car?",
+      "sample_id": "conv-41"
+    },
+    {
+      "C0": {
+        "case_id": "conv-42:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22600,
+          "full_history_estimated_tokens": 27079,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.4,
+          "kept_session_ids": [
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 29,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:10",
+          "D1:11",
+          "D1:12",
+          "D3:4",
+          "D4:9",
+          "D10:9",
+          "D20:2"
+        ],
+        "gold_answer": "Watching movies, making desserts",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8784,
+          "total_estimated": 28110,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Joanna and Nate share an interest in storytelling/creativity: Joanna is a writer of screenplays and books, and Nate enjoys video games and is inspired by fantasy/sci-fi movies and books. They also both love nature and animals—Joanna enjoys hiking and being inspired by nature, while Nate loves nature and his pet turtles. Additionally, they share a passion for dairy-free cooking/baking (coconut milk ice cream, desserts), and they bond over movies, books, and supportive friendship.\nJoanna and Nate ",
+          "error": null,
+          "input_tokens": 18085,
+          "latency_ms": 2301.7,
+          "ok": true,
+          "output_tokens": 318
+        },
+        "sample_id": "conv-42",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0702,
+          "token_recall": 0.5
+        }
+      },
+      "C2": {
+        "case_id": "conv-42:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 7253,
+          "full_history_estimated_tokens": 27079,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.2,
+          "kept_session_ids": [
+            "session_14",
+            "session_20",
+            "session_23",
+            "session_5",
+            "session_6"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 29,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:10",
+          "D1:11",
+          "D1:12",
+          "D3:4",
+          "D4:9",
+          "D10:9",
+          "D20:2"
+        ],
+        "gold_answer": "Watching movies, making desserts",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.29,
+          "total_estimated": 9279,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Joanna and Nate share an interest in creative hobbies and helping each other: Joanna is a writer/screenwriter and Nate is a gamer (video game tournaments), and they bond over cooking/baking, movies, and gaming/writing support—they both enjoy creative pursuits and encourage each other in them.\nJoanna and Nate share an interest in creative hobbies and helping each other: Joanna is a writer/screenwriter and Nate is a gamer (video game tournaments), and they bond over cooking/baking, movies, and gam",
+          "error": null,
+          "input_tokens": 6085,
+          "latency_ms": 1334.0,
+          "ok": true,
+          "output_tokens": 164
+        },
+        "sample_id": "conv-42",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0526,
+          "token_recall": 0.25
+        }
+      },
+      "case_id": "conv-42:1",
+      "category": "1",
+      "question": "What kind of interests do Joanna and Nate share?",
+      "sample_id": "conv-42"
+    },
+    {
+      "C0": {
+        "case_id": "conv-43:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22819,
+          "full_history_estimated_tokens": 31808,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.5,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29"
+          ],
+          "overflow": true,
+          "sessions_kept": 21,
+          "sessions_total": 29,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D6:15",
+          "D11:17"
+        ],
+        "gold_answer": "get endorsements, build his brand, do charity work",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8862,
+          "total_estimated": 28359,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "John's non-basketball-skill career goals are: pursuing endorsements and building his personal brand (thinking ahead to life after basketball), mentoring younger players, running seminars to help people with sports and marketing, using his platform to make a positive difference through charity work—including starting a foundation and supporting youth sports and fair access for underserved communities—and leaving a meaningful legacy.\nJohn's non-basketball-skill career goals are: pursuing endorseme",
+          "error": null,
+          "input_tokens": 18017,
+          "latency_ms": 1334.0,
+          "ok": true,
+          "output_tokens": 192
+        },
+        "sample_id": "conv-43",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1695,
+          "token_recall": 0.625
+        }
+      },
+      "C2": {
+        "case_id": "conv-43:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 8532,
+          "full_history_estimated_tokens": 31808,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_6",
+            "session_11",
+            "session_12",
+            "session_19",
+            "session_1"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 29,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D6:15",
+          "D11:17"
+        ],
+        "gold_answer": "get endorsements, build his brand, do charity work",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3385,
+          "total_estimated": 10832,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "John's non-basketball career goals are to build his personal brand through endorsements, use his platform to make a positive difference and inspire others, possibly start a foundation and do charity work (including partnering with a local organization to help disadvantaged kids with sports and school), and think about life after basketball while leaving a meaningful legacy.\nJohn's non-basketball career goals are to build his personal brand through endorsements, use his platform to make a positiv",
+          "error": null,
+          "input_tokens": 6969,
+          "latency_ms": 1711.2,
+          "ok": true,
+          "output_tokens": 166
+        },
+        "sample_id": "conv-43",
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.2593,
+          "token_recall": 0.875
+        }
+      },
+      "case_id": "conv-43:1",
+      "category": "1",
+      "question": "What are John's goals for his career that are not related to his basketball skills?",
+      "sample_id": "conv-43"
+    },
+    {
+      "C0": {
+        "case_id": "conv-44:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 22399,
+          "full_history_estimated_tokens": 30315,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28"
+          ],
+          "overflow": true,
+          "sessions_kept": 20,
+          "sessions_total": 28,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "The week before March 27, 2023",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8688,
+          "total_estimated": 27802,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided memory does not mention Andrew starting a new job as a financial analyst.\nThe provided memory does not mention Andrew starting a new job as a financial analyst.",
+          "error": null,
+          "input_tokens": 17898,
+          "latency_ms": 770.4,
+          "ok": true,
+          "output_tokens": 54
+        },
+        "sample_id": "conv-44",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1,
+          "token_recall": 0.1667
+        }
+      },
+      "C2": {
+        "case_id": "conv-44:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 8018,
+          "full_history_estimated_tokens": 30315,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_1",
+            "session_26",
+            "session_4",
+            "session_16",
+            "session_20"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 28,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:2"
+        ],
+        "gold_answer": "The week before March 27, 2023",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.319,
+          "total_estimated": 10208,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Last week (relative to session_1, when he told Audrey: \"I started a new job as a Financial Analyst last week\")\nLast week (relative to session_1, when he told Audrey: \"I started a new job as a Financial Analyst last week\")",
+          "error": null,
+          "input_tokens": 6777,
+          "latency_ms": 635.7,
+          "ok": true,
+          "output_tokens": 87
+        },
+        "sample_id": "conv-44",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0833,
+          "token_recall": 0.1667
+        }
+      },
+      "case_id": "conv-44:1",
+      "category": "2",
+      "question": "When did Andrew start his new job as a financial analyst?",
+      "sample_id": "conv-44"
+    },
+    {
+      "C0": {
+        "case_id": "conv-47:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 21559,
+          "full_history_estimated_tokens": 30304,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30",
+            "session_31"
+          ],
+          "overflow": true,
+          "sessions_kept": 23,
+          "sessions_total": 31,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:26"
+        ],
+        "gold_answer": "bowling",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8387,
+          "total_estimated": 26838,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any date information (including March 16, 2022), so the recreational activity James was pursuing on that date cannot be determined.\nThe provided memory/context does not contain any date information (including March 16, 2022), so the recreational activity James was pursuing on that date cannot be determined.",
+          "error": null,
+          "input_tokens": 17134,
+          "latency_ms": 1443.0,
+          "ok": true,
+          "output_tokens": 92
+        },
+        "sample_id": "conv-47",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "case_id": "conv-47:1",
+        "category": "2",
+        "context_meta": {
+          "digest_estimated_tokens": 8172,
+          "full_history_estimated_tokens": 30304,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_11",
+            "session_20",
+            "session_25",
+            "session_3",
+            "session_9"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 31,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:26"
+        ],
+        "gold_answer": "bowling",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3246,
+          "total_estimated": 10388,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "There is no information in the provided dialogue memory/context about James pursuing any recreational activity on March 16, 2022.\nThe provided sessions do not contain any dated reference to March 16, 2022, nor any recreational activity James was pursuing on that specific date.",
+          "error": null,
+          "input_tokens": 6718,
+          "latency_ms": 1022.7,
+          "ok": true,
+          "output_tokens": 78
+        },
+        "sample_id": "conv-47",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "case_id": "conv-47:1",
+      "category": "2",
+      "question": "Which recreational activity was James pursuing on March 16, 2022?",
+      "sample_id": "conv-47"
+    },
+    {
+      "C0": {
+        "case_id": "conv-48:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22616,
+          "full_history_estimated_tokens": 28144,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 30,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:5",
+          "D2:1",
+          "D6:4"
+        ],
+        "gold_answer": "mother, father, her friend Karlie",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8798,
+          "total_estimated": 28152,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Deborah's mother and a friend have passed away.\nDeborah's mother and a friend have passed away.",
+          "error": null,
+          "input_tokens": 17999,
+          "latency_ms": 1841.4,
+          "ok": true,
+          "output_tokens": 69
+        },
+        "sample_id": "conv-48",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.3077,
+          "token_recall": 0.4
+        }
+      },
+      "C2": {
+        "case_id": "conv-48:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 6925,
+          "full_history_estimated_tokens": 28144,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "session_2",
+            "session_22",
+            "session_1",
+            "session_24",
+            "session_6"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 30,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:5",
+          "D2:1",
+          "D6:4"
+        ],
+        "gold_answer": "mother, father, her friend Karlie",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2773,
+          "total_estimated": 8874,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Deborah's father, her mother, and her friend Karlie have passed away.\nDeborah's father, her mother, and her friend Karlie have passed away.",
+          "error": null,
+          "input_tokens": 5784,
+          "latency_ms": 855.7,
+          "ok": true,
+          "output_tokens": 96
+        },
+        "sample_id": "conv-48",
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.6667,
+          "token_recall": 1.0
+        }
+      },
+      "case_id": "conv-48:1",
+      "category": "1",
+      "question": "Which of Deborah`s family and friends have passed away?",
+      "sample_id": "conv-48"
+    },
+    {
+      "C0": {
+        "case_id": "conv-49:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22426,
+          "full_history_estimated_tokens": 23091,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.5,
+          "kept_session_ids": [
+            "session_2",
+            "session_3",
+            "session_4",
+            "session_5",
+            "session_6",
+            "session_7",
+            "session_8",
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25"
+          ],
+          "overflow": true,
+          "sessions_kept": 24,
+          "sessions_total": 25,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D18:1",
+          "D18:2",
+          "D18:3",
+          "D1:2",
+          "D1:4"
+        ],
+        "gold_answer": "His old Prius and his new Prius.",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8709,
+          "total_estimated": 27868,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Evan mentioned several things that broke or were broken: his new Prius broke down (session_18), and his knee was injured/twisted (sessions 9 and 11). He also described 'broken' self-checkout machines only in Sam's stories, not his own.\nEvan mentioned several things that broke or were broken: his new Prius broke down (session_18), and his knee was injured/twisted (sessions 9 and 11). He also described 'broken' self-checkout machines only in Sam's stories, not his own.",
+          "error": null,
+          "input_tokens": 18190,
+          "latency_ms": 1341.4,
+          "ok": true,
+          "output_tokens": 152
+        },
+        "sample_id": "conv-49",
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.2,
+          "token_recall": 0.8
+        }
+      },
+      "C2": {
+        "case_id": "conv-49:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 7540,
+          "full_history_estimated_tokens": 23091,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_11",
+            "session_17",
+            "session_21",
+            "session_7",
+            "session_8"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 25,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D18:1",
+          "D18:2",
+          "D18:3",
+          "D1:2",
+          "D1:4"
+        ],
+        "gold_answer": "His old Prius and his new Prius.",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.3003,
+          "total_estimated": 9611,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "Evan had a broken Prius (his new car broke down) and, earlier, a health scare was a misunderstanding rather than a break; the clearly mentioned broken possession is his new Prius.\nEvan had a broken Prius (his new car broke down) and, earlier, a health scare was a misunderstanding rather than a break; the clearly mentioned broken possession is his new Prius.",
+          "error": null,
+          "input_tokens": 6444,
+          "latency_ms": 942.0,
+          "ok": true,
+          "output_tokens": 106
+        },
+        "sample_id": "conv-49",
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.2759,
+          "token_recall": 0.8
+        }
+      },
+      "case_id": "conv-49:1",
+      "category": "1",
+      "question": "What kinds of things did Evan have broken?",
+      "sample_id": "conv-49"
+    },
+    {
+      "C0": {
+        "case_id": "conv-50:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 22215,
+          "full_history_estimated_tokens": 29750,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "session_9",
+            "session_10",
+            "session_11",
+            "session_12",
+            "session_13",
+            "session_14",
+            "session_15",
+            "session_16",
+            "session_17",
+            "session_18",
+            "session_19",
+            "session_20",
+            "session_21",
+            "session_22",
+            "session_23",
+            "session_24",
+            "session_25",
+            "session_26",
+            "session_27",
+            "session_28",
+            "session_29",
+            "session_30"
+          ],
+          "overflow": true,
+          "sessions_kept": 22,
+          "sessions_total": 30,
+          "strategy": "naive_recent_fill"
+        },
+        "evidence": [
+          "D1:3",
+          "D2:1"
+        ],
+        "gold_answer": "mansion in Japan, luxury car Ferrari 488 GTB",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.861,
+          "total_estimated": 27551,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided context does not contain any information about items Calvin bought in March 2023.\nThe provided context does not contain any information about items Calvin bought in March 2023.",
+          "error": null,
+          "input_tokens": 17335,
+          "latency_ms": 1898.2,
+          "ok": true,
+          "output_tokens": 58
+        },
+        "sample_id": "conv-50",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.087,
+          "token_recall": 0.125
+        }
+      },
+      "C2": {
+        "case_id": "conv-50:1",
+        "category": "1",
+        "context_meta": {
+          "digest_estimated_tokens": 7130,
+          "full_history_estimated_tokens": 29750,
+          "full_history_overflow_vs_max": false,
+          "gold_session_coverage": 0.5,
+          "kept_session_ids": [
+            "session_11",
+            "session_14",
+            "session_15",
+            "session_2",
+            "session_21"
+          ],
+          "overflow": false,
+          "sessions_kept": 5,
+          "sessions_total": 30,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "evidence": [
+          "D1:3",
+          "D2:1"
+        ],
+        "gold_answer": "mansion in Japan, luxury car Ferrari 488 GTB",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.2843,
+          "total_estimated": 9099,
+          "within_budget": true
+        },
+        "real": {
+          "answer_excerpt": "The provided memory/context does not mention any items Calvin bought in March 2023; it only mentions Calvin buying a new luxury car (no date given, in session_2).\nThe provided memory/context does not mention any items Calvin bought in March 2023; it only mentions Calvin buying a new luxury car (no date given, in session_2).",
+          "error": null,
+          "input_tokens": 5886,
+          "latency_ms": 1457.6,
+          "ok": true,
+          "output_tokens": 100
+        },
+        "sample_id": "conv-50",
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1714,
+          "token_recall": 0.375
+        }
+      },
+      "case_id": "conv-50:1",
+      "category": "1",
+      "question": "What items did Calvin buy in March 2023?",
+      "sample_id": "conv-50"
+    }
+  ],
+  "summary": {
+    "C0_correct_rate": 0.1,
+    "C0_mean_gold_session_coverage": 0.37,
+    "C0_mean_input_tokens": 17213.35,
+    "C0_mean_total_estimated": 26995.65,
+    "C0_overflow_rate": 0.8,
+    "C0_provider_ok_rate": 1.0,
+    "C0_token_recall_mean": 0.2663,
+    "C2_correct_rate": 0.25,
+    "C2_mean_gold_session_coverage": 0.6183,
+    "C2_mean_input_tokens": 6254.05,
+    "C2_mean_total_estimated": 9569.5,
+    "C2_overflow_rate": 0.0,
+    "C2_provider_ok_rate": 1.0,
+    "C2_token_recall_mean": 0.3155,
+    "claims": {
+      "C2_correct_not_worse_than_C0_by_5pct": true,
+      "C2_provider_all_ok": true,
+      "C2_saves_tokens_vs_C0": true,
+      "used_real_model": true
+    },
+    "conversations_covered": 10,
+    "dataset": "data/locomo10.json",
+    "delta_correct_C2_minus_C0": 0.15,
+    "design": {
+      "C0": "naive_recent_fill raw dialogue sessions to max_tokens",
+      "C2": "ContextBudget + keyword recall top-k",
+      "dataset": "locomo10.json (official LoCoMo10 shape)",
+      "license_note": "LoCoMo is CC BY-NC — research/internal only"
+    },
+    "full_history_overflow_rate": 0.1,
+    "max_tokens": 32000,
+    "mean_full_history_estimated_tokens": 27140.7,
+    "mode": "real",
+    "model_host": "api.deepseek.com",
+    "model_name": "deepseek-v4-flash",
+    "n": 20,
+    "pass": true,
+    "token_saving_C2_vs_C0": 0.6367,
+    "token_saving_C2_vs_full_estimate": 0.7696,
+    "top_k": 5
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "case": "loop",
+  "scope": "5A.1-5A.3",
+  "input_files": 2,
+  "input_bytes": 125,
+  "sync_ms": 591.92,
+  "queue_ms": 0.0,
+  "build_ms": 0.0,
+  "output_nodes": 4,
+  "output_edges": 3,
+  "output_chunks": 4,
+  "persisted_nodes": 4,
+  "persisted_edges": 3,
+  "persisted_chunks": 4,
+  "integrity_checked": 11,
+  "integrity_failed": 0,
+  "background_exception_count": 0,
+  "business_completed": true,
+  "persistence_readback": true,
+  "trace_flushed": true,
+  "t1": 1789023896728.4604,
+  "t2": 1789023896728.4626,
+  "persistence_lag_ms": 0.0,
+  "retries": 0,
+  "recovery_checks": {
+    "next_turn_source_context": true
+  },
+  "case_pass": true,
+  "hard_gates": {
+    "loop_completed": true,
+    "source_context": true,
+    "evidence_refs": true
+  },
+  "metrics": [],
+  "output_path": "docs/validation/prd005a-map-source-20260910/loop",
+  "started_at": "2026-09-10T07:04:56.728627+00:00",
+  "clock": "controlled",
+  "commit": null,
+  "repository_id": null,
+  "case_attempt": 1
+}

@@ -1,0 +1,1411 @@
+{
+  "rows": [
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22937,
+          "full_history_estimated_tokens": 162325,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "02bd2b90_3",
+            "e27891d3_2",
+            "ultrachat_486410",
+            "answer_280352e9",
+            "84503ce4_1"
+          ],
+          "overflow": true,
+          "sessions_kept": 5,
+          "sessions_total": 53,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "Business Administration",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8905,
+          "total_estimated": 28496,
+          "within_budget": true
+        },
+        "question_id": "e47becba",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Business Administration\nBusiness Administration",
+          "error": null,
+          "input_tokens": 15337,
+          "latency_ms": 768.6,
+          "ok": true,
+          "output_tokens": 33
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11245,
+          "full_history_estimated_tokens": 162325,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "02bd2b90_3",
+            "5dac7cc2_1",
+            "answer_280352e9",
+            "f6859b48_2",
+            "ultrachat_214101"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 53,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Business Administration",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4423,
+          "total_estimated": 14154,
+          "within_budget": true
+        },
+        "question_id": "e47becba",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about the degree you graduated with.\nThe provided memory/context does not contain any information about the degree you graduated with.",
+          "error": null,
+          "input_tokens": 8018,
+          "latency_ms": 730.1,
+          "ok": true,
+          "output_tokens": 56
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11245,
+          "full_history_estimated_tokens": 162325,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "02bd2b90_3",
+            "5dac7cc2_1",
+            "answer_280352e9",
+            "f6859b48_2",
+            "ultrachat_214101"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 53,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Business Administration",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4423,
+          "total_estimated": 14154,
+          "within_budget": true
+        },
+        "question_id": "e47becba",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain information about the degree you graduated with.\nThe provided memory/context does not contain information about the degree you graduated with.",
+          "error": null,
+          "input_tokens": 8011,
+          "latency_ms": 796.2,
+          "ok": true,
+          "output_tokens": 54
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "question_id": "e47becba",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22326,
+          "full_history_estimated_tokens": 161760,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "728deb4d_5",
+            "79f74d4e_1",
+            "sharegpt_1rIk8tS_17",
+            "sharegpt_M3x4mZx_0",
+            "ultrachat_246088",
+            "3ea9f765"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 45,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "45 minutes each way",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8625,
+          "total_estimated": 27599,
+          "within_budget": true
+        },
+        "question_id": "118b2229",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory does not contain any information about your daily commute to work, so I cannot answer that question.\nThe provided memory does not contain any information about your daily commute to work, so I cannot answer that question.",
+          "error": null,
+          "input_tokens": 14999,
+          "latency_ms": 923.5,
+          "ok": true,
+          "output_tokens": 66
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 10577,
+          "full_history_estimated_tokens": 161760,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "5dce60dd",
+            "afe04238_1",
+            "answer_40a90d51",
+            "db50c0f6",
+            "db73b7e4_4"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 45,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "45 minutes each way",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4155,
+          "total_estimated": 13296,
+          "within_budget": true
+        },
+        "question_id": "118b2229",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about the length of the user's daily commute to work.\nThe context only mentions that the user enjoys audiobooks during their daily commute, but never states how long that commute is.",
+          "error": null,
+          "input_tokens": 7595,
+          "latency_ms": 930.1,
+          "ok": true,
+          "output_tokens": 77
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 10577,
+          "full_history_estimated_tokens": 161760,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "5dce60dd",
+            "afe04238_1",
+            "answer_40a90d51",
+            "db50c0f6",
+            "db73b7e4_4"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 45,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "45 minutes each way",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4155,
+          "total_estimated": 13296,
+          "within_budget": true
+        },
+        "question_id": "118b2229",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about the length or duration of your daily commute to work. While commuting is mentioned (e.g., listening to audiobooks during your daily commute), no specific commute duration or distance is given.\nThe provided memory/context does not contain any information about the length or duration of your daily commute to work. While commuting is mentioned (e.g., listening to audiobooks during your daily commute), no specific commute duration or",
+          "error": null,
+          "input_tokens": 7598,
+          "latency_ms": 1429.6,
+          "ok": true,
+          "output_tokens": 128
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "question_id": "118b2229",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 21495,
+          "full_history_estimated_tokens": 167671,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "dfe646a7_1",
+            "sharegpt_EDBCs6g_23",
+            "ultrachat_104948",
+            "sharegpt_EYVyehy_0",
+            "217debf7",
+            "4f435d20_2"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 50,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "Target",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8364,
+          "total_estimated": 26764,
+          "within_budget": true
+        },
+        "question_id": "51a45a95",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about where a $5 coupon on coffee creamer was redeemed.\nThe provided memory/context does not contain any information about where a $5 coupon on coffee creamer was redeemed.",
+          "error": null,
+          "input_tokens": 14403,
+          "latency_ms": 1321.6,
+          "ok": true,
+          "output_tokens": 68
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11017,
+          "full_history_estimated_tokens": 167671,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "98c198fb",
+            "217debf7",
+            "answer_d61669c7",
+            "07ba9acd_2",
+            "5c44d9fe_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Target",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4347,
+          "total_estimated": 13911,
+          "within_budget": true
+        },
+        "question_id": "51a45a95",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Target (redeemed via the Cartwheel app)\nTarget (redeemed via the Cartwheel app)",
+          "error": null,
+          "input_tokens": 8219,
+          "latency_ms": 1329.0,
+          "ok": true,
+          "output_tokens": 49
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 0.2857,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11017,
+          "full_history_estimated_tokens": 167671,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "98c198fb",
+            "217debf7",
+            "answer_d61669c7",
+            "07ba9acd_2",
+            "5c44d9fe_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Target",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4347,
+          "total_estimated": 13911,
+          "within_budget": true
+        },
+        "question_id": "51a45a95",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about redeeming a $5 coupon on coffee creamer.\nThe provided memory/context does not contain any information about redeeming a $5 coupon on coffee creamer.",
+          "error": null,
+          "input_tokens": 8216,
+          "latency_ms": 589.1,
+          "ok": true,
+          "output_tokens": 66
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "question_id": "51a45a95",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22496,
+          "full_history_estimated_tokens": 163153,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "sharegpt_eyjhBv3_0",
+            "sharegpt_cmyFRwn_0",
+            "ultrachat_143341",
+            "ultrachat_268434",
+            "sharegpt_UAJxypC_0",
+            "sharegpt_OFiElWf_37",
+            "987b36db_2",
+            "e2efa128"
+          ],
+          "overflow": true,
+          "sessions_kept": 8,
+          "sessions_total": 57,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "The Glass Menagerie",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.875,
+          "total_estimated": 28000,
+          "within_budget": true
+        },
+        "question_id": "58bf7951",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memories do not contain any information about a play you attended at a local community theater.\nThe provided memories do not contain any information about a play you attended at a local community theater.",
+          "error": null,
+          "input_tokens": 15512,
+          "latency_ms": 1589.9,
+          "ok": true,
+          "output_tokens": 60
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1,
+          "token_recall": 0.3333
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11659,
+          "full_history_estimated_tokens": 163153,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_355c48bb",
+            "08469b58",
+            "ultrachat_268434",
+            "ultrachat_365156",
+            "1587bd78_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 57,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "The Glass Menagerie",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4571,
+          "total_estimated": 14628,
+          "within_budget": true
+        },
+        "question_id": "58bf7951",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The Glass Menagerie\nThe Glass Menagerie",
+          "error": null,
+          "input_tokens": 8191,
+          "latency_ms": 826.5,
+          "ok": true,
+          "output_tokens": 39
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11659,
+          "full_history_estimated_tokens": 163153,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_355c48bb",
+            "08469b58",
+            "ultrachat_268434",
+            "ultrachat_365156",
+            "1587bd78_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 57,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "The Glass Menagerie",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4571,
+          "total_estimated": 14628,
+          "within_budget": true
+        },
+        "question_id": "58bf7951",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The Glass Menagerie\nThe Glass Menagerie",
+          "error": null,
+          "input_tokens": 8182,
+          "latency_ms": 435.1,
+          "ok": true,
+          "output_tokens": 39
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "question_id": "58bf7951",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22446,
+          "full_history_estimated_tokens": 166497,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "b28990c8_1",
+            "a450dfaf",
+            "ultrachat_149462",
+            "a61d06f2",
+            "ultrachat_307660",
+            "7201d752"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 50,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "Summer Vibes",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8706,
+          "total_estimated": 27860,
+          "within_budget": true
+        },
+        "question_id": "1e043500",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "I don't have any information about a Spotify playlist you created.\nI don't have any information about a Spotify playlist you created.",
+          "error": null,
+          "input_tokens": 15272,
+          "latency_ms": 1047.4,
+          "ok": true,
+          "output_tokens": 48
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11011,
+          "full_history_estimated_tokens": 166497,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_3e012175",
+            "01bd9def",
+            "4d0d7984",
+            "7b1d1f43_1",
+            "8020d945_2"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Summer Vibes",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4393,
+          "total_estimated": 14058,
+          "within_budget": true
+        },
+        "question_id": "1e043500",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Summer Vibes\nSummer Vibes",
+          "error": null,
+          "input_tokens": 8219,
+          "latency_ms": 741.0,
+          "ok": true,
+          "output_tokens": 35
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11011,
+          "full_history_estimated_tokens": 166497,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_3e012175",
+            "01bd9def",
+            "4d0d7984",
+            "7b1d1f43_1",
+            "8020d945_2"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Summer Vibes",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4393,
+          "total_estimated": 14058,
+          "within_budget": true
+        },
+        "question_id": "1e043500",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Summer Vibes\nSummer Vibes",
+          "error": null,
+          "input_tokens": 8206,
+          "latency_ms": 792.1,
+          "ok": true,
+          "output_tokens": 40
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "question_id": "1e043500",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 19284,
+          "full_history_estimated_tokens": 163133,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "dc832f73",
+            "aaf71ce2_2",
+            "ultrachat_168639",
+            "fc6549b2",
+            "03362ec8_2"
+          ],
+          "overflow": true,
+          "sessions_kept": 5,
+          "sessions_total": 44,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "Johnson",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.7492,
+          "total_estimated": 23975,
+          "within_budget": true
+        },
+        "question_id": "c5e8278d",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about your last name before you changed it.\nThe provided memory/context does not contain any information about your last name before you changed it.",
+          "error": null,
+          "input_tokens": 13032,
+          "latency_ms": 839.9,
+          "ok": true,
+          "output_tokens": 60
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 10492,
+          "full_history_estimated_tokens": 163133,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_f6168136",
+            "64767b7f",
+            "89b1028d_1",
+            "193c23bd_2",
+            "aaf71ce2_2"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 44,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Johnson",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4154,
+          "total_estimated": 13292,
+          "within_budget": true
+        },
+        "question_id": "c5e8278d",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Johnson\nJohnson",
+          "error": null,
+          "input_tokens": 7662,
+          "latency_ms": 766.0,
+          "ok": true,
+          "output_tokens": 30
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 10492,
+          "full_history_estimated_tokens": 163133,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_f6168136",
+            "64767b7f",
+            "89b1028d_1",
+            "193c23bd_2",
+            "aaf71ce2_2"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 44,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Johnson",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4154,
+          "total_estimated": 13292,
+          "within_budget": true
+        },
+        "question_id": "c5e8278d",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Johnson\nJohnson",
+          "error": null,
+          "input_tokens": 7666,
+          "latency_ms": 873.4,
+          "ok": true,
+          "output_tokens": 30
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "question_id": "c5e8278d",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22125,
+          "full_history_estimated_tokens": 162463,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "ultrachat_462",
+            "sharegpt_eGVTJri_33",
+            "ec8fa65d_2",
+            "sharegpt_YsgacQi_0",
+            "sharegpt_SoOGnwu_11",
+            "0b64c6cb_1",
+            "ultrachat_183970",
+            "answer_9398da02"
+          ],
+          "overflow": true,
+          "sessions_kept": 8,
+          "sessions_total": 51,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "Serenity Yoga",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8572,
+          "total_estimated": 27432,
+          "within_budget": true
+        },
+        "question_id": "6ade9755",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Serenity Yoga (you practice there and have a Sunday morning yoga and brunch routine with your friend Sarah; you also use Down Dog for home practice).\nSerenity Yoga (you practice there and have a Sunday morning yoga and brunch routine with your friend Sarah; you also use Down Dog for home practice).",
+          "error": null,
+          "input_tokens": 14071,
+          "latency_ms": 1439.0,
+          "ok": true,
+          "output_tokens": 91
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 0.1667,
+          "token_recall": 1.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11048,
+          "full_history_estimated_tokens": 162463,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "7c5ab02a_2",
+            "27c10839_2",
+            "6155addd_3",
+            "a200b713_4",
+            "answer_9398da02"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 51,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Serenity Yoga",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4343,
+          "total_estimated": 13899,
+          "within_budget": true
+        },
+        "question_id": "6ade9755",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Serenity Yoga\nSerenity Yoga",
+          "error": null,
+          "input_tokens": 7992,
+          "latency_ms": 430.7,
+          "ok": true,
+          "output_tokens": 35
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11048,
+          "full_history_estimated_tokens": 162463,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "7c5ab02a_2",
+            "27c10839_2",
+            "6155addd_3",
+            "a200b713_4",
+            "answer_9398da02"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 51,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "Serenity Yoga",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4343,
+          "total_estimated": 13899,
+          "within_budget": true
+        },
+        "question_id": "6ade9755",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "Serenity Yoga\nSerenity Yoga",
+          "error": null,
+          "input_tokens": 7991,
+          "latency_ms": 796.1,
+          "ok": true,
+          "output_tokens": 35
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "question_id": "6ade9755",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 22005,
+          "full_history_estimated_tokens": 169360,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "5e87a43d_1",
+            "0c0f2449_2",
+            "sharegpt_btNPIXV_0",
+            "ultrachat_357964",
+            "f2d7486b",
+            "ultrachat_100380"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 50,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "a lighter shade of gray",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8582,
+          "total_estimated": 27462,
+          "within_budget": true
+        },
+        "question_id": "6f9b354f",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about repainting bedroom walls or the color used.\nThe provided memory/context does not contain any information about repainting bedroom walls or the color used.",
+          "error": null,
+          "input_tokens": 14304,
+          "latency_ms": 715.8,
+          "ok": true,
+          "output_tokens": 62
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0,
+          "token_recall": 0.0
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11035,
+          "full_history_estimated_tokens": 169360,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "a79f1a04_1",
+            "answer_feb5200f",
+            "0c0f2449_2",
+            "36828c66_2",
+            "sharegpt_VAELSB3_0"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "a lighter shade of gray",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.434,
+          "total_estimated": 13889,
+          "within_budget": true
+        },
+        "question_id": "6f9b354f",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "a lighter shade of gray\na lighter shade of gray",
+          "error": null,
+          "input_tokens": 7779,
+          "latency_ms": 615.8,
+          "ok": true,
+          "output_tokens": 39
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11035,
+          "full_history_estimated_tokens": 169360,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "a79f1a04_1",
+            "answer_feb5200f",
+            "0c0f2449_2",
+            "36828c66_2",
+            "sharegpt_VAELSB3_0"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "a lighter shade of gray",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.434,
+          "total_estimated": 13889,
+          "within_budget": true
+        },
+        "question_id": "6f9b354f",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "A lighter shade of gray.\nA lighter shade of gray.",
+          "error": null,
+          "input_tokens": 7775,
+          "latency_ms": 752.4,
+          "ok": true,
+          "output_tokens": 41
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": true,
+          "token_f1": 1.0,
+          "token_recall": 1.0
+        }
+      },
+      "question_id": "6f9b354f",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 20508,
+          "full_history_estimated_tokens": 161560,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "403ee298_1",
+            "e82ce7cd_1",
+            "sharegpt_65aOCnJ_15",
+            "sharegpt_GnobiqC_143",
+            "ultrachat_13835",
+            "answer_59547700"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 50,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "February 14th",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.8033,
+          "total_estimated": 25707,
+          "within_budget": true
+        },
+        "question_id": "58ef2f1c",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "You volunteered at the local animal shelter's fundraising dinner on Valentine's Day (the \"Love is in the Air\" fundraising dinner, back in February).\nYou volunteered at the local animal shelter's fundraising dinner on Valentine's Day (the \"Love is in the Air\" fundraising dinner, back in February).",
+          "error": null,
+          "input_tokens": 14508,
+          "latency_ms": 1330.6,
+          "ok": true,
+          "output_tokens": 88
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1,
+          "token_recall": 0.5
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 11024,
+          "full_history_estimated_tokens": 161560,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_59547700",
+            "13f3da23_3",
+            "e6ab6a7b_2",
+            "2eceeb9d_1",
+            "403ee298_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "February 14th",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4368,
+          "total_estimated": 13979,
+          "within_budget": true
+        },
+        "question_id": "58ef2f1c",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "You volunteered at the local animal shelter's fundraising dinner \"Love is in the Air\" in February.\nYou volunteered at the local animal shelter's fundraising dinner \"Love is in the Air\" in February.",
+          "error": null,
+          "input_tokens": 7962,
+          "latency_ms": 644.5,
+          "ok": true,
+          "output_tokens": 68
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.125,
+          "token_recall": 0.5
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 11024,
+          "full_history_estimated_tokens": 161560,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_59547700",
+            "13f3da23_3",
+            "e6ab6a7b_2",
+            "2eceeb9d_1",
+            "403ee298_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 50,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "February 14th",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4368,
+          "total_estimated": 13979,
+          "within_budget": true
+        },
+        "question_id": "58ef2f1c",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "You volunteered at the local animal shelter's \"Love is in the Air\" fundraising dinner back in February.\nYou volunteered at the local animal shelter's \"Love is in the Air\" fundraising dinner back in February.",
+          "error": null,
+          "input_tokens": 7950,
+          "latency_ms": 941.7,
+          "ok": true,
+          "output_tokens": 70
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.1176,
+          "token_recall": 0.5
+        }
+      },
+      "question_id": "58ef2f1c",
+      "question_type": "single-session-user"
+    },
+    {
+      "C0": {
+        "context_meta": {
+          "digest_estimated_tokens": 19087,
+          "full_history_estimated_tokens": 163557,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 0.0,
+          "kept_session_ids": [
+            "ultrachat_90878",
+            "ultrachat_252516",
+            "7746ba1b_2",
+            "ultrachat_376718",
+            "sharegpt_TKj3yO8_0",
+            "sharegpt_n2aGNgW_9"
+          ],
+          "overflow": true,
+          "sessions_kept": 6,
+          "sessions_total": 46,
+          "strategy": "naive_recent_fill"
+        },
+        "gold_answer": "the sports store downtown",
+        "mode": "C0",
+        "pack": {
+          "budget_fill": 0.7418,
+          "total_estimated": 23736,
+          "within_budget": true
+        },
+        "question_id": "f8c5f88b",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "The provided memory/context does not contain any information about where you bought a new tennis racket.\nThe provided memory/context does not contain any information about where you bought a new tennis racket.",
+          "error": null,
+          "input_tokens": 12249,
+          "latency_ms": 998.9,
+          "ok": true,
+          "output_tokens": 62
+        },
+        "score": {
+          "correct": false,
+          "exact_contain": false,
+          "token_f1": 0.0952,
+          "token_recall": 0.25
+        }
+      },
+      "C1": {
+        "context_meta": {
+          "digest_estimated_tokens": 10659,
+          "full_history_estimated_tokens": 163557,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_c3567066",
+            "394f846b",
+            "3b5205b6_1",
+            "58de8f9b",
+            "68ace657_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 46,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "the sports store downtown",
+        "mode": "C1",
+        "pack": {
+          "budget_fill": 0.4191,
+          "total_estimated": 13412,
+          "within_budget": true
+        },
+        "question_id": "f8c5f88b",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "From a sports store downtown.\nFrom a sports store downtown.",
+          "error": null,
+          "input_tokens": 7720,
+          "latency_ms": 636.8,
+          "ok": true,
+          "output_tokens": 40
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.6667,
+          "token_recall": 0.75
+        }
+      },
+      "C2": {
+        "context_meta": {
+          "digest_estimated_tokens": 10659,
+          "full_history_estimated_tokens": 163557,
+          "full_history_overflow_vs_max": true,
+          "gold_session_coverage": 1.0,
+          "kept_session_ids": [
+            "answer_c3567066",
+            "394f846b",
+            "3b5205b6_1",
+            "58de8f9b",
+            "68ace657_1"
+          ],
+          "overflow": false,
+          "recall_at_k": 1.0,
+          "sessions_kept": 5,
+          "sessions_total": 46,
+          "strategy": "keyword_recall",
+          "top_k": 5
+        },
+        "gold_answer": "the sports store downtown",
+        "mode": "C2",
+        "pack": {
+          "budget_fill": 0.4191,
+          "total_estimated": 13412,
+          "within_budget": true
+        },
+        "question_id": "f8c5f88b",
+        "question_type": "single-session-user",
+        "real": {
+          "answer_excerpt": "a sports store downtown\na sports store downtown",
+          "error": null,
+          "input_tokens": 7719,
+          "latency_ms": 793.5,
+          "ok": true,
+          "output_tokens": 36
+        },
+        "score": {
+          "correct": true,
+          "exact_contain": false,
+          "token_f1": 0.75,
+          "token_recall": 0.75
+        }
+      },
+      "question_id": "f8c5f88b",
+      "question_type": "single-session-user"
+    }
+  ],
+  "summary": {
+    "C0_correct_rate": 0.2,
+    "C0_mean_digest_estimated": 21470.9,
+    "C0_mean_gold_session_coverage": 0.3,
+    "C0_mean_input_tokens": 14368.7,
+    "C0_mean_total_estimated": 26703.1,
+    "C0_overflow_rate": 1.0,
+    "C0_provider_ok_rate": 1.0,
+    "C0_token_recall_mean": 0.3083,
+    "C1_correct_rate": 0.7,
+    "C1_mean_digest_estimated": 10976.7,
+    "C1_mean_gold_session_coverage": 1.0,
+    "C1_mean_input_tokens": 7935.7,
+    "C1_mean_total_estimated": 13851.8,
+    "C1_overflow_rate": 0.0,
+    "C1_provider_ok_rate": 1.0,
+    "C1_token_recall_mean": 0.725,
+    "C2_correct_rate": 0.6,
+    "C2_mean_digest_estimated": 10976.7,
+    "C2_mean_gold_session_coverage": 1.0,
+    "C2_mean_input_tokens": 7931.4,
+    "C2_mean_total_estimated": 13851.8,
+    "C2_overflow_rate": 0.0,
+    "C2_provider_ok_rate": 1.0,
+    "C2_token_recall_mean": 0.625,
+    "claims": {
+      "C2_correct_not_worse_than_C0_by_5pct": true,
+      "C2_provider_all_ok": true,
+      "C2_saves_tokens_vs_C0": true,
+      "full_history_does_not_fit": true,
+      "used_real_model": true
+    },
+    "dataset": "data/longmemeval_s_cleaned.json",
+    "delta_correct_C2_minus_C0": 0.4,
+    "delta_correct_C2_minus_C1": -0.1,
+    "design": {
+      "C0": "naive_recent_fill raw haystack to max_tokens (no retrieval)",
+      "C1": "SoftBudget + keyword recall top-k",
+      "C2": "ContextBudget floors_degrade + keyword recall top-k"
+    },
+    "full_history_overflow_rate": 1.0,
+    "max_tokens": 32000,
+    "mean_full_history_estimated_tokens": 164147.9,
+    "mode": "real",
+    "model_host": "api.deepseek.com",
+    "model_name": "deepseek-v4-flash",
+    "n": 10,
+    "note": "Primary token-saving claim is C2 vs C0 (naive fill), not C1 vs C2. correct = exact contain OR gold-token recall>=0.7 OR F1>=0.6.",
+    "pass": true,
+    "sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+    "sha256_match": true,
+    "token_saving_C2_vs_C0": 0.448,
+    "token_saving_C2_vs_full_estimate": 0.9517,
+    "top_k": 5
+  }
+}

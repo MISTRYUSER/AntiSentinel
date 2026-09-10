@@ -259,15 +259,108 @@ def test_composition_root_builds_fake_application_without_credentials(monkeypatc
     assert result["status"] == "completed"
 
 
+def test_http_full_chain_multi_turn_keeps_earlier_tool_summaries_in_model_context():
+    """HTTP → Application → Runtime → FakeProvider：第 N 轮请求仍含第 1 轮 tool summary。
+
+    这不是真实大模型测评；FakeProvider 只按脚本回放，并记录每次发给「模型」的
+    ModelRequest。用于证明生产入口路径上 Working Set 累积正确，且 raw 不进上下文。
+    """
+    from antisentinel.tools.manifest import ToolDefinition, ToolExecutionResult
+    from antisentinel.tools.registry import ToolRegistry
+
+    captured: dict[str, FakeProviderModel] = {}
+
+    def build_runtime():
+        model = FakeProviderModel([
+            {"tasks": [{"task_id": "t1", "objective": "查日志", "tool_calls": [
+                {"tool_name": "read_logs", "arguments": {"q": "1"}},
+            ]}]},
+            {"tasks": [{"task_id": "t2", "objective": "查指标", "tool_calls": [
+                {"tool_name": "read_metrics", "arguments": {"q": "2"}},
+            ]}]},
+            {"tasks": [{"task_id": "t3", "objective": "查链路", "tool_calls": [
+                {"tool_name": "read_traces", "arguments": {"q": "3"}},
+            ]}]},
+            {"final": {"summary": "完成", "diagnosis": "根因 E42", "confidence": 0.91, "evidence_refs": []}},
+        ])
+        captured["model"] = model
+        registry = ToolRegistry(auto_discover=False)
+
+        def make_handler(summary: str):
+            return lambda _arguments: ToolExecutionResult(
+                status="succeeded",
+                result={"raw": f"SECRET-{summary}"},
+                result_summary=summary,
+            )
+
+        for name, summary in (
+            ("read_logs", "error code E42 from turn1"),
+            ("read_metrics", "cpu saturation turn2"),
+            ("read_traces", "span drop turn3"),
+        ):
+            registry.register(
+                ToolDefinition(
+                    name=name,
+                    description=name,
+                    argument_schema={"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"]},
+                    handler=make_handler(summary),
+                )
+            )
+        return model, registry
+
+    service = DiagnosisApplicationService.default_fake()
+    service._runtime_builder = build_runtime  # type: ignore[attr-defined]
+    client = TestClient(create_app(service))
+
+    incident = client.post(
+        "/api/incidents",
+        json={"title": "working-set chain", "summary": "multi-turn continuity", "source": "operator"},
+    ).json()
+    started = client.post(
+        f"/api/incidents/{incident['incident_id']}/sessions",
+        json={"participant_ids": ["operator-1"], "model_mode": "fake"},
+    ).json()
+    result = wait_for_session(client, started["session_id"], timeout=5.0)
+
+    assert result["status"] == "completed"
+    assert result["final"]["diagnosis"] == "根因 E42"
+    assert len(result["turns"]) == 4
+
+    model = captured["model"]
+    assert len(model.requests) == 4
+    final_request_text = str(model.requests[3].messages)
+    assert "error code E42 from turn1" in final_request_text
+    assert "cpu saturation turn2" in final_request_text
+    assert "span drop turn3" in final_request_text
+    assert "SECRET-" not in final_request_text
+    assert "working_set" in final_request_text or "task_results" in final_request_text
+
+    # API 对外结果也不应泄漏 tool raw payload
+    assert "SECRET-" not in json.dumps(result, ensure_ascii=False)
+
+
 def test_runtime_config_reports_mode_without_exposing_credentials(monkeypatch):
     monkeypatch.setenv("ANTISENTINEL_MODEL_MODE", "real")
+    monkeypatch.setenv("ANTISENTINEL_MODEL_BASE_URL", "https://api.openai.com/v1")
+    monkeypatch.setenv("ANTISENTINEL_MODEL_NAME", "gpt-4o-mini")
     monkeypatch.delenv("ANTISENTINEL_MODEL_API_KEY", raising=False)
     client = TestClient(create_app(DiagnosisApplicationService.from_environment()))
 
     response = client.get("/api/runtime/config")
 
     assert response.status_code == 200
-    assert response.json() == {"model_mode": "real", "model_provider": "openai", "model_name": "gpt-4o-mini"}
+    body = response.json()
+    assert body["model_mode"] == "real"
+    assert body["model_provider"] == "openai"
+    assert body["model_name"] == "gpt-4o-mini"
+    assert body["estimate_version"] == "utf8_ceil_div3_v1"
+    from antisentinel.worker.runtime.model_profile import resolve_max_context_tokens
+
+    assert body["max_context_tokens"] == resolve_max_context_tokens(model="gpt-4o-mini")
+    assert body["max_context_tokens_mode"] == "auto"
+    assert body["packing_mode"] == "floors_degrade"
+    assert body["context_strict"] is True
+    assert "recent_turn_limit" in body
     assert "API_KEY" not in response.text
 
 

@@ -258,8 +258,8 @@ class CaseRunner:
         from antisentinel.persistence.sqlite_database import SQLiteDatabase
         from antisentinel.tracing.telemetry import Telemetry
 
-        remote = self.output / "remote.git"
-        worktree = self.output / "worktree"
+        remote = (self.output / "remote.git").resolve()
+        worktree = (self.output / "worktree").resolve()
         _run_git(("init", "--bare", str(remote)))
         _run_git(("init", "-b", "main", str(worktree)))
         _run_git(("-C", str(worktree), "config", "user.email", "case@example.test"))
