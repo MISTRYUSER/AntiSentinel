@@ -25,7 +25,6 @@ from .budget import (
 from .messages import (
     build_system_message,
     build_task_results_message,
-    build_tool_events_message,
     build_working_set_message,
 )
 from .source_window import window_source_content
@@ -210,6 +209,18 @@ def _pack_skill(skill_context: dict[str, Any] | None, *, budget: ContextBudget, 
     return messages
 
 
+def _source_identity_fields(item: Any) -> dict[str, Any]:
+    """Preserve RAG / code-map identity fields needed for re-read and scope checks."""
+    fields: dict[str, Any] = {}
+    for name in ("byte_start", "byte_end", "published_generation", "node_id", "chunk_id"):
+        value = getattr(item, name, None)
+        if value is None and isinstance(item, dict):
+            value = item.get(name)
+        if value is not None:
+            fields[name] = value
+    return fields
+
+
 def _pack_source(
     source_context: list[Any] | None,
     *,
@@ -240,8 +251,9 @@ def _pack_source(
                 "path": path,
                 "content_hash": getattr(item, "content_hash", None),
                 "pointer": True,
-                "note": "source body not pinned; call code_map.read_source to reload",
+                "note": "source body not pinned; call code_map.read_source or code_retrieval.read_evidence to reload",
             }
+            slice_obj.update(_source_identity_fields(item))
             cost = estimate_json(slice_obj, version=budget.estimate_version)
             if cost > remaining:
                 report.dropped.append(DroppedItem(kind="source", reason="over_block", ref=path or str(index)))
@@ -261,6 +273,7 @@ def _pack_source(
             "content_hash": getattr(item, "content_hash", None),
             "truncated": True,
         }
+        stub.update(_source_identity_fields(item))
         overhead = estimate_json(stub, version=budget.estimate_version)
         content_limit = max(0, remaining - overhead)
         if content_limit <= 0:
@@ -281,6 +294,7 @@ def _pack_source(
             "content": windowed.content,
             "content_hash": getattr(item, "content_hash", None),
         }
+        slice_obj.update(_source_identity_fields(item))
         if windowed.truncated:
             slice_obj["truncated"] = True
             report.truncated_slices.append(
@@ -307,7 +321,11 @@ def _pack_source(
 
 
 def _shrink_working_set(working_set: WorkingSet, *, budget: ContextBudget, limit: int, report: BudgetReport) -> None:
-    """Mutate working_set to fit working block; never drop below min_recent_turns."""
+    """Mutate a *projection* WorkingSet to fit the working block.
+
+    Callers must pass a deepcopy — never the session-canonical WorkingSet.
+    Never drop below min_recent_turns.
+    """
     min_k = budget.min_recent_turns
 
     def working_cost() -> int:
@@ -315,6 +333,7 @@ def _shrink_working_set(working_set: WorkingSet, *, budget: ContextBudget, limit
 
     # Digest first.
     while working_cost() > limit and working_set.older_digest:
+        before = working_set.older_digest
         target = max(32, estimate_tokens(working_set.older_digest, version=budget.estimate_version) // 2)
         working_set.compact_older(target)
         if working_set.older_digest and not working_set.older_digest.endswith(budget.truncation_marker.strip()):
@@ -324,7 +343,18 @@ def _shrink_working_set(working_set: WorkingSet, *, budget: ContextBudget, limit
                     working_set.older_digest.rstrip("…"), marker=budget.truncation_marker
                 )
         report.blocks["working"].truncated = True
-        if estimate_tokens(working_set.older_digest, version=budget.estimate_version) <= target:
+        # Stop when estimate matches target, or compact made no progress (byte vs token mismatch).
+        if (
+            working_set.older_digest == before
+            or estimate_tokens(working_set.older_digest, version=budget.estimate_version) <= target
+        ):
+            if working_set.older_digest == before and working_cost() > limit:
+                working_set.older_digest = _trim_text_to_tokens(
+                    working_set.older_digest,
+                    max(16, target),
+                    version=budget.estimate_version,
+                    marker=budget.truncation_marker,
+                )
             break
 
     # Lower K but stop at min_recent_turns.
@@ -583,6 +613,13 @@ def _refill_by_deficit(
 
 
 def pack_context(inp: PackInput) -> PackResult:
+    """Build a side-effect-free packed view for one model call.
+
+    Canonical session WorkingSet is never mutated: budget compaction runs on a
+    deepcopy projection only. Tool history lives in the working-set view; a
+    separate task_results message is only used for legacy (no WorkingSet) packs.
+    RAG / code-map bodies enter via ``source_context`` with identity fields preserved.
+    """
     budget = _resolve_budget(inp)
     floors = budget.floors()
     soft_caps = budget.soft_caps()
@@ -602,7 +639,8 @@ def pack_context(inp: PackInput) -> PackResult:
             f"system prompt exceeds system budget: used={system_cost} limit={floors['system']}"
         )
 
-    working_set = inp.working_set
+    # Projection only — never compact the caller's canonical WorkingSet.
+    working_set = deepcopy(inp.working_set) if inp.working_set is not None else None
     if working_set is not None:
         report.recent_turn_count = len(working_set.recent_turns)
         report.tool_event_count = working_set.tool_event_count()
@@ -653,12 +691,9 @@ def pack_context(inp: PackInput) -> PackResult:
     messages.append(user_message)
     report.blocks["working"].used = estimate_json(user_message, version=budget.estimate_version)
     report.blocks["working"].limit = soft_caps["working"]
-    if working_set is not None:
-        tool_message = build_tool_events_message(working_set)
-        if tool_message is not None:
-            messages.append(tool_message)
-            report.blocks["working"].used += estimate_json(tool_message, version=budget.estimate_version)
-    elif inp.task_results:
+    # Prefer a single tool-history channel: WorkingSet.recent_turns[].tool_events.
+    # Legacy packs without WorkingSet still emit task_results.
+    if working_set is None and inp.task_results:
         tool_message = build_task_results_message(inp.task_results)
         messages.append(tool_message)
         report.blocks["working"].used += estimate_json(tool_message, version=budget.estimate_version)

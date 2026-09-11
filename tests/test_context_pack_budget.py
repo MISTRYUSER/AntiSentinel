@@ -121,3 +121,88 @@ def test_pack_source_pressure_keeps_tools_and_skill():
     assert source_used <= budget.source_hard_max()
     assert result.report.blocks["tools"].used >= 1
     assert result.report.blocks["skill"].used >= 1
+
+
+def test_pack_context_does_not_mutate_canonical_working_set():
+    from antisentinel.worker.runtime.working_set import ToolEvent, TurnRecord, WorkingSet
+
+    ws = WorkingSet(recent_turn_limit=4, max_older_digest_tokens=4096)
+    for index in range(1, 6):
+        ws.append_turn(
+            TurnRecord(
+                turn_index=index,
+                plan_summary=f"plan-{index}-" + ("详细计划摘要" * 40),
+                tool_events=[
+                    ToolEvent(
+                        f"tool_{index}",
+                        f"fp{index}",
+                        "succeeded",
+                        f"result-summary-{index}-" + ("诊断细节" * 30),
+                        [f"ev-{index}"],
+                    )
+                ],
+                outcome=f"outcome-{index}-" + ("结果说明" * 20),
+            )
+        )
+    before = ws.to_dict()
+    budget = ContextBudget(max_context_tokens=1_800, min_recent_turns=1, recent_turn_limit=4, strict=True)
+    pack_context(_base_input(working_set=ws, budget=budget, system_override="sys"))
+    pack_context(_base_input(working_set=ws, budget=budget, system_override="sys"))
+    assert ws.to_dict() == before
+
+
+def test_pack_context_tool_history_not_duplicated_in_wire_payload():
+    from antisentinel.worker.runtime.working_set import ToolEvent, TurnRecord, WorkingSet
+
+    ws = WorkingSet(recent_turn_limit=3)
+    summary = "UNIQUE_RESULT_SUMMARY_TOKEN_9f3a"
+    evidence = "UNIQUE_EVIDENCE_REF_9f3a"
+    ws.append_turn(
+        TurnRecord(
+            turn_index=1,
+            plan_summary="inspect",
+            tool_events=[ToolEvent("read_health", "fp1", "succeeded", summary, [evidence])],
+            outcome="read_health:succeeded",
+        )
+    )
+    result = pack_context(_base_input(working_set=ws, budget=ContextBudget(max_context_tokens=8_192), system_override="sys"))
+    wire = str(result.messages)
+    assert wire.count(summary) == 1
+    assert wire.count(evidence) == 1
+    assert not any(message.get("role") == "tool" for message in result.messages)
+    user = next(message for message in result.messages if message["role"] == "user")
+    events = user["working_set"]["recent_turns"][0]["tool_events"]
+    assert events[0]["result_summary"] == summary
+    assert evidence in events[0]["evidence_refs"]
+
+
+def test_pack_source_preserves_rag_identity_fields():
+    from antisentinel.code_map.source_context import SourceContextSlice
+
+    incident = Incident.create(title="rag", source="test")
+    slice_obj = SourceContextSlice(
+        str(incident.incident_id),
+        "ev-rag",
+        "repo",
+        "snap",
+        "deadbeef",
+        "svc/handler.py",
+        "def handle():\n    return 1\n",
+        "hash-rag",
+        byte_start=10,
+        byte_end=40,
+        published_generation=2,
+    )
+    result = pack_context(
+        _base_input(
+            source_context=[slice_obj],
+            budget=ContextBudget(max_context_tokens=8_192),
+            system_override="sys",
+        )
+    )
+    source = next(message for message in result.messages if message["role"] == "source_context")
+    packed = source["slices"][0]
+    assert packed["byte_start"] == 10
+    assert packed["byte_end"] == 40
+    assert packed["published_generation"] == 2
+    assert "def handle" in packed["content"]

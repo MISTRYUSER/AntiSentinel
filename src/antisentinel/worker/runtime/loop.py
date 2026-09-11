@@ -535,8 +535,9 @@ class RuntimeLoop:
                     rejected = executor.preflight(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
                     execution_arguments = planned_call.arguments
                     if rejected is None and planned_call.tool_name == 'code_retrieval.read_evidence':
-                        remaining_fragments = 4 - len(source_context)
-                        remaining_bytes = 32 * 1024 - sum(len(s.content.encode('utf-8')) for s in source_context)
+                        packed_now = materialize_for_pack(source_pins)
+                        remaining_fragments = max(0, 4 - len(source_pins))
+                        remaining_bytes = 32 * 1024 - sum(len(s.content.encode('utf-8')) for s in packed_now)
                         if remaining_fragments <= 0 or remaining_bytes <= 0:
                             from antisentinel.tools.manifest import ToolExecutionResult
                             rejected = ToolExecutionResult(status='rejected', error={'code': 'source_budget_exceeded', 'message': 'source context budget exhausted'})
@@ -612,11 +613,23 @@ class RuntimeLoop:
                             evidences.append(evidence)
                         if planned_call.tool_name == 'code_retrieval.read_evidence' and isinstance(result.result, dict):
                             from antisentinel.code_map.source_context import SourceContextSlice
+                            ttl = (
+                                max(1, config.source_body_ttl_turns)
+                                if config.source_pin_policy == "ephemeral"
+                                else max(config.source_body_ttl_turns, 32)
+                            )
+                            if config.source_pin_policy == "sticky_bodies":
+                                ttl = max(ttl, 64)
                             for raw in result.result.get('slices', []):
                                 matching = next((e for e in result.evidences if str(e.evidence_id) == raw.get('evidence_id')), None)
                                 if matching is None or matching.content_hash != raw.get('content_hash'):
                                     raise ValueError('source_evidence_mismatch')
-                                source_context.append(SourceContextSlice(**raw))
+                                slice_obj = raw if isinstance(raw, SourceContextSlice) else SourceContextSlice(**raw)
+                                source_pins = upsert_pin(
+                                    source_pins,
+                                    pin_from_slice(slice_obj, body_ttl=ttl),
+                                    max_pins=config.max_source_pins,
+                                )
                         if planned_call.tool_name == "code_map.read_source" and isinstance(result.result, dict):
                             raw_source = result.result.get("source_context")
                             if raw_source and result.evidence is not None and raw_source.get("evidence_id") == str(result.evidence.evidence_id):

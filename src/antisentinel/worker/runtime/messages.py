@@ -21,9 +21,11 @@ _HOLLOW_SUMMARIES = frozenset(
 
 def build_system_message(*, skill_mode: bool = False) -> dict[str, str]:
     skill_rule = " You may load one listed skill and then read only its registered references when needed." if skill_mode else ""
-    code_map_rule = (
-        " Prefer code_map.find_symbols/get_node/get_neighbors to locate code; call code_map.read_source only when you need"
-        " a specific chunk body. Source bodies are ephemeral pointers afterward—re-read if needed."
+    retrieval_rule = (
+        " Prefer code_retrieval.search (and expand_graph when needed) to locate published code, then"
+        " code_retrieval.read_evidence for budgeted source bodies. Prefer code_map.find_symbols/get_node/get_neighbors"
+        " for exact symbol navigation; call code_map.read_source only for a specific chunk body."
+        " Source bodies in context are ephemeral—re-read if needed."
     )
     return {
         "role": "system",
@@ -34,7 +36,7 @@ def build_system_message(*, skill_mode: bool = False) -> dict[str, str]:
             "or {\"final\":{\"summary\":\"简短中文摘要\",\"diagnosis\":\"中文结论\",\"confidence\":0.0,\"evidence_refs\":[]}}. "
             "Use at most 2 tool calls per turn, never repeat the same tool and arguments. "
             "After tool results, call another distinct tool only when it can resolve a remaining evidence gap; otherwise return final."
-            + code_map_rule
+            + retrieval_rule
             + skill_rule
         ),
     }

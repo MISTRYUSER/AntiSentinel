@@ -237,10 +237,15 @@ def test_context_includes_working_set_recent_and_older_digest():
     user = next(message for message in request.messages if message["role"] == "user")
     assert "working_set" in user
     assert user["working_set"]["older_digest"]
-    tool = next(message for message in request.messages if message["role"] == "tool")
-    summaries = [item["summary"] for item in tool["task_results"]]
-    assert any("503" in (summary or "") for summary in summaries)
-    assert not any("error code E42" in (summary or "") for summary in summaries)  # folded out of recent tool msg
+    # Tool history lives only inside working_set (no duplicate task_results message).
+    assert not any(message.get("role") == "tool" for message in request.messages)
+    recent_summaries = [
+        event["result_summary"]
+        for turn in user["working_set"]["recent_turns"]
+        for event in turn["tool_events"]
+    ]
+    assert any("503" in (summary or "") for summary in recent_summaries)
+    assert not any("error code E42" in (summary or "") for summary in recent_summaries)  # folded out of recent
 
 
 def test_benchmark_and_production_builders_share_pack_module():
