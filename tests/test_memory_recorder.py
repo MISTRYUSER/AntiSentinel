@@ -18,7 +18,7 @@ def test_memory_recorder_automatically_persists_completed_rollout(tmp_path):
     )
 
     recorder = MemoryRecorder(tmp_path)
-    recorder.record(result)
+    recorder.record(result, operator_id="operator-1")
 
     rollout = recorder.rollout_memory.get("session-1")
     assert rollout is not None

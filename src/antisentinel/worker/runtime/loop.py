@@ -535,16 +535,47 @@ class RuntimeLoop:
                     rejected = executor.preflight(planned_call.tool_name, planned_call.arguments, scope=turn_scope)
                     execution_arguments = planned_call.arguments
                     if rejected is None and planned_call.tool_name == 'code_retrieval.read_evidence':
-                        packed_now = materialize_for_pack(source_pins)
-                        remaining_fragments = max(0, 4 - len(source_pins))
-                        remaining_bytes = 32 * 1024 - sum(len(s.content.encode('utf-8')) for s in packed_now)
-                        if remaining_fragments <= 0 or remaining_bytes <= 0:
-                            from antisentinel.tools.manifest import ToolExecutionResult
-                            rejected = ToolExecutionResult(status='rejected', error={'code': 'source_budget_exceeded', 'message': 'source context budget exhausted'})
+                        from .source_pins import filter_unpinned_candidates
+                        from antisentinel.tools.manifest import ToolExecutionResult
+
+                        raw_candidates = planned_call.arguments.get('candidates') or []
+                        if not isinstance(raw_candidates, list):
+                            raw_candidates = list(raw_candidates)
+                        fresh_candidates, reused_candidates = filter_unpinned_candidates(raw_candidates, source_pins)
+                        if not fresh_candidates and reused_candidates:
+                            rejected = ToolExecutionResult(
+                                status='succeeded',
+                                result={
+                                    'slices': [],
+                                    'total_bytes': 0,
+                                    'truncated': False,
+                                    'reused_pins': len(reused_candidates),
+                                },
+                                result_summary=f'evidence: reused {len(reused_candidates)} pinned sources',
+                                evidences=(),
+                            )
                         else:
-                            execution_arguments = {**planned_call.arguments,
-                                'max_fragments': min(remaining_fragments, planned_call.arguments.get('max_fragments', 4)),
-                                'max_bytes': min(remaining_bytes, planned_call.arguments.get('max_bytes', 32 * 1024))}
+                            packed_now = materialize_for_pack(source_pins)
+                            remaining_fragments = max(0, 4 - len(source_pins))
+                            remaining_bytes = 32 * 1024 - sum(len(s.content.encode('utf-8')) for s in packed_now)
+                            if remaining_fragments <= 0 or remaining_bytes <= 0:
+                                rejected = ToolExecutionResult(
+                                    status='rejected',
+                                    error={'code': 'source_budget_exceeded', 'message': 'source context budget exhausted'},
+                                )
+                            else:
+                                execution_arguments = {
+                                    **planned_call.arguments,
+                                    'candidates': fresh_candidates or raw_candidates,
+                                    'max_fragments': min(
+                                        remaining_fragments,
+                                        planned_call.arguments.get('max_fragments', 4),
+                                    ),
+                                    'max_bytes': min(
+                                        remaining_bytes,
+                                        planned_call.arguments.get('max_bytes', 32 * 1024),
+                                    ),
+                                }
                     cached = completed_invocations.get(invocation_key) if rejected is None else None
                     if rejected is not None:
                         result = rejected
@@ -677,6 +708,11 @@ class RuntimeLoop:
                         status=result.status,
                         result_summary=result.result_summary,
                         error=result.error,
+                        max_chars=(
+                            4096
+                            if planned_call.tool_name == "code_retrieval.search"
+                            else 240
+                        ),
                     )
                     turn_tool_events.append(
                         ToolEvent(

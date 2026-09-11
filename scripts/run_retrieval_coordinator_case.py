@@ -47,13 +47,55 @@ class Encoder:
 class Model:
     def __init__(self):
         self.phase, self.slices = 0, []
+
+    @staticmethod
+    def _hit_identity(hit):
+        if isinstance(hit.get('source_identity'), dict):
+            return dict(hit['source_identity'])
+        return {
+            key: hit[key] for key in (
+                'repository_id', 'snapshot_id', 'published_generation', 'commit_sha',
+                'node_id', 'chunk_id', 'path', 'source_hash', 'byte_start', 'byte_end',
+                'parent_source_hash',
+            ) if key in hit
+        }
+
+    @staticmethod
+    def _parse_hits(request):
+        blobs = []
+        for message in request.messages:
+            if message.get('role') == 'tool':
+                for item in message.get('task_results') or []:
+                    raw = item.get('summary') or item.get('result_summary') or ''
+                    if isinstance(raw, str):
+                        blobs.append(raw)
+            working = message.get('working_set')
+            if isinstance(working, dict):
+                for turn in working.get('recent_turns') or []:
+                    for event in turn.get('tool_events') or []:
+                        raw = event.get('result_summary') or ''
+                        if isinstance(raw, str):
+                            blobs.append(raw)
+        for raw in blobs:
+            if 'hits' not in raw:
+                continue
+            start = raw.find('{')
+            if start < 0:
+                continue
+            try:
+                payload = json.loads(raw[start:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(payload, dict) and payload.get('hits'):
+                return payload['hits']
+        raise ValueError('search hits missing from working set / tool summaries')
+
     def complete(self, request):
         if self.phase == 0:
             name, arguments = 'code_retrieval.search', {'query': 'Service.run', 'mode': 'hybrid'}
         elif self.phase == 1:
-            results = next(m['task_results'] for m in request.messages if m['role'] == 'tool')
-            hits = json.loads(results[0]['summary'])['hits']
-            name, arguments = 'code_retrieval.read_evidence', {'candidates': [hits[0]['source_identity']]}
+            hits = self._parse_hits(request)
+            name, arguments = 'code_retrieval.read_evidence', {'candidates': [self._hit_identity(hits[0])]}
         else:
             self.slices = next(m['slices'] for m in request.messages if m['role'] == 'source_context')
             return {'final': {'summary': 'verified', 'diagnosis': 'fixture source inspected', 'confidence': 1.,

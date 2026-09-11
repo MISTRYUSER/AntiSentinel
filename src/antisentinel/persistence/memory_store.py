@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from antisentinel.domain.errors import InvalidInputError
-from antisentinel.memory.models import MemoryRecord
+from antisentinel.memory.models import MemoryNamespace, MemoryRecord, require_scope_id
+from antisentinel.memory.scope_filter import filter_records
 
 
 class FileMemoryStore:
@@ -18,6 +19,8 @@ class FileMemoryStore:
     def append(self, record: dict[str, Any]) -> None:
         if not isinstance(record, dict) or not record.get("memory_id"):
             raise InvalidInputError("memory record must contain memory_id")
+        if record.get("operator_id") is not None:
+            require_scope_id("operator_id", str(record["operator_id"]))
         self.path.parent.mkdir(parents=True, exist_ok=True)
         existing = self._read()
         if any(item.get("memory_id") == record["memory_id"] for item in existing):
@@ -31,6 +34,8 @@ class FileMemoryStore:
     def replace(self, record: dict[str, Any]) -> None:
         if not isinstance(record, dict) or not record.get("memory_id"):
             raise InvalidInputError("memory record must contain memory_id")
+        if record.get("operator_id") is not None:
+            require_scope_id("operator_id", str(record["operator_id"]))
         records = self._read()
         replaced = False
         for index, item in enumerate(records):
@@ -47,7 +52,11 @@ class FileMemoryStore:
         self.replace(record.to_dict())
 
     def list_by_operator(self, operator_id: str) -> list[dict[str, Any]]:
+        require_scope_id("operator_id", operator_id)
         return [item for item in self._read() if item.get("operator_id") == operator_id]
+
+    def list_by_scope(self, scope: MemoryNamespace, *, include_operator_wide: bool = True) -> list[dict[str, Any]]:
+        return filter_records(self._read(), scope, include_operator_wide=include_operator_wide)
 
     def get(self, memory_id: str) -> dict[str, Any] | None:
         return next((item for item in self._read() if item.get("memory_id") == memory_id), None)

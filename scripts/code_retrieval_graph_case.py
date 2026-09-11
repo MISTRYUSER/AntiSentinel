@@ -53,15 +53,50 @@ class ScriptedGraphModel:
         self.phase = 2 if resume else 0
         self.requests = []
 
+    @staticmethod
+    def _parse_hits(request):
+        blobs = []
+        for message in request.messages:
+            if message.get('role') == 'tool':
+                for item in message.get('task_results') or []:
+                    raw = item.get('summary') or item.get('result_summary') or ''
+                    if isinstance(raw, str):
+                        blobs.append(raw)
+            working = message.get('working_set')
+            if isinstance(working, dict):
+                for turn in working.get('recent_turns') or []:
+                    for event in turn.get('tool_events') or []:
+                        raw = event.get('result_summary') or ''
+                        if isinstance(raw, str):
+                            blobs.append(raw)
+        for raw in blobs:
+            if 'hits' not in raw:
+                continue
+            start = raw.find('{')
+            if start < 0:
+                continue
+            try:
+                payload = json.loads(raw[start:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(payload, dict) and payload.get('hits'):
+                return payload['hits']
+        raise ValueError('search hits missing from working set / tool summaries')
+
     def complete(self, request):
         self.requests.append(request)
         if self.phase == 0:
             name, args = 'code_retrieval.search', {'query': 'class', 'mode': 'graph'}
         elif self.phase == 1:
-            results = next(m['task_results'] for m in request.messages if m['role'] == 'tool')
-            hits = json.loads(results[0]['summary'])['hits']
-            expanded = next(h for h in hits if h['channels'] == ['graph'])
-            identity = expanded['source_identity']
+            hits = self._parse_hits(request)
+            expanded = next(h for h in hits if list(h.get('channels') or []) == ['graph'])
+            identity = expanded.get('source_identity') if isinstance(expanded.get('source_identity'), dict) else {
+                key: expanded[key] for key in (
+                    'repository_id', 'snapshot_id', 'published_generation', 'commit_sha',
+                    'node_id', 'chunk_id', 'path', 'source_hash', 'byte_start', 'byte_end',
+                    'parent_source_hash',
+                ) if key in expanded
+            }
             candidate = dict(identity)
             name, args = 'code_retrieval.read_evidence', {'candidates': [candidate]}
         else:

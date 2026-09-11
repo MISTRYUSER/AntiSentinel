@@ -5,12 +5,36 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Literal
+from uuid import uuid4
 
 
 MemoryLifecycle = Literal["active", "superseded", "retracted", "conflict", "pending", "failed"]
 MemorySourceType = Literal["event", "evidence", "session", "turn", "unknown"]
+MemoryVisibility = Literal["session", "incident", "agent", "operator", "tenant"]
 _MEMORY_LIFECYCLES = frozenset({"active", "superseded", "retracted", "conflict", "pending", "failed"})
 _MEMORY_SOURCE_TYPES = frozenset({"event", "evidence", "session", "turn", "unknown"})
+_MEMORY_VISIBILITIES = frozenset({"session", "incident", "agent", "operator", "tenant"})
+DEFAULT_TENANT_ID = "default"
+DEFAULT_AGENT_ID = "diagnosis-agent"
+_FORBIDDEN_WRITE_SCOPE_TOKENS = frozenset({"unknown", "legacy-unscoped"})
+
+
+class MissingMemoryScopeError(ValueError):
+    """Raised when a memory write/recall lacks a fail-closed identity scope."""
+
+
+def require_scope_id(name: str, value: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise MissingMemoryScopeError(f"{name} is required")
+    cleaned = value.strip()
+    if cleaned.lower() in _FORBIDDEN_WRITE_SCOPE_TOKENS:
+        raise MissingMemoryScopeError(f"{name} must not use reserved placeholder {cleaned!r}")
+    return cleaned
+
+
+def new_memory_id() -> str:
+    """Globally unique durable memory identity (scope stays in separate fields)."""
+    return f"mem_{uuid4().hex}"
 
 
 @dataclass(frozen=True)
@@ -56,14 +80,85 @@ class MemorySourceRef:
 
 
 @dataclass(frozen=True)
+class MemoryNamespace:
+    """Canonical long-term memory isolation key (namespace-first, not post-filter)."""
+
+    tenant_id: str
+    operator_id: str
+    agent_id: str
+    memory_type: str | None = None
+    incident_id: str | None = None
+    session_id: str | None = None
+    visibility: MemoryVisibility | None = None
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "tenant_id", require_scope_id("tenant_id", self.tenant_id))
+        object.__setattr__(self, "operator_id", require_scope_id("operator_id", self.operator_id))
+        object.__setattr__(self, "agent_id", require_scope_id("agent_id", self.agent_id))
+        if self.incident_id is not None:
+            object.__setattr__(self, "incident_id", require_scope_id("incident_id", self.incident_id))
+        if self.session_id is not None:
+            object.__setattr__(self, "session_id", require_scope_id("session_id", self.session_id))
+        if self.memory_type is not None and (not isinstance(self.memory_type, str) or not self.memory_type.strip()):
+            raise MissingMemoryScopeError("memory_type must be a non-empty string when provided")
+        if self.visibility is not None and self.visibility not in _MEMORY_VISIBILITIES:
+            raise ValueError("invalid memory visibility")
+
+    def path(self) -> str:
+        parts = [self.tenant_id, self.operator_id, self.agent_id]
+        if self.memory_type:
+            parts.append(self.memory_type)
+        if self.incident_id:
+            parts.append(self.incident_id)
+        if self.session_id:
+            parts.append(self.session_id)
+        return "/".join(parts)
+
+
+@dataclass(frozen=True)
+class SessionKey:
+    """In-process short-term session tree key (never bare session_id alone)."""
+
+    tenant_id: str
+    operator_id: str
+    agent_id: str
+    session_id: str
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "tenant_id", require_scope_id("tenant_id", self.tenant_id))
+        object.__setattr__(self, "operator_id", require_scope_id("operator_id", self.operator_id))
+        object.__setattr__(self, "agent_id", require_scope_id("agent_id", self.agent_id))
+        object.__setattr__(self, "session_id", require_scope_id("session_id", self.session_id))
+
+
+@dataclass(frozen=True)
 class AuthorizedMemoryScope:
     operator_id: str
     incident_id: str
     session_id: str
+    tenant_id: str = DEFAULT_TENANT_ID
+    agent_id: str = DEFAULT_AGENT_ID
 
     def __post_init__(self) -> None:
-        if not all(isinstance(value, str) and value.strip() for value in (self.operator_id, self.incident_id, self.session_id)):
-            raise ValueError("authorized memory scope requires operator_id, incident_id, and session_id")
+        object.__setattr__(self, "operator_id", require_scope_id("operator_id", self.operator_id))
+        object.__setattr__(self, "incident_id", require_scope_id("incident_id", self.incident_id))
+        object.__setattr__(self, "session_id", require_scope_id("session_id", self.session_id))
+        object.__setattr__(self, "tenant_id", require_scope_id("tenant_id", self.tenant_id))
+        object.__setattr__(self, "agent_id", require_scope_id("agent_id", self.agent_id))
+
+    def to_namespace(self, *, memory_type: str | None = None, visibility: MemoryVisibility | None = None) -> MemoryNamespace:
+        return MemoryNamespace(
+            tenant_id=self.tenant_id,
+            operator_id=self.operator_id,
+            agent_id=self.agent_id,
+            memory_type=memory_type,
+            incident_id=self.incident_id,
+            session_id=self.session_id,
+            visibility=visibility,
+        )
+
+    def session_key(self) -> SessionKey:
+        return SessionKey(self.tenant_id, self.operator_id, self.agent_id, self.session_id)
 
 
 @dataclass(frozen=True)
@@ -84,10 +179,22 @@ class MemoryRecord:
     extractor_revision: str = "rule-v1"
     reason_code: str = ""
     outcome: str | None = None
+    tenant_id: str = DEFAULT_TENANT_ID
+    agent_id: str = DEFAULT_AGENT_ID
+    visibility: MemoryVisibility = "operator"
 
     def __post_init__(self) -> None:
         if not all(isinstance(value, str) and value.strip() for value in (self.memory_id, self.memory_type, self.operator_id, self.content, self.extractor_revision)):
             raise ValueError("memory_id, memory_type, operator_id, content, and extractor_revision are required")
+        # Records may still contain legacy-unscoped for migration reads; "unknown" is never valid.
+        if self.operator_id.strip().lower() == "unknown":
+            raise MissingMemoryScopeError("operator_id must not use reserved placeholder 'unknown'")
+        if self.tenant_id.strip().lower() == "unknown" or self.agent_id.strip().lower() == "unknown":
+            raise MissingMemoryScopeError("tenant_id/agent_id must not use reserved placeholder 'unknown'")
+        if not self.tenant_id.strip() or not self.agent_id.strip():
+            raise MissingMemoryScopeError("tenant_id and agent_id are required")
+        if self.visibility not in _MEMORY_VISIBILITIES:
+            raise ValueError("invalid memory visibility")
         if self.status not in _MEMORY_LIFECYCLES:
             raise ValueError("invalid memory lifecycle")
         if isinstance(self.extraction_confidence, bool) or not isinstance(self.extraction_confidence, (int, float)) or not 0 <= self.extraction_confidence <= 1:
@@ -106,6 +213,17 @@ class MemoryRecord:
         """Compatibility value for the existing persistence/ranking column."""
         return float(self.extraction_confidence)
 
+    def namespace(self) -> MemoryNamespace:
+        return MemoryNamespace(
+            tenant_id=self.tenant_id,
+            operator_id=self.operator_id,
+            agent_id=self.agent_id,
+            memory_type=self.memory_type,
+            incident_id=self.incident_id,
+            session_id=self.session_id,
+            visibility=self.visibility,
+        )
+
     @classmethod
     def create(cls, **kwargs: object) -> "MemoryRecord":
         return cls(**kwargs)  # type: ignore[arg-type]
@@ -117,6 +235,9 @@ class MemoryRecord:
             "operator_id": self.operator_id,
             "incident_id": self.incident_id,
             "session_id": self.session_id,
+            "tenant_id": self.tenant_id,
+            "agent_id": self.agent_id,
+            "visibility": self.visibility,
             "content": self.content,
             "source_refs": [ref.to_dict() for ref in self.source_refs],
             "extraction_confidence": self.extraction_confidence,
@@ -143,6 +264,8 @@ class MemoryRecord:
             status=value.get("status", "active"), content_version=value.get("content_version", 1),
             schema_version=value.get("schema_version", 2), extractor_revision=value.get("extractor_revision", "rule-v1"),
             reason_code=value.get("reason_code", ""), outcome=value.get("outcome"),
+            tenant_id=value.get("tenant_id", DEFAULT_TENANT_ID), agent_id=value.get("agent_id", DEFAULT_AGENT_ID),
+            visibility=value.get("visibility", "operator"),
         )  # type: ignore[arg-type]
 
     @classmethod
@@ -170,9 +293,11 @@ class MemoryRecord:
         valid_to = raw_valid_to if isinstance(raw_valid_to, datetime) else (datetime.fromisoformat(str(raw_valid_to).replace("Z", "+00:00")) if raw_valid_to else None)
         text = value.get("content") or value.get("text") or " ".join(str(value.get(key, "")) for key in ("subject", "predicate", "object") if value.get(key)) or "[legacy memory without content]"
         confidence = value.get("extraction_confidence", value.get("confidence", 0.0))
+        # Legacy rows without operator stay readable for migration, but cannot be written as "unknown".
+        operator_id = str(value.get("operator_id") or value.get("owner_id") or "legacy-unscoped")
         return cls(
             memory_id=str(value["memory_id"]), memory_type=str(value.get("memory_type", "unknown")),
-            operator_id=str(value.get("operator_id") or value.get("owner_id") or "legacy-unscoped"),
+            operator_id=operator_id,
             incident_id=str(value["incident_id"]) if value.get("incident_id") is not None else None,
             session_id=str(value["session_id"]) if value.get("session_id") is not None else None,
             content=str(text), source_refs=tuple(source_refs), extraction_confidence=confidence,
@@ -180,6 +305,8 @@ class MemoryRecord:
             status=value.get("status") if value.get("status") in _MEMORY_LIFECYCLES else "pending",
             content_version=int(value.get("content_version", 1)), extractor_revision=str(value.get("extractor_revision", value.get("model_version", "legacy-v1"))),
             reason_code=str(value.get("reason_code", "legacy_record")), outcome=str(value["outcome"]) if value.get("outcome") is not None else None,
+            tenant_id=str(value.get("tenant_id", DEFAULT_TENANT_ID)), agent_id=str(value.get("agent_id", DEFAULT_AGENT_ID)),
+            visibility=value.get("visibility", "operator") if value.get("visibility") in _MEMORY_VISIBILITIES else "operator",  # type: ignore[arg-type]
         )
 
 

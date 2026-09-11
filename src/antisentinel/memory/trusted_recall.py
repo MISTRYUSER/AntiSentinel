@@ -61,6 +61,8 @@ class TrustedMemoryRecall:
     @staticmethod
     def _reject_reason(record, scope, now, evidence_lookup):
         if record.operator_id != scope.operator_id: return "operator_mismatch"
+        if getattr(record, "tenant_id", scope.tenant_id) != scope.tenant_id: return "tenant_mismatch"
+        if getattr(record, "agent_id", scope.agent_id) != scope.agent_id: return "agent_mismatch"
         if record.incident_id not in {None, scope.incident_id}: return "incident_mismatch"
         if record.status != "active": return "status_inactive"
         if record.valid_from > now: return "not_yet_valid"

@@ -116,3 +116,79 @@ def decay_packed_bodies(pins: list[PinnedSource], packed: list[SourceContextSlic
 def refs_from_pins(pins: list[PinnedSource], *, max_pins: int = 0) -> list[dict[str, Any]]:
     selected = pins[-max_pins:] if max_pins > 0 else pins
     return [pin.to_ref() for pin in selected]
+
+
+def _pin_match_key(repository_id: str, snapshot_id: str, content_hash: str, byte_start: Any, byte_end: Any) -> tuple[Any, ...]:
+    return (repository_id, snapshot_id, content_hash, byte_start, byte_end)
+
+
+def pinned_source_keys(pins: list[PinnedSource]) -> set[tuple[Any, ...]]:
+    """Identity keys for already-verified source pins (hash + optional byte range)."""
+    keys: set[tuple[Any, ...]] = set()
+    for pin in pins:
+        slice_obj = pin.slice
+        content_hash = str(slice_obj.content_hash or "")
+        if not content_hash:
+            continue
+        keys.add(
+            _pin_match_key(
+                str(slice_obj.repository_id or ""),
+                str(slice_obj.snapshot_id or ""),
+                content_hash,
+                slice_obj.byte_start,
+                slice_obj.byte_end,
+            )
+        )
+        # Also index without byte range so unscoped candidates can reuse.
+        keys.add(
+            _pin_match_key(
+                str(slice_obj.repository_id or ""),
+                str(slice_obj.snapshot_id or ""),
+                content_hash,
+                None,
+                None,
+            )
+        )
+    return keys
+
+
+def filter_unpinned_candidates(
+    candidates: list[dict[str, Any]] | tuple[dict[str, Any], ...],
+    pins: list[PinnedSource],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Split candidates into (needs_read, already_pinned)."""
+    pinned = pinned_source_keys(pins)
+    fresh: list[dict[str, Any]] = []
+    reused: list[dict[str, Any]] = []
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            fresh.append(candidate)  # type: ignore[arg-type]
+            continue
+        content_hash = str(candidate.get("source_hash") or candidate.get("content_hash") or "")
+        if not content_hash:
+            fresh.append(candidate)
+            continue
+        key = _pin_match_key(
+            str(candidate.get("repository_id") or ""),
+            str(candidate.get("snapshot_id") or ""),
+            content_hash,
+            candidate.get("byte_start"),
+            candidate.get("byte_end"),
+        )
+        # Prefer exact range match; fall back to hash-only when candidate omits range.
+        hash_only = _pin_match_key(
+            str(candidate.get("repository_id") or ""),
+            str(candidate.get("snapshot_id") or ""),
+            content_hash,
+            None,
+            None,
+        )
+        if key in pinned or (
+            candidate.get("byte_start") is None
+            and candidate.get("byte_end") is None
+            and hash_only in pinned
+        ):
+            reused.append(candidate)
+        else:
+            fresh.append(candidate)
+    return fresh, reused

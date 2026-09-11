@@ -12,6 +12,78 @@ from .models import CodeSearchScope
 from antisentinel.domain.errors import DomainError
 from antisentinel.runtime.deadline import check_deadline, QueryDeadlineExceeded
 
+# Working-set / pack consume result_summary; keep it bounded.
+_SEARCH_SUMMARY_MAX_BYTES = 4096
+_HIT_IDENTITY_KEYS = (
+    "repository_id",
+    "snapshot_id",
+    "published_generation",
+    "commit_sha",
+    "node_id",
+    "chunk_id",
+    "path",
+    "source_hash",
+    "byte_start",
+    "byte_end",
+    "parent_source_hash",
+)
+
+
+def _compact_hit(hit: Any) -> dict[str, Any]:
+    identity = dict(getattr(hit, "source_identity", None) or {})
+    compact: dict[str, Any] = {
+        "document_id": getattr(hit, "document_id", identity.get("document_id")),
+        "score": getattr(hit, "score", None),
+        "channels": list(getattr(hit, "channels", ()) or ()),
+    }
+    for key in _HIT_IDENTITY_KEYS:
+        if key in identity and identity[key] is not None:
+            compact[key] = identity[key]
+    ranks = getattr(hit, "ranks", None)
+    if isinstance(ranks, dict) and ranks:
+        compact["ranks"] = dict(ranks)
+    return {key: value for key, value in compact.items() if value is not None}
+
+
+def compact_search_payload(result: Any, *, max_bytes: int = _SEARCH_SUMMARY_MAX_BYTES) -> dict[str, Any]:
+    """Compact search result for working-set summaries (not the full tool result)."""
+    hits = [_compact_hit(hit) for hit in getattr(result, "hits", ()) or ()]
+    payload: dict[str, Any] = {
+        "hits": hits,
+        "mode": getattr(result, "mode", None),
+        "channel_statuses": dict(getattr(result, "channel_statuses", None) or {}),
+        "degraded": bool(getattr(result, "degraded", False)),
+        "error_code": getattr(result, "error_code", None),
+        "truncated": bool(getattr(result, "truncated", False)),
+        "incomplete": bool(getattr(result, "incomplete", False)),
+        "hit_count": len(hits),
+    }
+    encoded = json.dumps(payload, ensure_ascii=False)
+    if len(encoded.encode("utf-8")) <= max_bytes:
+        return payload
+    # Drop hits from the tail until under budget; keep status fields.
+    kept = list(hits)
+    while kept:
+        kept.pop()
+        payload = {
+            "hits": kept,
+            "mode": getattr(result, "mode", None),
+            "channel_statuses": dict(getattr(result, "channel_statuses", None) or {}),
+            "degraded": bool(getattr(result, "degraded", False)),
+            "error_code": getattr(result, "error_code", None),
+            "truncated": True,
+            "incomplete": True,
+            "hit_count": len(hits),
+            "summary_truncated": True,
+        }
+        if len(json.dumps(payload, ensure_ascii=False).encode("utf-8")) <= max_bytes:
+            return payload
+    payload["hits"] = []
+    payload["summary_truncated"] = True
+    payload["truncated"] = True
+    payload["incomplete"] = True
+    return payload
+
 
 def build_code_retrieval_tools(service, scope_provider: Callable[[dict[str, Any]], Any], *, graph_expander=None, evidence_assembler=None, query_encoder=None, scope_selectors=False) -> tuple[ToolDefinition, ...]:
     def search(arguments: dict[str, Any]):
@@ -52,12 +124,19 @@ def build_code_retrieval_tools(service, scope_provider: Callable[[dict[str, Any]
             query_vector=vector,
             top_k=arguments.get("top_k", 5), candidate_limit=arguments.get("candidate_limit", 30),
         )
+        full = {
+            "hits": [hit.__dict__ for hit in result.hits],
+            "mode": result.mode,
+            "channel_statuses": result.channel_statuses,
+            "degraded": result.degraded,
+            "error_code": result.error_code,
+            "truncated": result.truncated,
+            "incomplete": result.incomplete,
+        }
         return ToolExecutionResult(
             status="succeeded",
-            result={"hits": [hit.__dict__ for hit in result.hits], "mode": result.mode, "channel_statuses": result.channel_statuses, "degraded": result.degraded, "error_code": result.error_code, 'truncated': result.truncated, 'incomplete': result.incomplete},
-            result_summary=json.dumps({'hits': [hit.__dict__ for hit in result.hits], 'channel_statuses': result.channel_statuses,
-                                       'degraded': result.degraded, 'error_code': result.error_code,
-                                       'truncated': result.truncated, 'incomplete': result.incomplete}, ensure_ascii=False),
+            result=full,
+            result_summary=json.dumps(compact_search_payload(result), ensure_ascii=False),
         )
 
     definitions = [ToolDefinition(

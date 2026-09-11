@@ -62,5 +62,20 @@ class AuditedMemoryStore:
     def list_by_operator(self, operator_id: str):
         return self.primary.list_by_operator(operator_id)
 
+    def list_by_scope(self, scope, *, include_operator_wide: bool = True):
+        return self.primary.list_by_scope(scope, include_operator_wide=include_operator_wide)
+
     def list_by_type(self, memory_type: str):
         return self.primary.list_by_type(memory_type)
+
+    def search(self, query: str, *, operator_id: str, incident_id: str | None = None, limit: int = 10):
+        return self.primary.search(query, operator_id=operator_id, incident_id=incident_id, limit=limit)
+
+    def append_record(self, record):
+        return self.primary.append_record(record)
+
+    def replace_record(self, record):
+        return self.primary.replace_record(record)
+
+    def get_record(self, memory_id: str):
+        return self.primary.get_record(memory_id)

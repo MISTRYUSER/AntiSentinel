@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 storage/
+.local/
 .env
 .env.*
 !.env.example

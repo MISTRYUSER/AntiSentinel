@@ -50,15 +50,16 @@ class LocalVectorMemory:
                 (memory_id, self.embedder.model_name, self.embedder.dimension, json.dumps(vector, separators=(",", ":")), int(record.get("content_version", 1))),
             )
 
-    def search(self, query: str, *, operator_id: str | None = None, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+    def search(self, query: str, *, operator_id: str, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+        from antisentinel.memory.models import require_scope_id
+
+        require_scope_id("operator_id", operator_id)
         if limit < 1:
             raise ValueError("limit must be positive")
         query_vector = self._embed_query([query])[0]
         self._validate(query_vector)
-        where = ["m.status = 'active'", "v.embedding_model = ?", "v.dimension = ?", "v.content_version = m.content_version"]
-        params: list[Any] = [self.embedder.model_name, self.embedder.dimension]
-        if operator_id is not None:
-            where.append("(m.operator_id = ? OR m.operator_id IS NULL)"); params.append(operator_id)
+        where = ["m.status = 'active'", "m.operator_id = ?", "v.embedding_model = ?", "v.dimension = ?", "v.content_version = m.content_version"]
+        params: list[Any] = [operator_id, self.embedder.model_name, self.embedder.dimension]
         if incident_id is not None:
             where.append("(m.incident_id = ? OR m.incident_id IS NULL)"); params.append(incident_id)
         rows = self.database.query(
