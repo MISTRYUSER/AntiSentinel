@@ -29,6 +29,7 @@ class RuntimeSnapshot:
     completed_invocations: dict[str, dict[str, Any]] = field(default_factory=dict)
     source_context_refs: list[dict[str, Any]] = field(default_factory=list)
     skill_state: dict[str, Any] | None = None
+    working_set: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         require_non_empty(self.session_id, "session_id")
@@ -74,7 +75,20 @@ class RuntimeSnapshot:
             completed_invocations=deepcopy(value["completed_invocations"]),
             source_context_refs=deepcopy(value.get("source_context_refs", [])),
             skill_state=deepcopy(value.get("skill_state")),
+            working_set=deepcopy(value.get("working_set")),
         )
+
+
+def rebuild_working_set(snapshot: RuntimeSnapshot, *, recent_turn_limit: int = 3):
+    """Rebuild Working Set from checkpoint. Phase A requires explicit working_set field."""
+    from .working_set import WorkingSet
+
+    if snapshot.working_set:
+        restored = WorkingSet.from_dict(snapshot.working_set)
+        restored.set_recent_turn_limit(recent_turn_limit)
+        return restored
+    # Phase C: deterministic rebuild from turns/tasks/attempts. Phase A: empty set.
+    return WorkingSet(recent_turn_limit=recent_turn_limit)
 
 
 class CheckpointStore(Protocol):

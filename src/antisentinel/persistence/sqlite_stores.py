@@ -223,8 +223,12 @@ class SQLiteMemoryStore:
 
     @staticmethod
     def _validate(record: dict[str, Any]) -> None:
+        from antisentinel.memory.models import require_scope_id
+
         if not isinstance(record, dict) or not record.get("memory_id"):
             raise InvalidInputError("memory record must contain memory_id")
+        if record.get("operator_id") is not None:
+            require_scope_id("operator_id", str(record["operator_id"]))
 
     def append(self, record: dict[str, Any]) -> None:
         self._validate(record)
@@ -306,20 +310,42 @@ class SQLiteMemoryStore:
         return MemoryRecord.from_legacy_or_dict(record) if record is not None else None
 
     def list_by_operator(self, operator_id: str) -> list[dict[str, Any]]:
+        from antisentinel.memory.models import require_scope_id
+
+        require_scope_id("operator_id", operator_id)
         return self._list("operator_id=?", (operator_id,))
+
+    def list_by_scope(self, scope, *, include_operator_wide: bool = True) -> list[dict[str, Any]]:
+        from antisentinel.memory.models import require_scope_id
+        from antisentinel.memory.scope_filter import filter_records
+
+        require_scope_id("operator_id", scope.operator_id)
+        where = ["operator_id=?"]
+        params: list[Any] = [scope.operator_id]
+        if scope.incident_id is not None:
+            if include_operator_wide:
+                where.append("(incident_id IS NULL OR incident_id=?)")
+            else:
+                where.append("incident_id=?")
+            params.append(scope.incident_id)
+        if scope.memory_type is not None:
+            where.append("memory_type=?")
+            params.append(scope.memory_type)
+        return filter_records(self._list(" AND ".join(where), tuple(params)), scope, include_operator_wide=include_operator_wide)
 
     def list_by_type(self, memory_type: str) -> list[dict[str, Any]]:
         return self._list("memory_type=?", (memory_type,))
 
-    def search(self, query: str, *, operator_id: str | None = None, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+    def search(self, query: str, *, operator_id: str, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+        from antisentinel.memory.models import require_scope_id
+
+        require_scope_id("operator_id", operator_id)
         if not query.strip():
             return []
         if limit < 1:
             raise ValueError("limit must be positive")
-        where = ["m.status = 'active'"]
-        params: list[Any] = []
-        if operator_id is not None:
-            where.append("m.operator_id = ?"); params.append(operator_id)
+        where = ["m.status = 'active'", "m.operator_id = ?"]
+        params: list[Any] = [operator_id]
         if incident_id is not None:
             where.append("(m.incident_id IS NULL OR m.incident_id = ?)"); params.append(incident_id)
         filter_sql = " AND ".join(where)

@@ -18,7 +18,15 @@ from .jobs import InMemoryMemoryJobQueue, MemoryJob
 from .operator_graph import FilePreferenceStore, PreferenceCandidate, PreferenceGraph
 from .worker import MemoryWorker
 from .recall import MemoryRecall, MemoryScope
-from .models import MemoryRecord, MemorySourceRef
+from .models import (
+    DEFAULT_AGENT_ID,
+    DEFAULT_TENANT_ID,
+    AuthorizedMemoryScope,
+    MemoryRecord,
+    MemorySourceRef,
+    SessionKey,
+    require_scope_id,
+)
 from antisentinel.tracing.telemetry import Telemetry, TraceContext
 
 
@@ -45,31 +53,71 @@ class MemoryRecorder:
         self.worker = MemoryWorker(self)
         self.telemetry = telemetry or Telemetry(service_name="antisentinel.memory")
         self.candidate_retriever = candidate_retriever
-        self.trees: dict[str, SessionTimelineTree] = {}
+        self.trees: dict[SessionKey, SessionTimelineTree] = {}
         if start_worker:
             self.worker.start()
 
-    def recall_context(self, *, session_id: str, operator_id: str, incident_id: str, query: str, token_budget: int = 400):
-        tree = self.trees.setdefault(session_id, SessionTimelineTree(session_id))
+    def recall_context(
+        self,
+        *,
+        session_id: str,
+        operator_id: str,
+        incident_id: str,
+        query: str,
+        token_budget: int = 400,
+        tenant_id: str = DEFAULT_TENANT_ID,
+        agent_id: str = DEFAULT_AGENT_ID,
+    ):
+        memory_scope = AuthorizedMemoryScope(
+            operator_id=operator_id,
+            incident_id=incident_id,
+            session_id=session_id,
+            tenant_id=tenant_id,
+            agent_id=agent_id,
+        )
+        key = memory_scope.session_key()
+        tree = self.trees.setdefault(key, SessionTimelineTree(session_id))
+        durable = self.rollout_memory.durable
+
+        def records_for_scope(scope):
+            if hasattr(durable, "list_by_scope"):
+                return durable.list_by_scope(scope.to_namespace(), include_operator_wide=True)
+            return durable.list_by_operator(scope.operator_id)
+
         return MemoryRecall(
-            {session_id: tree},
-            records_provider=self.rollout_memory.durable.list_by_operator,
+            self.trees,
+            records_provider=records_for_scope,
             evidence_lookup=self.evidence.get,
             candidate_retriever=self.candidate_retriever,
         ).recall(
             MemoryScope(kind="session", scope_id=session_id),
-            query=query, token_budget=token_budget,
-            operator_id=operator_id, incident_id=incident_id,
+            query=query,
+            token_budget=token_budget,
+            memory_scope=memory_scope,
         )
 
-    def record(self, result: RuntimeResult, *, operator_id: str = "unknown", user_input: str = "") -> SessionTimelineTree:
+    def record(
+        self,
+        result: RuntimeResult,
+        *,
+        operator_id: str,
+        user_input: str = "",
+        tenant_id: str = DEFAULT_TENANT_ID,
+        agent_id: str = DEFAULT_AGENT_ID,
+    ) -> SessionTimelineTree:
+        require_scope_id("operator_id", operator_id)
+        require_scope_id("tenant_id", tenant_id)
+        require_scope_id("agent_id", agent_id)
+        require_scope_id("incident_id", str(result.incident_id))
+        require_scope_id("session_id", str(result.session_id))
         trace = TraceContext(
             trace_id=result.trace_id or f"trace-{result.session_id}",
             session_id=result.session_id,
             request_id=f"memory-record-{result.session_id}",
             parent_request_id=f"session-{result.session_id}",
         )
-        tree = self.trees.setdefault(result.session_id, SessionTimelineTree(result.session_id))
+        key = SessionKey(tenant_id, operator_id, agent_id, str(result.session_id))
+        tree = self.trees.setdefault(key, SessionTimelineTree(result.session_id))
         for event in sorted(result.events, key=lambda item: item.occurred_at):
             routed = self._route(event, result)
             self.events.append(routed)
@@ -133,6 +181,7 @@ class MemoryRecorder:
                         extraction_confidence=classification.confidence,
                         valid_from=datetime.now(timezone.utc), extractor_revision=type(self.memory_classifier).__name__,
                         reason_code=classification.reason_code,
+                        visibility="incident" if classification.memory_type == "episodic" else "agent",
                     ))
         except Exception as exc:  # retryable derived-memory failure; canonical facts already persisted
             error = type(exc).__name__

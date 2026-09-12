@@ -7,7 +7,7 @@ from typing import Any
 
 from antisentinel.persistence.memory_store import FileMemoryStore, InMemoryMemoryCache
 
-from .models import MemorySourceRef
+from .models import MemorySourceRef, new_memory_id, require_scope_id
 from .resolver import EntityResolver
 
 
@@ -92,6 +92,7 @@ class PreferenceGraph:
         self.resolver = resolver or EntityResolver()
 
     def upsert(self, candidate: PreferenceCandidate) -> PreferenceRecord:
+        require_scope_id("operator_id", candidate.operator_id)
         candidate = PreferenceCandidate(
             operator_id=candidate.operator_id, subject=self.resolver.canonicalize(candidate.subject),
             predicate=candidate.predicate, object=self.resolver.canonicalize(candidate.object),
@@ -102,7 +103,7 @@ class PreferenceGraph:
         active = next((item for item in records if item.status == "active" and item.subject == candidate.subject and item.predicate == candidate.predicate), None)
         if active is not None and active.object != candidate.object and candidate.confidence < active.confidence:
             conflict = PreferenceRecord(
-                memory_id=f"conflict-{len(records) + 1}", operator_id=candidate.operator_id,
+                memory_id=new_memory_id(), operator_id=candidate.operator_id,
                 subject=candidate.subject, predicate=candidate.predicate, object=candidate.object,
                 source_ids=candidate.source_ids, confidence=candidate.confidence, status="conflict",
                 content_version=active.content_version + 1, conflict_with=active.memory_id,
@@ -114,7 +115,7 @@ class PreferenceGraph:
             self._cache(candidate.operator_id, records)
             return conflict
         record = PreferenceRecord(
-            memory_id=f"preference-{len(records) + 1}", operator_id=candidate.operator_id,
+            memory_id=new_memory_id(), operator_id=candidate.operator_id,
             subject=candidate.subject, predicate=candidate.predicate, object=candidate.object,
             source_ids=candidate.source_ids, confidence=candidate.confidence,
             content_version=(active.content_version + 1 if active else 1),

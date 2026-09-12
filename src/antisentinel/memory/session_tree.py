@@ -69,14 +69,17 @@ class SessionTimelineTree:
             self.append_event(event)
 
     def digest(self, token_budget: int = 1200) -> dict[str, Any]:
+        from antisentinel.worker.runtime.budget import estimate_tokens
+
         lines: list[str] = []
         used = 0
         for node in self.nodes():
             line = f"{node.node_type}: {node.summary}"
-            if used + len(line) > token_budget * 4:
+            cost = estimate_tokens(line)
+            if used + cost > token_budget:
                 break
             lines.append(line)
-            used += len(line)
+            used += cost
         return {"session_id": self.session_id, "summary": "\n".join(lines), "node_count": len(self._nodes)}
 
     def _find_related(self, relation: str, value: str) -> str | None:

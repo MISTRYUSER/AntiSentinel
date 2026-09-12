@@ -55,6 +55,26 @@ def test_model_returns_final_and_completes_session():
     assert any(event.type == "model.responded" for event in result.events)
 
 
+def test_runtime_emits_context_built_budget_report():
+    incident, session = make_session()
+    model = FakeModel([{"final": {"summary": "ok", "diagnosis": "ok", "confidence": 0.9, "evidence_refs": []}}])
+    result = RuntimeEngine().run(
+        incident,
+        session,
+        model,
+        registry=ToolRegistry(auto_discover=False),
+        config=RuntimeConfig(max_context_tokens=8192),
+    )
+    built = [event for event in result.events if event.type == "context.built"]
+    assert built
+    payload = built[0].payload
+    assert payload["estimate_version"] == "utf8_ceil_div3_v1"
+    assert payload["within_budget"] is True
+    assert payload["total_estimated"] <= payload["max_context_tokens"]
+    assert "blocks" in payload
+    assert "truncated_slices" not in payload
+
+
 def test_model_creates_multiple_tasks_and_task_executes_multiple_tool_calls():
     incident, session = make_session()
     calls = []
@@ -310,3 +330,115 @@ def test_runtime_events_have_all_available_correlation_ids():
         assert event.related_ids["incident_id"] == str(incident.incident_id)
         assert event.related_ids["session_id"] == str(session.session_id)
         assert event.related_ids["turn_id"]
+
+
+def test_multi_turn_model_requests_retain_earlier_tool_summaries():
+    """PRD-002B §7.1: turn N still sees turn-1 tool result_summary (not last-turn-only)."""
+    incident, session = make_session()
+    registry = ToolRegistry(auto_discover=False)
+
+    def make_tool(name: str, summary: str):
+        registry.register(
+            ToolDefinition(
+                name=name,
+                description=name,
+                argument_schema={"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"]},
+                handler=lambda arguments, summary=summary: ToolExecutionResult(
+                    status="succeeded",
+                    result={"raw": f"SECRET-{summary}"},
+                    result_summary=summary,
+                ),
+            )
+        )
+
+    make_tool("read_logs", "error code E42 from turn1")
+    make_tool("read_metrics", "cpu saturation turn2")
+    make_tool("read_traces", "span drop turn3")
+
+    model = FakeModel([
+        {"tasks": [{"task_id": "t1", "objective": "logs", "tool_calls": [{"tool_name": "read_logs", "arguments": {"q": "1"}}]}]},
+        {"tasks": [{"task_id": "t2", "objective": "metrics", "tool_calls": [{"tool_name": "read_metrics", "arguments": {"q": "2"}}]}]},
+        {"tasks": [{"task_id": "t3", "objective": "traces", "tool_calls": [{"tool_name": "read_traces", "arguments": {"q": "3"}}]}]},
+        {"final": {"summary": "done", "diagnosis": "E42 root cause", "confidence": 0.9, "evidence_refs": []}},
+    ])
+
+    result = RuntimeEngine().run(
+        incident,
+        session,
+        model,
+        registry=registry,
+        config=RuntimeConfig(max_turns=4, recent_turn_limit=3),
+    )
+
+    assert result.status == "completed"
+    assert len(model.requests) == 4
+    fourth = str(model.requests[3].messages)
+    assert "error code E42 from turn1" in fourth
+    assert "cpu saturation turn2" in fourth
+    assert "span drop turn3" in fourth
+    assert "SECRET-" not in fourth
+    # Turn outcome must not be the hollow placeholder alone in prior history.
+    assert "tool calls completed" not in fourth or "read_logs" in fourth
+
+
+def test_working_set_off_only_keeps_last_turn_tool_summary():
+    """Comparison baseline: enable_working_set=False restores last-turn-only behavior."""
+    incident, session = make_session()
+    registry = ToolRegistry(auto_discover=False)
+    for name, summary in (
+        ("read_logs", "error code E42 from turn1"),
+        ("read_metrics", "cpu saturation turn2"),
+        ("read_traces", "span drop turn3"),
+    ):
+        registry.register(
+            ToolDefinition(
+                name=name,
+                description=name,
+                argument_schema={"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"]},
+                handler=lambda arguments, summary=summary: ToolExecutionResult(
+                    status="succeeded", result={"raw": "x"}, result_summary=summary
+                ),
+            )
+        )
+    model = FakeModel([
+        {"tasks": [{"task_id": "t1", "objective": "logs", "tool_calls": [{"tool_name": "read_logs", "arguments": {"q": "1"}}]}]},
+        {"tasks": [{"task_id": "t2", "objective": "metrics", "tool_calls": [{"tool_name": "read_metrics", "arguments": {"q": "2"}}]}]},
+        {"tasks": [{"task_id": "t3", "objective": "traces", "tool_calls": [{"tool_name": "read_traces", "arguments": {"q": "3"}}]}]},
+        {"final": {"summary": "done", "diagnosis": "E42", "confidence": 0.9, "evidence_refs": []}},
+    ])
+    result = RuntimeEngine().run(
+        incident, session, model, registry=registry,
+        config=RuntimeConfig(max_turns=4, enable_working_set=False),
+    )
+    assert result.status == "completed"
+    fourth = str(model.requests[3].messages)
+    assert "span drop turn3" in fourth
+    assert "error code E42 from turn1" not in fourth
+
+
+def test_checkpoint_persists_working_set_for_resume_continuity():
+    incident, session = make_session()
+    store = InMemoryCheckpointStore()
+    model = FakeModel([
+        {"tasks": [{"task_id": "task-1", "objective": "inspect", "tool_calls": [{"tool_name": "read_health", "arguments": {"service": "api"}}]}]},
+        ModelError("process interrupted"),
+    ])
+    RuntimeEngine().run(
+        incident,
+        session,
+        model,
+        registry=registry_for(
+            lambda arguments: ToolExecutionResult(
+                status="succeeded",
+                result={"raw": "secret"},
+                result_summary="health endpoint returned 503",
+            )
+        ),
+        checkpoint_store=store,
+    )
+    snapshot = store.load(session.session_id)
+    assert snapshot is not None
+    assert snapshot.working_set is not None
+    assert snapshot.working_set["recent_turns"]
+    assert "503" in str(snapshot.working_set)
+    assert "secret" not in str(snapshot.working_set)

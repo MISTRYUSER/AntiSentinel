@@ -44,7 +44,7 @@ def test_memory_recall_builds_context_from_real_records_with_budget_and_refs():
         "valid_to": None, "content": "排查时先看日志", "source_refs": [{"type": "session", "id": "session-1"}],
     }]
     tree = SessionTimelineTree("session-1")
-    memory_recall = recall.MemoryRecall({"session-1": tree}, records_provider=lambda operator_id: records)
+    memory_recall = recall.MemoryRecall({"session-1": tree}, records_provider=lambda _scope: records)
 
     view = memory_recall.recall(
         recall.MemoryScope(kind="session", scope_id="session-1"),

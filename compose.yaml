@@ -29,6 +29,13 @@ services:
     build: .
     restart: unless-stopped
     command: ["python", "-m", "antisentinel.code_map"]
+    # Image HEALTHCHECK probes the API; this worker is not an HTTP server.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,signal; os.kill(1, 0)"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     environment:
       ANTISENTINEL_CODE_MAP_ENABLED: "1"
       ANTISENTINEL_CODE_MAP_DB: /app/storage/antisentinel.db

@@ -31,7 +31,8 @@ def test_low_confidence_conflict_keeps_active_value_and_audit_metadata(tmp_path)
     ))
 
     assert conflict.status == "conflict"
-    assert conflict.conflict_with == "preference-1"
+    assert conflict.conflict_with == graph.list_active("operator-1")[0].memory_id
+    assert conflict.memory_id.startswith("mem_")
     assert conflict.source_ids == ("session-2",)
     assert conflict.model_version == "small-memory-v1"
     assert graph.list_active("operator-1")[0].object == "logs_before_metrics"

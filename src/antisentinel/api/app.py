@@ -153,7 +153,28 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
 
     @app.get("/api/runtime/config")
     def runtime_config():
-        return {"model_mode": app.state.service.model_mode, "model_provider": getattr(app.state.service, "model_provider", "fake"), "model_name": getattr(app.state.service, "model_name", None)}
+        from antisentinel.worker.runtime.budget import ESTIMATE_VERSION
+        from antisentinel.worker.runtime.engine import RuntimeConfig
+
+        from antisentinel.worker.runtime.model_profile import lookup_context_window
+
+        defaults = RuntimeConfig()
+        model_name = getattr(app.state.service, "model_name", None)
+        resolved = defaults.resolved_max_context_tokens(model=model_name if isinstance(model_name, str) else None)
+        return {
+            "model_mode": app.state.service.model_mode,
+            "model_provider": getattr(app.state.service, "model_provider", "fake"),
+            "model_name": model_name,
+            "max_context_tokens": resolved,
+            "max_context_tokens_mode": "override" if defaults.max_context_tokens > 0 else "auto",
+            "model_context_window": defaults.model_context_window or lookup_context_window(model_name if isinstance(model_name, str) else None),
+            "recent_turn_limit": defaults.recent_turn_limit,
+            "estimate_version": ESTIMATE_VERSION,
+            "context_strict": defaults.context_strict,
+            "packing_mode": "floors_degrade",
+            "source_pin_policy": defaults.source_pin_policy,
+            "target_fill_ratio": defaults.target_fill_ratio,
+        }
 
     @app.post("/v1/chat/completions")
     def chat_completions(payload: dict):

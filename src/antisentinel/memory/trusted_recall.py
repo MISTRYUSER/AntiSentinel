@@ -33,7 +33,17 @@ class TrustedMemoryRecall:
                 continue
             selected.append((record, "verified" if score >= 0.8 else "hypothesis"))
         used = _tokens(digest)
-        bounded_digest = digest[: token_budget * 2] if used > token_budget else digest
+        if used > token_budget:
+            from antisentinel.worker.runtime.budget import apply_truncation_marker, estimate_tokens
+
+            # Approximate byte budget from unified estimator (ceil(utf8/3)).
+            max_bytes = max(0, token_budget * 3)
+            bounded_digest = apply_truncation_marker(
+                digest.encode("utf-8")[:max_bytes].decode("utf-8", errors="ignore").rstrip()
+            )
+            used = estimate_tokens(bounded_digest)
+        else:
+            bounded_digest = digest
         used = min(used, token_budget)
         texts: list[str] = []
         ids: list[str] = []
@@ -51,6 +61,8 @@ class TrustedMemoryRecall:
     @staticmethod
     def _reject_reason(record, scope, now, evidence_lookup):
         if record.operator_id != scope.operator_id: return "operator_mismatch"
+        if getattr(record, "tenant_id", scope.tenant_id) != scope.tenant_id: return "tenant_mismatch"
+        if getattr(record, "agent_id", scope.agent_id) != scope.agent_id: return "agent_mismatch"
         if record.incident_id not in {None, scope.incident_id}: return "incident_mismatch"
         if record.status != "active": return "status_inactive"
         if record.valid_from > now: return "not_yet_valid"
@@ -64,4 +76,6 @@ class TrustedMemoryRecall:
 
 
 def _tokens(text: str) -> int:
-    return max(0, (len(text) + 1) // 2)
+    from antisentinel.worker.runtime.budget import estimate_tokens
+
+    return estimate_tokens(text or "")

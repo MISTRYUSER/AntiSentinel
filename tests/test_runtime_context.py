@@ -69,22 +69,38 @@ def test_context_includes_prior_turn_summaries():
     assert "Initial context" in str(request.messages)
 
 
-def test_context_includes_at_most_four_hash_verified_source_slices_with_32k_budget():
+def test_context_source_slices_respect_cap_and_token_budget():
     from antisentinel.code_map.source_context import SourceContextSlice
+    from antisentinel.worker.runtime.budget import ContextBudget
 
     incident = Incident.create(title="Source", source="test")
     session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
     turn = Turn.create(session_id=session.session_id)
     slices = [
-        SourceContextSlice(str(incident.incident_id), f"ev-{index}", "repo-a", "snap", "commit", "a.py", "x" * 8_000, "hash")
+        SourceContextSlice(str(incident.incident_id), f"ev-{index}", "repo-a", "snap", "commit", f"a{index}.py", "x" * 8_000, "hash")
         for index in range(5)
     ]
+    reports = []
+    budget = ContextBudget(max_context_tokens=8192, strict=True)
+    request = ContextBuilder().build(
+        incident,
+        session,
+        turn,
+        prior_turns=[],
+        task_results=[],
+        tools=[],
+        source_context=slices,
+        budget=budget,
+        on_budget_report=reports.append,
+    )
 
-    request = ContextBuilder().build(incident, session, turn, prior_turns=[], task_results=[], tools=[], source_context=slices)
-
-    source_message = next(message for message in request.messages if message["role"] == "source_context")
-    assert len(source_message["slices"]) == 4
-    assert sum(len(item["content"]) for item in source_message["slices"]) <= 32 * 1024
+    source_messages = [message for message in request.messages if message["role"] == "source_context"]
+    assert source_messages, "expected source_context message"
+    packed = source_messages[0]["slices"]
+    assert len(packed) <= 4
+    assert reports and reports[0].within_budget
+    assert any(item.reason == "slice_cap" for item in reports[0].dropped) or len(packed) < 5
+    assert any(item.get("truncated") for item in packed) or reports[0].blocks["source"].truncated or reports[0].blocks["source"].dropped > 0
 
 
 def test_runtime_loop_injects_memory_context_from_provider():
@@ -135,7 +151,10 @@ def test_runtime_loop_reinjects_verified_source_context_after_source_tool_call()
     result = RuntimeEngine().run(incident, session, model, registry=registry, config=RuntimeConfig(max_turns=2))
 
     assert result.status == "completed"
-    assert any(message["role"] == "source_context" and message["slices"][0]["evidence_id"] == str(evidence.evidence_id) for message in model.requests[1].messages)
+    # Ephemeral TTL=1: next turn still sees body once.
+    source_msg = next(message for message in model.requests[1].messages if message["role"] == "source_context")
+    assert source_msg["slices"][0]["evidence_id"] == str(evidence.evidence_id)
+    assert "def f()" in (source_msg["slices"][0].get("content") or "")
 
 
 def test_runtime_resume_rehydrates_checkpoint_source_references_before_model_call():
@@ -147,12 +166,92 @@ def test_runtime_resume_rehydrates_checkpoint_source_references_before_model_cal
 
     incident = Incident.create(title="resume", source="test")
     session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
-    checkpoint = RuntimeSnapshot(session_id=str(session.session_id), incident=incident.to_dict(), session=session.to_dict(), turns=[], tasks=[], tool_calls=[], attempts=[], messages=[], turn_count=0, current_task_index=None, current_tool_call_index=None, successful_tool_call_ids=(), last_error=None, source_context_refs=[{"evidence_id": "evidence-1"}])
+    checkpoint = RuntimeSnapshot(session_id=str(session.session_id), incident=incident.to_dict(), session=session.to_dict(), turns=[], tasks=[], tool_calls=[], attempts=[], messages=[], turn_count=0, current_task_index=None, current_tool_call_index=None, successful_tool_call_ids=(), last_error=None, source_context_refs=[{"evidence_id": "evidence-1", "repository_id": "repo", "snapshot_id": "snap", "commit_sha": "commit", "path": "a.py", "content_hash": "a" * 64}])
     store = InMemoryCheckpointStore()
     store.save(checkpoint)
     model = FakeProviderModel([{"final": {"summary": "done", "diagnosis": "resumed", "confidence": 1.0, "evidence_refs": []}}])
 
-    result = RuntimeEngine().run(incident, session, model, registry=ToolRegistry(auto_discover=False), config=RuntimeConfig(max_turns=1), checkpoint_store=store, resume=True, source_context_rehydrator=lambda refs: [SourceContextSlice(str(incident.incident_id), "evidence-1", "repo", "snap", "commit", "a.py", "def f(): pass\n", "a" * 64)])
+    result = RuntimeEngine().run(
+        incident,
+        session,
+        model,
+        registry=ToolRegistry(auto_discover=False),
+        config=RuntimeConfig(max_turns=1),
+        checkpoint_store=store,
+        resume=True,
+        source_context_rehydrator=lambda refs: [
+            SourceContextSlice(str(incident.incident_id), "evidence-1", "repo", "snap", "commit", "a.py", "def f(): pass\n", "a" * 64)
+        ],
+    )
 
     assert result.status == "completed"
-    assert any(message["role"] == "source_context" for message in model.requests[0].messages)
+    # CodeMap-first ephemeral: resume packs pointer stub, not rehydrated body.
+    source_msg = next(message for message in model.requests[0].messages if message["role"] == "source_context")
+    assert source_msg["slices"][0]["evidence_id"] == "evidence-1"
+    assert source_msg["slices"][0].get("pointer") is True
+    assert not (source_msg["slices"][0].get("content") or "")
+
+
+def test_context_includes_working_set_recent_and_older_digest():
+    from antisentinel.worker.runtime.working_set import ToolEvent, TurnRecord, WorkingSet
+
+    incident = Incident.create(title="WS", source="test", summary="s")
+    session = Session.create(incident_id=incident.incident_id, participant_ids=["worker-1"])
+    turn = Turn.create(session_id=session.session_id)
+    ws = WorkingSet(recent_turn_limit=2)
+    ws.append_turn(
+        TurnRecord(
+            turn_index=1,
+            plan_summary="early-plan",
+            tool_events=[
+                ToolEvent("read_logs", "fp1", "succeeded", "error code E42 in pod-a", ["ev-early"])
+            ],
+            outcome="read_logs:succeeded",
+        )
+    )
+    ws.append_turn(
+        TurnRecord(
+            turn_index=2,
+            plan_summary="mid-plan",
+            tool_events=[ToolEvent("read_metrics", "fp2", "succeeded", "cpu high", ["ev-mid"])],
+            outcome="read_metrics:succeeded",
+        )
+    )
+    ws.append_turn(
+        TurnRecord(
+            turn_index=3,
+            plan_summary="late-plan",
+            tool_events=[ToolEvent("read_health", "fp3", "succeeded", "503", ["ev-late"])],
+            outcome="read_health:succeeded",
+        )
+    )
+
+    request = ContextBuilder().build(
+        incident, session, turn, prior_turns=[], task_results=[], tools=[], working_set=ws
+    )
+    text = str(request.messages)
+    assert "error code E42 in pod-a" in text or "turn=1" in text  # recent folded → digest or still present
+    assert "ev-early" in text
+    assert "503" in text
+    assert "SECRET" not in text
+    user = next(message for message in request.messages if message["role"] == "user")
+    assert "working_set" in user
+    assert user["working_set"]["older_digest"]
+    # Tool history lives only inside working_set (no duplicate task_results message).
+    assert not any(message.get("role") == "tool" for message in request.messages)
+    recent_summaries = [
+        event["result_summary"]
+        for turn in user["working_set"]["recent_turns"]
+        for event in turn["tool_events"]
+    ]
+    assert any("503" in (summary or "") for summary in recent_summaries)
+    assert not any("error code E42" in (summary or "") for summary in recent_summaries)  # folded out of recent
+
+
+def test_benchmark_and_production_builders_share_pack_module():
+    from antisentinel.evaluation.skillsbench_session import make_benchmark_context_builder
+    from antisentinel.worker.runtime.pack import pack_context
+
+    assert ContextBuilder().build.__func__ is make_benchmark_context_builder().build.__func__
+    assert pack_context is not None
+

@@ -5,6 +5,7 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 storage/
+.local/
 .env
 .env.*
 !.env.example
@@ -16,3 +17,14 @@ dist/
 *.db
 *.db-wal
 *.db-shm
+data/
+
+# Case/runtime debris under validation (keep curated report/README by hand)
+docs/validation/**/worktree/
+docs/validation/**/remote.git/
+docs/validation/**/cache/
+docs/validation/**/cache.lock
+docs/validation/**/*.sqlite
+docs/validation/**/*.sqlite-*
+docs/validation/**/*-traces.jsonl
+docs/validation/**/.antisentinel-case

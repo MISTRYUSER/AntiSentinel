@@ -22,5 +22,8 @@ class LocalLongTermMemory:
     def get(self, memory_id: str) -> dict[str, Any] | None:
         return self.store.get(memory_id)
 
-    def search(self, query: str, *, operator_id: str | None = None, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+    def search(self, query: str, *, operator_id: str, incident_id: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
         return self.store.search(query, operator_id=operator_id, incident_id=incident_id, limit=limit)
+
+    def list_by_scope(self, scope, *, include_operator_wide: bool = True) -> list[dict[str, Any]]:
+        return self.store.list_by_scope(scope, include_operator_wide=include_operator_wide)
