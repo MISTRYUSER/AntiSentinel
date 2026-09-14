@@ -1,0 +1,330 @@
+[
+  {
+    "key": "809217e38b6b2f7298ca91d1bc3d6a25e9adc8d293a6487063afaf228333b373",
+    "request": {
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "intent_ref": {
+        "content_hash": "f77a7e22a605f7607ce665ed1b2e057476b475843dac358c673b5f0e2d3e6bbe",
+        "incident_id": "i1",
+        "intent_id": "ae0e44bc-0b3c-4b40-96e9-364059f0a0e7",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "intent_type": "question",
+      "key": "809217e38b6b2f7298ca91d1bc3d6a25e9adc8d293a6487063afaf228333b373",
+      "objective": "连接池是什么？",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "连接池是什么？",
+          "ref": "q01",
+          "source": "user"
+        }
+      ],
+      "route": "direct_answer",
+      "step": "main"
+    },
+    "receipt": {
+      "downstream_id": "contract-direct_answer-2f309916-7f63-43a1-83c9-225bc35fc9eb",
+      "intent_ref": {
+        "content_hash": "f77a7e22a605f7607ce665ed1b2e057476b475843dac358c673b5f0e2d3e6bbe",
+        "incident_id": "i1",
+        "intent_id": "ae0e44bc-0b3c-4b40-96e9-364059f0a0e7",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "key": "809217e38b6b2f7298ca91d1bc3d6a25e9adc8d293a6487063afaf228333b373",
+      "receipt_id": "e8e6fda2-8e2e-45fb-8b62-7e8707c5481a",
+      "receiver_kind": "contract",
+      "route": "direct_answer",
+      "status": "accepted",
+      "step": "main"
+    }
+  },
+  {
+    "key": "7c76c0cbe21cf4c6a69abcd01c623f4162beb1e6090ef70ea9076f6013435121",
+    "request": {
+      "constraints": [
+        {
+          "kind": "read_only",
+          "value": true
+        },
+        {
+          "kind": "forbid_restart",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "intent_ref": {
+        "content_hash": "d371f5a3b076bdd5885639692e5bd9ca2208220de9f70dba77b4ad2eb53e455d",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "key": "7c76c0cbe21cf4c6a69abcd01c623f4162beb1e6090ef70ea9076f6013435121",
+      "objective": "排查订单超时，只分析，不要重启。",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        }
+      ],
+      "route": "plan",
+      "step": "main"
+    },
+    "receipt": {
+      "downstream_id": "contract-plan-788a0214-fc1e-4f04-a366-518575cc2d2a",
+      "intent_ref": {
+        "content_hash": "d371f5a3b076bdd5885639692e5bd9ca2208220de9f70dba77b4ad2eb53e455d",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "key": "7c76c0cbe21cf4c6a69abcd01c623f4162beb1e6090ef70ea9076f6013435121",
+      "receipt_id": "6f5dd88a-108b-4461-978e-bafafb8882bd",
+      "receiver_kind": "contract",
+      "route": "plan",
+      "status": "accepted",
+      "step": "main"
+    }
+  },
+  {
+    "key": "6f93983ad11373cc27f4c688634971c27d4858e45ec031d77da5d6bc2ae822c5",
+    "request": {
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": {
+          "run_id": "r1",
+          "state_version": "v1",
+          "task_id": "t1"
+        }
+      },
+      "control": {
+        "operation": "status",
+        "target": null
+      },
+      "entities": {},
+      "intent_ref": {
+        "content_hash": "b9f3c1c58f55640ee3aa46d284338b27a671c6abb8794fce75d0b4e38564fa9a",
+        "incident_id": "i1",
+        "intent_id": "03c23597-9d75-42b8-8c4f-5a99c6679dbc",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "intent_type": "task_control",
+      "key": "6f93983ad11373cc27f4c688634971c27d4858e45ec031d77da5d6bc2ae822c5",
+      "objective": "刚才任务进度如何？",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "刚才任务进度如何？",
+          "ref": "t01",
+          "source": "user"
+        }
+      ],
+      "route": "task_control",
+      "step": "main"
+    },
+    "receipt": {
+      "downstream_id": "contract-task_control-95b53ffc-3f48-49e5-95a7-18e9eaad07d1",
+      "intent_ref": {
+        "content_hash": "b9f3c1c58f55640ee3aa46d284338b27a671c6abb8794fce75d0b4e38564fa9a",
+        "incident_id": "i1",
+        "intent_id": "03c23597-9d75-42b8-8c4f-5a99c6679dbc",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "key": "6f93983ad11373cc27f4c688634971c27d4858e45ec031d77da5d6bc2ae822c5",
+      "receipt_id": "d07d6fd1-cd70-4d9b-bf24-f7b5b74d96ca",
+      "receiver_kind": "contract",
+      "route": "task_control",
+      "status": "accepted",
+      "step": "main"
+    }
+  },
+  {
+    "key": "127640c0236d1950d03e9ac9d285590ef7ef009aac37df82cc3c538f9f5fd4f6",
+    "request": {
+      "constraints": [
+        {
+          "kind": "forbid_restart",
+          "value": true
+        },
+        {
+          "kind": "read_only",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": {
+          "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+          "revision": 1
+        },
+        "task": {
+          "run_id": "r1",
+          "state_version": "v1",
+          "task_id": "t1"
+        }
+      },
+      "control": {
+        "operation": "cancel",
+        "target": "t1"
+      },
+      "entities": {},
+      "intent_ref": {
+        "content_hash": "4dd023fbc6c859a093b9e829c9a2340968215d400e9069c84782b6ee27fde0c3",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 2,
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "key": "127640c0236d1950d03e9ac9d285590ef7ef009aac37df82cc3c538f9f5fd4f6",
+      "objective": "Do not change configuration, only analyze.",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": null,
+          "ref": "c1",
+          "source": "context"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        }
+      ],
+      "route": "task_control",
+      "step": "stop"
+    },
+    "receipt": {
+      "downstream_id": "contract-task_control-eb944146-832e-4795-b2ab-71e16e3fb5de",
+      "intent_ref": {
+        "content_hash": "4dd023fbc6c859a093b9e829c9a2340968215d400e9069c84782b6ee27fde0c3",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 2,
+        "session_id": "s1"
+      },
+      "key": "127640c0236d1950d03e9ac9d285590ef7ef009aac37df82cc3c538f9f5fd4f6",
+      "receipt_id": "f383c2f5-2af4-430d-bcca-40335c885867",
+      "receiver_kind": "contract",
+      "route": "task_control",
+      "status": "completed",
+      "step": "stop"
+    }
+  },
+  {
+    "key": "169d64fbf1297bdb6a48616f49861b4a879c175c5a2b532d3c38b597615d8a30",
+    "request": {
+      "constraints": [
+        {
+          "kind": "forbid_restart",
+          "value": true
+        },
+        {
+          "kind": "read_only",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": {
+          "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+          "revision": 1
+        },
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "intent_ref": {
+        "content_hash": "4dd023fbc6c859a093b9e829c9a2340968215d400e9069c84782b6ee27fde0c3",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 2,
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "key": "169d64fbf1297bdb6a48616f49861b4a879c175c5a2b532d3c38b597615d8a30",
+      "objective": "Do not change configuration, only analyze.",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": null,
+          "ref": "c1",
+          "source": "context"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        }
+      ],
+      "route": "plan",
+      "step": "main"
+    },
+    "receipt": {
+      "downstream_id": "contract-plan-2e96cdff-a289-43fd-b30a-2402dad13090",
+      "intent_ref": {
+        "content_hash": "4dd023fbc6c859a093b9e829c9a2340968215d400e9069c84782b6ee27fde0c3",
+        "incident_id": "i1",
+        "intent_id": "d69ad60a-a53c-4305-a135-8c6d11ee38c5",
+        "revision": 2,
+        "session_id": "s1"
+      },
+      "key": "169d64fbf1297bdb6a48616f49861b4a879c175c5a2b532d3c38b597615d8a30",
+      "receipt_id": "7bbcb0a6-1604-4fae-9a73-8a43100f867c",
+      "receiver_kind": "contract",
+      "route": "plan",
+      "status": "accepted",
+      "step": "main"
+    }
+  }
+]

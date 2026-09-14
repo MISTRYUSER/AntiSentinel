@@ -36,6 +36,7 @@ class RuntimeEngine:
         memory_context_provider: Callable[[Incident, Session, Any], Any] | None = None,
         source_context_rehydrator: Callable[[list[dict[str, Any]]], list[Any]] | None = None,
         skill_runtime=None,
+        cancel_requested: Callable[[], bool] | None = None,
     ) -> RuntimeResult:
         resume_snapshot = None
         if resume and checkpoint_store is not None:
@@ -57,5 +58,6 @@ class RuntimeEngine:
                 memory_context_provider=memory_context_provider,
                 source_context_rehydrator=source_context_rehydrator,
                 skill_runtime=skill_runtime,
+                cancel_requested=cancel_requested,
             )
             return replace(result, trace_id=trace_context.trace_id)

@@ -17,7 +17,11 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
-docker compose up --build -d --wait
+if [ -f .env.local ]; then
+  docker compose --env-file .env.local up --build -d --wait
+else
+  docker compose up --build -d --wait
+fi
 
 PORT="${ANTISENTINEL_PORT:-8765}"
 echo "AntiSentinel is ready: http://127.0.0.1:${PORT}"

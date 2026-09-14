@@ -1,0 +1,9 @@
+{
+  "records": 32,
+  "input_context_hash_checks": 64,
+  "resolved_hash_and_source_checks": 32,
+  "source_files_verified": 4,
+  "metrics_recomputed": true,
+  "effectiveness_pass": false,
+  "errors": 0
+}

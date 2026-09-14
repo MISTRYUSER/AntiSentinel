@@ -25,6 +25,7 @@ class SessionStatus(StrEnum):
     WAITING = "waiting"
     COMPLETED = "completed"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 
 @dataclass
@@ -89,6 +90,10 @@ class Session:
             "session.failed",
             error=error,
         )
+
+    def cancel(self) -> None:
+        self._transition((SessionStatus.ACTIVE, SessionStatus.WAITING), SessionStatus.CANCELLED,
+                         'session.cancelled', summary='运行已在调用边界停止；已发生的副作用未撤销。')
 
     def _transition(
         self,

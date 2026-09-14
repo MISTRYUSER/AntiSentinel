@@ -56,7 +56,7 @@ class RuntimeConfig:
 
 @dataclass(frozen=True)
 class RuntimeResult:
-    status: Literal["completed", "failed", "waiting_approval"]
+    status: Literal["completed", "failed", "waiting_approval", "cancelled"]
     incident_id: str
     session_id: str
     turn_count: int
@@ -109,6 +109,7 @@ class RuntimeLoop:
         memory_context_provider: Callable[[Incident, Session, Turn], Any] | None = None,
         source_context_rehydrator: Callable[[list[dict[str, Any]]], list[Any]] | None = None,
         skill_runtime=None,
+        cancel_requested: Callable[[], bool] | None = None,
     ) -> RuntimeResult:
         metrics = metrics or RuntimeMetrics()
         _current_skill_runtime.set(skill_runtime)
@@ -130,6 +131,20 @@ class RuntimeLoop:
         completed_invocations = dict(resume_snapshot.completed_invocations) if resume_snapshot else {}
         duplicate_only_turns = 0
 
+        def cancellation_result():
+            for active_task in tasks:
+                if active_task.status.value in {'pending', 'running', 'waiting_tool', 'waiting_approval'}:
+                    active_task.cancel('user requested cancellation')
+            if turn.status.value in {'running', 'waiting_tool'}:
+                turn.complete(ModelOutputKind.TEXT, 'cancelled at invocation boundary')
+            if session.status.value in {'active', 'waiting'}:
+                session.cancel()
+            self._publish(runtime_events, self._event('runtime.cancelled', incident, session, turn), event_sink)
+            return self._result('cancelled', incident, session, turns, tasks, tool_calls, attempts,
+                                runtime_events, task_summaries, evidence_refs, None,
+                                {'code': 'runtime_cancelled', 'message': 'Stopped at invocation boundary; completed effects are retained.'},
+                                evidences, token_usage)
+
         for turn_number in range(1, config.max_turns + 1):
             turn_had_tool_call = False
             turn_had_fresh_tool_call = False
@@ -140,6 +155,8 @@ class RuntimeLoop:
             metrics.increment("turns")
             turn.start()
             self._publish(runtime_events, self._event("turn.started", incident, session, turn), event_sink)
+            if cancel_requested and cancel_requested():
+                return cancellation_result()
             turn_scope = (
                 skill_runtime.execution_scope()
                 if skill_runtime is not None and hasattr(skill_runtime, "execution_scope")
@@ -216,6 +233,8 @@ class RuntimeLoop:
                     task_summaries, evidence_refs,
                 )
 
+            if cancel_requested and cancel_requested():
+                return cancellation_result()
             self._publish(runtime_events, self._event("model.completed", incident, session, turn), event_sink)
             self._publish(runtime_events, self._event("model.responded", incident, session, turn), event_sink)
             metrics.observe("model_latency_ms", (monotonic() - model_started) * 1000)
@@ -262,6 +281,8 @@ class RuntimeLoop:
                         task_summaries, evidence_refs,
                     )
                 for planned_call in task_plan.tool_calls:
+                    if cancel_requested and cancel_requested():
+                        return cancellation_result()
                     if len(tool_calls) >= config.max_total_tool_calls:
                         return self._fail(
                             incident, session, turn, turns, tasks, tool_calls, attempts, runtime_events,
@@ -405,6 +426,8 @@ class RuntimeLoop:
                     self._publish(runtime_events, self._event("task.completed", incident, session, turn, task), event_sink)
                 task_summaries.append(session_task_summary)
                 turn_results.append(task_summaries[-1])
+            if cancel_requested and cancel_requested():
+                return cancellation_result()
             if turn_had_tool_call and not turn_had_fresh_tool_call:
                 duplicate_only_turns += 1
                 if duplicate_only_turns >= 2:

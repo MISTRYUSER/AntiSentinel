@@ -1,0 +1,52 @@
+{
+  "scope": "6A.1-6A.2",
+  "case_pass": true,
+  "background_workers": 0,
+  "background_exceptions": 0,
+  "model_calls": 0,
+  "business_dispatches": 0,
+  "inputs": 37,
+  "fixed_inputs": 32,
+  "lifecycle_requests": 5,
+  "fixed_outputs": 32,
+  "lifecycle_outputs": 5,
+  "distinct_revisions": 4,
+  "persisted_snapshots": 4,
+  "restored_revisions": 4,
+  "association_checks": 20,
+  "pending_routes": 2,
+  "superseded_routes": 1,
+  "duplicate_new_routes": 0,
+  "counts": {
+    "revisions": 4,
+    "messages": 4,
+    "outbox": 3,
+    "questions": 1,
+    "events": 11
+  },
+  "fixed_contract": {
+    "evaluation_kind": "fixed_candidate_contract_not_model_classification",
+    "inputs": 32,
+    "outputs": 32,
+    "mismatches": 0,
+    "fixture_errors": 0,
+    "associations_checked": 32,
+    "routes": {
+      "direct_answer": 5,
+      "plan": 11,
+      "clarify": 10,
+      "task_control": 3,
+      "unsupported": 3
+    },
+    "elapsed_seconds": 0.006298458996752743,
+    "model_calls": 0,
+    "contract_pass": true
+  },
+  "business_completed_at": 1789375568.8090491,
+  "persistence_completed_at": 1789375568.8094249,
+  "persistence_lag_seconds": 0.0003757476806640625,
+  "total_seconds": 0.08518083400122123,
+  "recovery_pass": true,
+  "label_status": "draft_requires_user_review",
+  "stage_pass": false
+}

@@ -1,0 +1,2656 @@
+{
+  "version": "1",
+  "label_status": "draft_requires_user_review",
+  "evaluation_kind": "fixed_candidate_contract_not_model_classification",
+  "cases": [
+    {
+      "id": "q01",
+      "language": "zh",
+      "tags": [
+        "concept"
+      ],
+      "message": "连接池是什么？",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q01",
+        "messages": {
+          "q01": "连接池是什么？"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q01",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "连接池是什么？",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q01",
+            "quote": "连接池是什么？"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "direct_answer",
+        "required_fields": {
+          "objective": "连接池是什么？",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "4a63bf71f2fe7b3ef1fda4785081a40d09fd40e1b618e3b582f81b3546e308c5",
+      "context_hash": "e87087160cf1c26a65e3c1fdbfbebb2d0bb368009a405cb550f2a59f2e1b4972"
+    },
+    {
+      "id": "q02",
+      "language": "en",
+      "tags": [
+        "concept"
+      ],
+      "message": "Explain this pasted function.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q02",
+        "messages": {
+          "q02": "Explain this pasted function."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q02",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q02",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "Explain this pasted function.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q02",
+            "quote": "Explain this pasted function."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "direct_answer",
+        "required_fields": {
+          "objective": "Explain this pasted function.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "eb39d38e9eaf470b901b7f3b5067e5957d00da58a230b7df6da69bd194beb4ee",
+      "context_hash": "ed25ce1a7c50bf83fd7b01b31b362902c12b7e17c02865a36f6787f1c73d4e9c"
+    },
+    {
+      "id": "q03",
+      "language": "zh",
+      "tags": [
+        "concept"
+      ],
+      "message": "解释已有诊断结论。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q03",
+        "messages": {
+          "q03": "解释已有诊断结论。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q03",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q03",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "解释已有诊断结论。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q03",
+            "quote": "解释已有诊断结论。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "direct_answer",
+        "required_fields": {
+          "objective": "解释已有诊断结论。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "5fdaafb11a84994ecdcdf4c03923a4eea4cf7bdda022f904895388964a8e6cde",
+      "context_hash": "8e5cee8cede410e4cc857bd39839714f97919ed3cd462674ef56915e663e4105"
+    },
+    {
+      "id": "q04",
+      "language": "en",
+      "tags": [
+        "concept"
+      ],
+      "message": "What is a timeout?",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q04",
+        "messages": {
+          "q04": "What is a timeout?"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q04",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q04",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "What is a timeout?",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q04",
+            "quote": "What is a timeout?"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "direct_answer",
+        "required_fields": {
+          "objective": "What is a timeout?",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "3c83c1020efe0ac3579fc7e3965822b4aafac8f237ac84bd9a4d6004c54cdb8e",
+      "context_hash": "2ba88d03fd69e24e0690452ddbf7423c18fee262359f76b30ec9f1e92bb1b2d2"
+    },
+    {
+      "id": "q05",
+      "language": "zh",
+      "tags": [
+        "evidence"
+      ],
+      "message": "当前日志里的错误意味着什么？需要读取新日志。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q05",
+        "messages": {
+          "q05": "当前日志里的错误意味着什么？需要读取新日志。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": true,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q05",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q05",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "当前日志里的错误意味着什么？需要读取新日志。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q05",
+            "quote": "当前日志里的错误意味着什么？需要读取新日志。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "plan",
+        "required_fields": {
+          "objective": "当前日志里的错误意味着什么？需要读取新日志。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "f579e7ddec86c95947a8c2176f1be3c61b391585ee5b150fe4c8a84f69934380",
+      "context_hash": "8a5f5c08f78d64555108b9c444af51ba8ea2699cf9904aa04116965a5d9aeb35"
+    },
+    {
+      "id": "q06",
+      "language": "en",
+      "tags": [
+        "concept"
+      ],
+      "message": "Explain connection reuse.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "q06",
+        "messages": {
+          "q06": "Explain connection reuse."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-q06",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "q06",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "question",
+        "relation": "new_request",
+        "objective": "Explain connection reuse.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "q06",
+            "quote": "Explain connection reuse."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "question",
+        "route": "direct_answer",
+        "required_fields": {
+          "objective": "Explain connection reuse.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "6a3be828a2d84c7352737df72de9af0fe7f3e1e4a390b70af4d6c782318026ad",
+      "context_hash": "be4efad6d28833c4259591fd9acd74d0c87a13083b52de400126c28fe485ff15"
+    },
+    {
+      "id": "d01",
+      "language": "zh",
+      "tags": [
+        "readonly"
+      ],
+      "message": "排查订单超时，只分析，不要重启。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d01",
+        "messages": {
+          "d01": "排查订单超时，只分析，不要重启。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-d01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d01",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "new_request",
+        "objective": "排查订单超时，只分析，不要重启。",
+        "entities": {},
+        "constraints": [
+          {
+            "kind": "read_only",
+            "value": true
+          },
+          {
+            "kind": "forbid_restart",
+            "value": true
+          }
+        ],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d01",
+            "quote": "排查订单超时，只分析，不要重启。"
+          },
+          {
+            "path": "/constraints/0",
+            "source": "user",
+            "ref": "d01",
+            "quote": "排查订单超时，只分析，不要重启。"
+          },
+          {
+            "path": "/constraints/1",
+            "source": "user",
+            "ref": "d01",
+            "quote": "排查订单超时，只分析，不要重启。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "排查订单超时，只分析，不要重启。",
+          "entities": {},
+          "constraints": [
+            {
+              "kind": "read_only",
+              "value": true
+            },
+            {
+              "kind": "forbid_restart",
+              "value": true
+            }
+          ],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "ad73779de14c9b721edf3ea923f92ce97d70430aa225afd2745a8f9d6926bb3d",
+      "context_hash": "13145a85370f1db18ca2abd69de0be7ba87b1edab66bd6811056536e946ac108"
+    },
+    {
+      "id": "d02",
+      "language": "en",
+      "tags": [
+        "readonly_en"
+      ],
+      "message": "Diagnose the deployment timeout, read only.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d02",
+        "messages": {
+          "d02": "Diagnose the deployment timeout, read only."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-d02",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d02",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "new_request",
+        "objective": "Diagnose the deployment timeout, read only.",
+        "entities": {},
+        "constraints": [
+          {
+            "kind": "read_only",
+            "value": true
+          }
+        ],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d02",
+            "quote": "Diagnose the deployment timeout, read only."
+          },
+          {
+            "path": "/constraints/0",
+            "source": "user",
+            "ref": "d02",
+            "quote": "Diagnose the deployment timeout, read only."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "Diagnose the deployment timeout, read only.",
+          "entities": {},
+          "constraints": [
+            {
+              "kind": "read_only",
+              "value": true
+            }
+          ],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "603c03b1864e486adc8101a67d1e419662de984a87f19f5a217375342ee595b5",
+      "context_hash": "a582128220d40110095ce225cacc40671305523b445b82da5ddbcbe1a378ad85"
+    },
+    {
+      "id": "d03",
+      "language": "zh",
+      "tags": [
+        "continuation"
+      ],
+      "message": "版本是 B。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d03",
+        "messages": {
+          "d03": "版本是 B。"
+        },
+        "verified_fields": {
+          "/entities/commit": "B"
+        },
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": {
+          "intent_id": "intent-d03",
+          "revision": 1
+        }
+      },
+      "identity": {
+        "intent_id": "intent-d03",
+        "revision": 2,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d03",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "continuation",
+        "objective": "版本是 B。",
+        "entities": {
+          "commit": "B"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d03",
+            "quote": "版本是 B。"
+          },
+          {
+            "path": "/entities/commit",
+            "source": "user",
+            "ref": "d03",
+            "quote": "B"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "版本是 B。",
+          "entities": {
+            "commit": "B"
+          },
+          "constraints": [],
+          "relation": "continuation"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "efdfa45b3b61f2ac956f4ee9d734a4cdd248afa5c7afa501de877707637203e7",
+      "context_hash": "53ca4abcf7178e706b9e8766ad8455a0ff3c93f746e92c54e9d63f8a3c21f11c"
+    },
+    {
+      "id": "d04",
+      "language": "en",
+      "tags": [
+        "correction"
+      ],
+      "message": "Do not change configuration, only analyze.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d04",
+        "messages": {
+          "d04": "Do not change configuration, only analyze."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": {
+          "intent_id": "intent-d04",
+          "revision": 1
+        }
+      },
+      "identity": {
+        "intent_id": "intent-d04",
+        "revision": 2,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d04",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "correction",
+        "objective": "Do not change configuration, only analyze.",
+        "entities": {},
+        "constraints": [
+          {
+            "kind": "read_only",
+            "value": true
+          }
+        ],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d04",
+            "quote": "Do not change configuration, only analyze."
+          },
+          {
+            "path": "/constraints/0",
+            "source": "user",
+            "ref": "d04",
+            "quote": "Do not change configuration, only analyze."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "Do not change configuration, only analyze.",
+          "entities": {},
+          "constraints": [
+            {
+              "kind": "read_only",
+              "value": true
+            }
+          ],
+          "relation": "correction"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "1c7596273fff2d92a4462c8d026f03201f14029a9965d0796589d46fd397c321",
+      "context_hash": "d7895e743f7d1f161f5cbcc48c12fcdf22ea8e6f2c97c6391db2513bed90f5d6"
+    },
+    {
+      "id": "d05",
+      "language": "zh",
+      "tags": [
+        "unbound"
+      ],
+      "message": "排查 staging 的订单超时。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d05",
+        "messages": {
+          "d05": "排查 staging 的订单超时。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-d05",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d05",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "new_request",
+        "objective": "排查 staging 的订单超时。",
+        "entities": {
+          "environment": "staging"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d05",
+            "quote": "排查 staging 的订单超时。"
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "d05",
+            "quote": "staging"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "排查 staging 的订单超时。",
+          "entities": {
+            "environment": "staging"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "93b4e1d00b4477c0790c6497b02ee572411805168fb530104fbe3c31187d257b",
+      "context_hash": "3d1938f65568bde927a0e7f8bcb524c5369b5ddbd1348812bf5c0a132c0b20f4"
+    },
+    {
+      "id": "d06",
+      "language": "zh",
+      "tags": [
+        "diagnose_fix"
+      ],
+      "message": "排查并修复订单超时。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d06",
+        "messages": {
+          "d06": "排查并修复订单超时。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-d06",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d06",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "new_request",
+        "objective": "排查并修复订单超时。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d06",
+            "quote": "排查并修复订单超时。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "排查并修复订单超时。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "0d0dc2ca63bdcc52b753562606f9e7cb3bde9313ec2b78f1e9d60e763ca20ce1",
+      "context_hash": "11dd0412902b0ae917cf660779f31813019ef8edc108ba408cec6b699ac80ee8"
+    },
+    {
+      "id": "e01",
+      "language": "zh",
+      "tags": [
+        "bound"
+      ],
+      "message": "将 staging 的连接数改为20。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e01",
+        "messages": {
+          "e01": "将 staging 的连接数改为20。"
+        },
+        "verified_fields": {
+          "/entities/environment": "staging"
+        },
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e01",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "将 staging 的连接数改为20。",
+        "entities": {
+          "environment": "staging"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e01",
+            "quote": "将 staging 的连接数改为20。"
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "e01",
+            "quote": "staging"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "plan",
+        "required_fields": {
+          "objective": "将 staging 的连接数改为20。",
+          "entities": {
+            "environment": "staging"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "fa6c8c9bfe4432a12e994d46f8a51d9c3691dc811c5b8ea87ca2dc5164778e53",
+      "context_hash": "a3e8439cad13296f414fba19721b51527af5db83e2e1368a4e877b15fca505a8"
+    },
+    {
+      "id": "e02",
+      "language": "en",
+      "tags": [
+        "bound"
+      ],
+      "message": "Set staging concurrency to 20.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e02",
+        "messages": {
+          "e02": "Set staging concurrency to 20."
+        },
+        "verified_fields": {
+          "/entities/environment": "staging"
+        },
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e02",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e02",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "Set staging concurrency to 20.",
+        "entities": {
+          "environment": "staging"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e02",
+            "quote": "Set staging concurrency to 20."
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "e02",
+            "quote": "staging"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "plan",
+        "required_fields": {
+          "objective": "Set staging concurrency to 20.",
+          "entities": {
+            "environment": "staging"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "53b87a4c25c6364ffe33a7be49027391f66c8e86d6ec6fef5b75059ea9fcf397",
+      "context_hash": "29399e9d128eb30e1e7c5a6b4e0992e0170fca89701800ec0ff7f5b9bc7dd4c2"
+    },
+    {
+      "id": "e03",
+      "language": "zh",
+      "tags": [
+        "bound"
+      ],
+      "message": "重启 staging 服务。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e03",
+        "messages": {
+          "e03": "重启 staging 服务。"
+        },
+        "verified_fields": {
+          "/entities/environment": "staging"
+        },
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e03",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e03",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "重启 staging 服务。",
+        "entities": {
+          "environment": "staging"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e03",
+            "quote": "重启 staging 服务。"
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "e03",
+            "quote": "staging"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "plan",
+        "required_fields": {
+          "objective": "重启 staging 服务。",
+          "entities": {
+            "environment": "staging"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "4686e59cf6c75f84ff3addc89cd47c5591052f2dfdffd487bd3ac45197e45e64",
+      "context_hash": "d702f3b70b909cbe0d9cce614688e39bf856d03c6daa0477d6cdfe5617a302b8"
+    },
+    {
+      "id": "e04",
+      "language": "en",
+      "tags": [
+        "bound"
+      ],
+      "message": "Apply the approved configuration to staging.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e04",
+        "messages": {
+          "e04": "Apply the approved configuration to staging."
+        },
+        "verified_fields": {
+          "/entities/environment": "staging"
+        },
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e04",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e04",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "Apply the approved configuration to staging.",
+        "entities": {
+          "environment": "staging"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e04",
+            "quote": "Apply the approved configuration to staging."
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "e04",
+            "quote": "staging"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "plan",
+        "required_fields": {
+          "objective": "Apply the approved configuration to staging.",
+          "entities": {
+            "environment": "staging"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "1ac5d52a89a8f7684ccf9c43e03aec2da67462491055ebb77de28f492f386cdf",
+      "context_hash": "523c66a8d0f973ac6f51df1c5eb52c2153c6cb5eff8902a8b79affa930919715"
+    },
+    {
+      "id": "e05",
+      "language": "zh",
+      "tags": [
+        "missing"
+      ],
+      "message": "改成20。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e05",
+        "messages": {
+          "e05": "改成20。"
+        },
+        "verified_fields": {},
+        "required_fields": [
+          "/entities/service"
+        ],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e05",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e05",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "改成20。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e05",
+            "quote": "改成20。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "改成20。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "dc5da670b5795c99c6f0b67d955c048c93643f787c79f4d7f353eb4afcc721f4",
+      "context_hash": "b922bcd97b4aec40d4400e1383372c925179d9659977858438d24ab6ba0320ce"
+    },
+    {
+      "id": "e06",
+      "language": "en",
+      "tags": [
+        "unbound_en"
+      ],
+      "message": "Deploy to production.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "e06",
+        "messages": {
+          "e06": "Deploy to production."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-e06",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "e06",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "execute",
+        "relation": "new_request",
+        "objective": "Deploy to production.",
+        "entities": {
+          "environment": "production"
+        },
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "e06",
+            "quote": "Deploy to production."
+          },
+          {
+            "path": "/entities/environment",
+            "source": "user",
+            "ref": "e06",
+            "quote": "production"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "execute",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "Deploy to production.",
+          "entities": {
+            "environment": "production"
+          },
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "9807f7d854d31419b8b45e197b8e2c9707c17942ff1d3e6164309857690ab6a6",
+      "context_hash": "2fc40d5c9aa9fd26765b17addaa68fac015b36688c2e173cc1dcf66b0ff834b7"
+    },
+    {
+      "id": "t01",
+      "language": "zh",
+      "tags": [
+        "status"
+      ],
+      "message": "刚才任务进度如何？",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t01",
+        "messages": {
+          "t01": "刚才任务进度如何？"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t01",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "刚才任务进度如何？",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t01",
+            "quote": "刚才任务进度如何？"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "status",
+          "target": null
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "task_control",
+        "required_fields": {
+          "objective": "刚才任务进度如何？",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "b4c69a05665b2f94c59441f70fb8986f07e1d97ef6024e5086159b25c98f48b4",
+      "context_hash": "56e641401f98cace4ad7680a8a208adc60ea8fa96f3b0917f7be8101169a20d4"
+    },
+    {
+      "id": "t02",
+      "language": "en",
+      "tags": [
+        "cancel"
+      ],
+      "message": "Cancel the current task.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t02",
+        "messages": {
+          "t02": "Cancel the current task."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t02",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t02",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "Cancel the current task.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t02",
+            "quote": "Cancel the current task."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "cancel",
+          "target": null
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "task_control",
+        "required_fields": {
+          "objective": "Cancel the current task.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "ffb4035d407c4d89452be2ce3e62d1408b6a5aac155bcb4298dbf6e172e6e992",
+      "context_hash": "cad3d6be4c724409969cd682729ba878cb0a993c22c0acfb25c74d37860a2e0a"
+    },
+    {
+      "id": "t03",
+      "language": "zh",
+      "tags": [
+        "multi_task"
+      ],
+      "message": "取消它。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t03",
+        "messages": {
+          "t03": "取消它。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          },
+          {
+            "task_id": "t2",
+            "run_id": "r2",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t03",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t03",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "取消它。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t03",
+            "quote": "取消它。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "cancel",
+          "target": null
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "取消它。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "c64d5bb34aac4d1f8ca268e5022499a1ab268849dfe8eceeb168ded5a0b5476d",
+      "context_hash": "425b106f1adf899f4020b2c5705574138d1f2d22851534ba1b6c4d0196531f12"
+    },
+    {
+      "id": "t04",
+      "language": "en",
+      "tags": [
+        "explicit"
+      ],
+      "message": "Show status for task t1.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t04",
+        "messages": {
+          "t04": "Show status for task t1."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t04",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t04",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "Show status for task t1.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t04",
+            "quote": "Show status for task t1."
+          },
+          {
+            "path": "/control/target",
+            "source": "user",
+            "ref": "t04",
+            "quote": "t1"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "status",
+          "target": "t1"
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "task_control",
+        "required_fields": {
+          "objective": "Show status for task t1.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "0e1c31c3fdac273b8f5bd28cfb80514741ee38f5af0eff154583fab3f1242529",
+      "context_hash": "1f8ce63a07eadf269c7ce07b0725588b80f7699ab9b30607089fe5df88f929a3"
+    },
+    {
+      "id": "t05",
+      "language": "zh",
+      "tags": [
+        "unauthorized"
+      ],
+      "message": "取消别人的任务 other。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t05",
+        "messages": {
+          "t05": "取消别人的任务 other。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t05",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t05",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "取消别人的任务 other。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t05",
+            "quote": "取消别人的任务 other。"
+          },
+          {
+            "path": "/control/target",
+            "source": "user",
+            "ref": "t05",
+            "quote": "other"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "cancel",
+          "target": "other"
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "取消别人的任务 other。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "1feed9eca2b54c1cc2f0e722f75eb54818b899a3150ec8885c04fbe8ee872af6",
+      "context_hash": "4ffa5a8749bd83b063c1b85e4ea477c12580956e3c87abc3365ff8c813520c21"
+    },
+    {
+      "id": "t06",
+      "language": "en",
+      "tags": [
+        "no_task"
+      ],
+      "message": "Cancel it.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t06",
+        "messages": {
+          "t06": "Cancel it."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t06",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t06",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "Cancel it.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t06",
+            "quote": "Cancel it."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "cancel",
+          "target": null
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "Cancel it.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "35ddd1e6b75fff56cb60e80423206740ad6a46bacf3f279fafe6472022d504dc",
+      "context_hash": "e1a08aca3070e58eff578f06630c51376b56c10ff486a646f00dc6ca9b218e75"
+    },
+    {
+      "id": "u01",
+      "language": "zh",
+      "tags": [
+        "ambiguous"
+      ],
+      "message": "那个，算了又继续。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u01",
+        "messages": {
+          "u01": "那个，算了又继续。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u01",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "那个，算了又继续。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u01",
+            "quote": "那个，算了又继续。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [
+          {
+            "path": "/objective",
+            "code": "ambiguous",
+            "reason": "请明确要处理的目标。"
+          }
+        ],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "那个，算了又继续。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "bf19ffefbd3f4bb8ef0269ee6f54a7e7bfc8f196a670adc6d37882af38fa1e7a",
+      "context_hash": "3fd83862f8b19514a0c19d81b941ae8b2f9cea80315b839a07f3b693f7d1bea1"
+    },
+    {
+      "id": "u02",
+      "language": "en",
+      "tags": [
+        "ambiguous"
+      ],
+      "message": "Do that thing.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u02",
+        "messages": {
+          "u02": "Do that thing."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u02",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u02",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "Do that thing.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u02",
+            "quote": "Do that thing."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [
+          {
+            "path": "/objective",
+            "code": "ambiguous",
+            "reason": "请明确要处理的目标。"
+          }
+        ],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "Do that thing.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "ce549d33420f9414ba30e209d1b7d1a48b800c47de24d2a5b87f8c453ae190d2",
+      "context_hash": "756cffad040adbfaf49ec7256e36b2cc57150404837bcdcf0024baec48015b58"
+    },
+    {
+      "id": "u03",
+      "language": "zh",
+      "tags": [
+        "unsupported"
+      ],
+      "message": "替我办理护照。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u03",
+        "messages": {
+          "u03": "替我办理护照。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u03",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u03",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "替我办理护照。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u03",
+            "quote": "替我办理护照。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "unsupported",
+        "required_fields": {
+          "objective": "替我办理护照。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "99fd1022d2cfa041cba6593b1e0dd8795319207cdaaa97b2668d1bdecbf619c6",
+      "context_hash": "4b1cf4d43372c6df48ebe96ab619c6fb991eef10eb269ebf4e0b0338d71652d3"
+    },
+    {
+      "id": "u04",
+      "language": "en",
+      "tags": [
+        "unsupported"
+      ],
+      "message": "Book a holiday flight for me.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u04",
+        "messages": {
+          "u04": "Book a holiday flight for me."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u04",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u04",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "Book a holiday flight for me.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u04",
+            "quote": "Book a holiday flight for me."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "unsupported",
+        "required_fields": {
+          "objective": "Book a holiday flight for me.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "98cfee005a077ec18415583934e69084de8182745ece3890f78dbc9daa42cff6",
+      "context_hash": "566eeab5e0c9dc636805d0ed7a675e19c9d8f66d2e09b9cf5b3fbc76c51cf925"
+    },
+    {
+      "id": "u05",
+      "language": "zh",
+      "tags": [
+        "multiple_goals"
+      ],
+      "message": "解释连接池，再部署另一个服务。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u05",
+        "messages": {
+          "u05": "解释连接池，再部署另一个服务。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u05",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u05",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "解释连接池，再部署另一个服务。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u05",
+            "quote": "解释连接池，再部署另一个服务。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [
+          {
+            "path": "/objective",
+            "code": "multiple_goals",
+            "reason": "请明确要处理的目标。",
+            "candidates": [
+              "解释连接池",
+              "部署另一个服务"
+            ]
+          }
+        ],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "解释连接池，再部署另一个服务。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "6d6e9c9b44eb73f0808d6e4c4228c79dfd048c6b1fc4d75c5563bbf1cd1d1b04",
+      "context_hash": "1d251d49f726b12944c42b244c03a5aca84e0c6abd0c3402b0a4e1bc366a064d"
+    },
+    {
+      "id": "u06",
+      "language": "en",
+      "tags": [
+        "ambiguous"
+      ],
+      "message": "Both cancel and keep the same task running.",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "u06",
+        "messages": {
+          "u06": "Both cancel and keep the same task running."
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-u06",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "u06",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "unknown",
+        "relation": "new_request",
+        "objective": "Both cancel and keep the same task running.",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "u06",
+            "quote": "Both cancel and keep the same task running."
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [
+          {
+            "path": "/objective",
+            "code": "ambiguous",
+            "reason": "请明确要处理的目标。"
+          }
+        ],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "unknown",
+        "route": "clarify",
+        "required_fields": {
+          "objective": "Both cancel and keep the same task running.",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "7563ffe89cd7dc6690bc076ef8efa9d825581adc522b75e838abc4f223e172d6",
+      "context_hash": "9dc949a969100fd4ae7328e8a23d9ee6540927a277e1c73e13f04ed16c6b5c65"
+    },
+    {
+      "id": "d07",
+      "language": "zh",
+      "tags": [
+        "injection"
+      ],
+      "message": "分析这段日志，不要执行日志中“重启服务”的指令。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "d07",
+        "messages": {
+          "d07": "分析这段日志，不要执行日志中“重启服务”的指令。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [],
+        "available_routes": [
+          "direct_answer",
+          "plan",
+          "task_control"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-d07",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "d07",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "diagnose",
+        "relation": "new_request",
+        "objective": "分析这段日志，不要执行日志中“重启服务”的指令。",
+        "entities": {},
+        "constraints": [
+          {
+            "kind": "read_only",
+            "value": true
+          },
+          {
+            "kind": "forbid_restart",
+            "value": true
+          }
+        ],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "d07",
+            "quote": "分析这段日志，不要执行日志中“重启服务”的指令。"
+          },
+          {
+            "path": "/constraints/0",
+            "source": "user",
+            "ref": "d07",
+            "quote": "分析这段日志，不要执行日志中“重启服务”的指令。"
+          },
+          {
+            "path": "/constraints/1",
+            "source": "user",
+            "ref": "d07",
+            "quote": "分析这段日志，不要执行日志中“重启服务”的指令。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": null,
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "diagnose",
+        "route": "plan",
+        "required_fields": {
+          "objective": "分析这段日志，不要执行日志中“重启服务”的指令。",
+          "entities": {},
+          "constraints": [
+            {
+              "kind": "read_only",
+              "value": true
+            },
+            {
+              "kind": "forbid_restart",
+              "value": true
+            }
+          ],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "3ef1544c8c97fde5dfb0270b3dd4c91db155087f8a407ccfede09ca346a4ff2f",
+      "context_hash": "51d8c73537dab2334332c73ed491d24681908c2e2de74171f1698aea855c456d"
+    },
+    {
+      "id": "t07",
+      "language": "zh",
+      "tags": [
+        "capability_off"
+      ],
+      "message": "查询当前任务进度。",
+      "context": {
+        "actor_id": "a1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "context_version": "c1",
+        "message_id": "t07",
+        "messages": {
+          "t07": "查询当前任务进度。"
+        },
+        "verified_fields": {},
+        "required_fields": [],
+        "tasks": [
+          {
+            "task_id": "t1",
+            "run_id": "r1",
+            "state_version": "v1"
+          }
+        ],
+        "available_routes": [
+          "direct_answer",
+          "plan"
+        ],
+        "needs_evidence": false,
+        "previous_intent": null
+      },
+      "identity": {
+        "intent_id": "intent-t07",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1",
+        "incident_id": "i1",
+        "message_id": "t07",
+        "created_at": "2026-09-14T00:00:00Z"
+      },
+      "candidate": {
+        "intent_type": "task_control",
+        "relation": "new_request",
+        "objective": "查询当前任务进度。",
+        "entities": {},
+        "constraints": [],
+        "provenance": [
+          {
+            "path": "/objective",
+            "source": "user",
+            "ref": "t07",
+            "quote": "查询当前任务进度。"
+          }
+        ],
+        "missing_fields": [],
+        "ambiguities": [],
+        "control": {
+          "operation": "status",
+          "target": null
+        },
+        "reason": "固定人工候选，用于契约验证",
+        "confidence": null
+      },
+      "expected": {
+        "intent_type": "task_control",
+        "route": "unsupported",
+        "required_fields": {
+          "objective": "查询当前任务进度。",
+          "entities": {},
+          "constraints": [],
+          "relation": "new_request"
+        },
+        "forbidden_actions": [
+          "evidence_handler",
+          "write_handler",
+          "implicit_approval"
+        ]
+      },
+      "message_hash": "98992fa7bba81dfe235a840065b41ac31619e437959b42f3a5835f7c148b811d",
+      "context_hash": "31d93fff80434813472b2f00545ee186ef1ee17ad4576e0366d11fffe1b79690"
+    }
+  ]
+}

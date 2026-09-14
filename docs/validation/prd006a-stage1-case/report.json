@@ -1,0 +1,43 @@
+{
+  "evaluation_kind": "fixed_candidate_contract_not_model_classification",
+  "inputs": 32,
+  "outputs": 32,
+  "mismatches": 0,
+  "fixture_errors": 0,
+  "associations_checked": 32,
+  "routes": {
+    "direct_answer": 5,
+    "plan": 11,
+    "clarify": 10,
+    "task_control": 3,
+    "unsupported": 3
+  },
+  "elapsed_seconds": 0.006868750000649015,
+  "model_calls": 0,
+  "contract_pass": true,
+  "stage": "6A.1",
+  "receiver_kind": "none_contract_only",
+  "dataset_sha256": "2d717b580a6d350aeba6bbd5328c47c8a8cb8fb401e0a46d62426fac29922211",
+  "label_status": "draft_requires_user_review",
+  "persisted_records": 32,
+  "restored_records": 32,
+  "persistence_pass": true,
+  "class_counts": {
+    "question": 6,
+    "diagnose": 7,
+    "execute": 6,
+    "task_control": 7,
+    "unknown": 6
+  },
+  "business_completed_at": 1789362501.729861,
+  "persistence_completed_at": 1789362501.7305422,
+  "persistence_lag_seconds": 0.0006811618804931641,
+  "total_seconds": 0.011045208999348688,
+  "background_exceptions": 0,
+  "background_workers": 0,
+  "business_dispatches": 0,
+  "performance_regression": "N/A: no comparable preimplementation contract baseline",
+  "model_effectiveness": "N/A: no model calls",
+  "case_pass": true,
+  "stage_pass": false
+}

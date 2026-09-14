@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AntiSentinel · 意图对话</title>
+<style>body{font:16px/1.6 system-ui,sans-serif;background:#101820;color:#e4eaf0;margin:0}main{max-width:850px;margin:40px auto;padding:24px}h1{font-size:28px}label{display:block;margin:16px 0 6px}input,textarea,select,button{font:inherit;padding:10px;border-radius:6px;border:1px solid #607080;background:#182530;color:inherit}input,textarea{box-sizing:border-box;width:100%}button{cursor:pointer;background:#175f76;margin:12px 8px 0 0}button:disabled{opacity:.5}article{border:1px solid #3e5362;padding:18px;margin:16px 0;border-radius:8px;white-space:pre-wrap;overflow-wrap:anywhere}small{color:#a9c0cc}a{color:#71d3ed}#error{color:#ffb0a6}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style></head>
+<body><main><h1>意图对话</h1><p>提问、分析问题，或查询和取消已有任务。</p><label for="access">服务访问令牌</label><input id="access" type="password" autocomplete="off" placeholder="服务令牌，不是 DeepSeek 密钥"><small>令牌仅用于本页请求，不写入浏览器存储。</small>
+<div><button id="create">新建对话</button><span id="session"></span></div>
+<label for="message">消息</label><textarea id="message" rows="4" placeholder="例如：连接池是什么？"></textarea>
+<label for="relation">消息关系</label><select id="relation"><option value="new">新请求</option><option value="follow">补充或纠正上一个请求</option></select>
+<div><button id="send">发送</button><button id="refresh">刷新当前请求状态</button></div><p id="error" role="alert"></p><section id="messages" aria-live="polite"></section></main>
+<script src="/static/intent.js"></script></body></html>
