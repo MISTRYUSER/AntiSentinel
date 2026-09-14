@@ -71,10 +71,15 @@ class HttpUsageAudit:
             usage = {}
         with self._lock:
             self.responses += 1
-            if isinstance(usage, dict) and type(usage.get('total_tokens')) is int:
-                self.input_tokens += int(usage.get('prompt_tokens', usage.get('input_tokens', 0)))
-                self.output_tokens += int(usage.get('completion_tokens', usage.get('output_tokens', 0)))
-                self.total_tokens += usage['total_tokens']
+            if not isinstance(usage, dict):
+                return
+            values = (usage.get('prompt_tokens', usage.get('input_tokens', 0)),
+                      usage.get('completion_tokens', usage.get('output_tokens', 0)),
+                      usage.get('total_tokens'))
+            if all(type(value) is int and value >= 0 for value in values):
+                self.input_tokens += values[0]
+                self.output_tokens += values[1]
+                self.total_tokens += values[2]
                 self.usage_responses += 1
 
     def snapshot(self):
@@ -118,6 +123,7 @@ def assert_report_safe(report):
     forbidden.extend(value for value in (
         os.getenv('DASHSCOPE_API_KEY'),
         os.getenv('ANTISENTINEL_MODEL_API_KEY'),
+        os.getenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_TOKEN'),
     ) if value)
     if any(value in encoded for value in forbidden):
         raise ValueError('case report contains sensitive material')

@@ -2291,3 +2291,11 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 ### 2026-09-14 PRD-005 真实应用 Case：冻结输入与脱敏审计
 
 新增 `scripts/prd005_real_case_support.py` 和3项测试。`freeze_case_input()` 通过本地 Git 固定 manifest SHA-256、一个有答案查询和一个无答案查询，要求二者 Scope 完全一致；`HttpUsageAudit` 仅保留请求/响应次数及 provider usage token 数；`case_environment()` 恢复环境变量；`assert_report_safe()` 拒绝 API key、Authorization、Bearer、请求/响应正文和源码正文字段。先运行失败测试，因模块不存在而 collection error；实现后3 passed、0 failed、0 warnings、0.60s。新增源码文件1、测试文件1、开发日志1；真实Case0、外部模型调用0、Milvus连接0、后台异常0、重试0。下一步为 R1 正常 FastAPI/lifespan/Session 的本地替身回归，尚不调用真实模型。
+
+### 2026-09-14 R1 超时诊断与恢复开发
+
+上一轮 R1 的120秒超时不能仅凭 AllocTimestamp 日志归因为 Lite 不兼容。只读 `sqlite3 .../pytest-5/test_r1_uses_normal_applicatio0/r1/facts.sqlite` 查到82任务中48 ready/34 pending、48 attempts全部无error_code、2个building投影；attempt时间每5秒各推进2个，与Coordinator默认poll_seconds=5一致。根因是测试预算与逐任务轮询速度不匹配。失败目录保留。仅将本地工厂poll_seconds设为0.02后，同一输入和真实SQLite/Milvus Lite测试1 passed、1 warning、7.07s；生产默认5秒未改、外部模型调用0。远程回调和审计仍在补齐，不标真实Case通过。另前轮worktree全量测试未保留最终退出结果，不能把进程结束当作基线通过；后续全量将保留日志与退出码。
+
+### 2026-09-14 R1 runner 本地验证
+
+新增正常应用HTTP Session/lifespan及完成后重开runner，显式切片和独立collection；检查82文档/任务/向量对账、两个Session、已披露引用、Evidence回连及重开。异步HTTP hooks错误、usage非法值、Milvus token脱敏、NaN预算、CLI从其他目录导入均经失败测试后修复。`python -m pytest tests/test_prd005_real_case_support.py tests/test_prd005_real_session_case.py -q --tb=short --show-capture=no`：18 passed、0 failed、1 warning、12.31s；外部请求0。伪造引用Case返回case_pass=false；blocked及失败Session不再等满预算。远程模式恢复使用MODEL_MODE=real，本地替身用fake基础装配+显式real Session工厂，二者在报告披露；Redis在Case环境中禁用。正式R1仍待用户确认，当前没有远程Case通过结论。下一步R2及累计回归。
