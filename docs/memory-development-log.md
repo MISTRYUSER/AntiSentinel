@@ -2287,3 +2287,7 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 新增 `ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION`。默认值保持 `antisentinel_code`；显式合法基名传给 `MilvusAdapter`，用于共享 Milvus 上的独立 Case collection。空值、数字开头、连字符、空格、长度超过80的值在客户端创建前以 `invalid Milvus collection base` 拒绝。实现仅改 `src/antisentinel/retrieval/config.py` 和 `tests/test_retrieval_coordinator.py`，默认 hybrid/投影/point identity 均未改。
 
 先写7项配置测试并观察到6失败（显式值仍为默认、5类非法值未拒绝），再实现最小配置读取和正则校验。针对性结果7 passed、0 failed、1 warning、1.76s；相关回归33 passed、0 failed、1 warning、4.65s。基线728项为此前同一HEAD记录，本 Step 未重跑全量；真实Case0、外部模型调用0、Milvus连接0、后台异常0、重试0。下一步为冻结输入和脱敏调用审计；当前阶段仅配置前置完成，尚未推进真实运行状态。
+
+### 2026-09-14 PRD-005 真实应用 Case：冻结输入与脱敏审计
+
+新增 `scripts/prd005_real_case_support.py` 和3项测试。`freeze_case_input()` 通过本地 Git 固定 manifest SHA-256、一个有答案查询和一个无答案查询，要求二者 Scope 完全一致；`HttpUsageAudit` 仅保留请求/响应次数及 provider usage token 数；`case_environment()` 恢复环境变量；`assert_report_safe()` 拒绝 API key、Authorization、Bearer、请求/响应正文和源码正文字段。先运行失败测试，因模块不存在而 collection error；实现后3 passed、0 failed、0 warnings、0.60s。新增源码文件1、测试文件1、开发日志1；真实Case0、外部模型调用0、Milvus连接0、后台异常0、重试0。下一步为 R1 正常 FastAPI/lifespan/Session 的本地替身回归，尚不调用真实模型。
