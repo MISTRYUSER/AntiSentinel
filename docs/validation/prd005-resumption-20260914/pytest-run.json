@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/Users/xuewentao/.local/share/antisentinel/venvs/ragas-0.4.3/bin/python",
+    "-m",
+    "pytest",
+    "-q"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 54.26,
+  "retries": 0
+}

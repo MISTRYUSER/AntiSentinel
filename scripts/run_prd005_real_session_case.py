@@ -294,7 +294,7 @@ def _wait_ready(client, scope_count, deadline):
 def _run_session(client, service, query, deadline):
     incident_response = client.post('/api/incidents', json={
         'title': query['query'],
-        'summary': '请使用代码检索工具核对固定版本源码后给出结论；证据不足时明确拒答。',
+        'summary': '请使用code_retrieval.search的hybrid模式检索，并用read_evidence核对固定版本源码后给出结论；证据不足时明确拒答。',
         'source': 'prd005-r1-case',
     })
     if incident_response.status_code != 201:
@@ -323,6 +323,37 @@ def _run_session(client, service, query, deadline):
     persisted = _wait_for(lambda: service.application_store.load_result(session_id), deadline,
                           'terminal session result was not persisted')
     return incident, session_id, result, persisted, business_seen, time.monotonic()
+
+
+def verified_hybrid_search(result, scope):
+    searches = {call['tool_call_id']: call for call in result['tool_calls']
+                if call['tool_name'] == 'code_retrieval.search'}
+    if not searches or any(call['arguments'].get('mode', 'hybrid') != 'hybrid' for call in searches.values()):
+        return False
+    seen = set()
+    for attempt in result['attempts']:
+        cid = attempt['tool_call_id']
+        if cid not in searches:
+            continue
+        try:
+            summary = json.loads(attempt['result_summary'])
+            valid = (attempt['status'] == 'succeeded' and summary['degraded'] is False
+                     and summary['incomplete'] is False and summary['error_code'] is None
+                     and summary['channel_statuses'] == {'keyword': 'ready', 'vector': 'ready'}
+                     and all(all(hit['source_identity'].get(k) == v for k, v in scope.items())
+                             for hit in summary['hits']))
+        except (KeyError, TypeError, ValueError):
+            return False
+        if not valid:
+            return False
+        seen.add(cid)
+    return seen == set(searches)
+
+
+def restored_result_matches(original, reopened):
+    # The HTTP view adds conversation messages. Every persisted result field must survive.
+    return (reopened.get('status') == 'completed'
+            and all(key in reopened and reopened[key] == value for key, value in original.items()))
 
 
 def _evidence_document_matches(service, references):
@@ -425,6 +456,8 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
                 names = {call['tool_name'] for call in answerable['tool_calls']}
                 checks['retrieval_tools_executed'] = {'code_retrieval.search', 'code_retrieval.read_evidence'} <= names
                 checks['tool_attempts_succeeded'] = all(attempt['status'] == 'succeeded' for record in session_records for attempt in record[3]['attempts'])
+                checks['hybrid_channels_and_scope'] = all(verified_hybrid_search(record[3], query['scope'])
+                    for record, query in zip(session_records, (frozen.answerable_query, frozen.no_answer_query)))
                 all_refs = [{'evidence_id': value} for value in sorted(set().union(*factories.disclosures.values()))]
 
             second = _start_service(factories)
@@ -432,7 +465,8 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
             with TestClient(create_app(second)) as client:
                 health.append(_wait_ready(client, scope_count, deadline))
                 reopened = [client.get(f'/api/sessions/{record[1]}').json() for record in session_records]
-                checks['reopened_results'] = all(item.get('status') == 'completed' for item in reopened)
+                checks['reopened_results'] = all(restored_result_matches(record[3], item)
+                    for record, item in zip(session_records, reopened))
                 restored = SourceEvidenceService(
                     None, second.code_map_store, second.code_map_evidence_store
                 ).rehydrate(all_refs)
@@ -477,6 +511,12 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
         }
         checks['all_records_present'] = counts['documents'] == counts['tasks'] == counts['ready_tasks'] == counts['vectors'] and counts['documents'] > 0
         checks['all_results_persisted'] = counts['persisted_results'] == 2
+        embedding_http, model_http = factories.embedding_audit.snapshot(), factories.model_audit.snapshot()
+        checks['remote_calls_observed'] = (not factories.remote or (
+            embedding_http['requests'] > 0 and model_http['requests'] > 0
+            and embedding_http['responses'] == embedding_http['requests']
+            and model_http['responses'] == model_http['requests']))
+        factories.close()
         retries = sum(max(0, row[0] - 1) for row in database.query('SELECT attempt FROM code_embedding_tasks'))
         unexpected_background_exceptions = sum(item['projection_errors'] for item in health)
         elapsed_ms = (time.monotonic() - started) * 1000
@@ -516,6 +556,7 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
             'verification_lag_ms': (verified_completed - business_completed) * 1000,
             'elapsed_ms': elapsed_ms,
             'evidence_projection_identity_persisted': False,
+            'timing_semantics': 'API terminal/result persistence are polling observations; verification gap includes reopen',
         }
         assert_report_safe(report)
         (output / 'report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
@@ -537,6 +578,8 @@ def preflight(repository, manifest, answerable_query_id, no_answer_query_id, mil
     frozen = freeze_case_input(repository, manifest, answerable_query_id, no_answer_query_id)
     per_scope = Counter((d.repository_id, d.snapshot_id, d.published_generation, d.commit_sha) for d in frozen.corpus.documents)
     def endpoint_identity(value):
+        if not value:
+            return {'kind': 'not_configured'}
         url = urlsplit(value)
         return {'scheme': url.scheme, 'host': url.hostname, 'port': url.port} if url.scheme else {'kind': 'local_file'}
     return {

@@ -2299,3 +2299,19 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 ### 2026-09-14 R1 runner 本地验证
 
 新增正常应用HTTP Session/lifespan及完成后重开runner，显式切片和独立collection；检查82文档/任务/向量对账、两个Session、已披露引用、Evidence回连及重开。异步HTTP hooks错误、usage非法值、Milvus token脱敏、NaN预算、CLI从其他目录导入均经失败测试后修复。`python -m pytest tests/test_prd005_real_case_support.py tests/test_prd005_real_session_case.py -q --tb=short --show-capture=no`：18 passed、0 failed、1 warning、12.31s；外部请求0。伪造引用Case返回case_pass=false；blocked及失败Session不再等满预算。远程模式恢复使用MODEL_MODE=real，本地替身用fake基础装配+显式real Session工厂，二者在报告披露；Redis在Case环境中禁用。正式R1仍待用户确认，当前没有远程Case通过结论。下一步R2及累计回归。
+
+### 2026-09-14 R2 进程退出恢复本地验证
+
+复用旧run_embedding_worker_case入口及17退出码路径，增加86退出码的单文档恢复模式；新模块prd005_embedding_recovery.py承载冻结语料/远程编码审计，避免把旧runner继续扩大。崩溃前marker与调用计数fsync，子进程真实os._exit，父进程重开SQLite并在租约到期后重新领取。检查point ID/hash/版本、缓存向量复用、attempt/token变化与旧租约4种写操作拒绝。先见CrashAfterFirstUpsert缺失红灯，后`python -m pytest tests/test_prd005_embedding_recovery_case.py -q --tb=short --show-capture=no`为4 passed、0 failed、5.72s；本地1任务/2attempt/1向量、首次编码1/恢复0、预期进程退出1、旧租约拒绝4、业务重试1（租约到期）、外部模型调用0。远程真实Case尚未执行；后续累计回归。
+
+### 2026-09-14 R1/R2 累计回归与真实Case准备
+
+增加hybrid验收函数并先观察4项缺失红灯，后验证keyword替代/降级/越域拒绝。累计相关66 passed、0 failed、1 warning、18.85s；全量`python -m pytest -q --tb=short --show-capture=no`退出0，761 passed、0 skipped、0 failed、7 warnings、54.58s，较728基线+33/+4.53%。日志位于docs/validation/prd005-real-app-20260914/pytest-focused-final.txt和pytest-full.txt。当前9个运行/测试文件相对原基线有改动；本地两个新场景36检查满足（R1 23/R2 13），旧Worker独立Case17/17检查满足、6460.87ms，外部调用0。三个场景共53检查，本轮独立运行旧Case1次、技术重试0；R2有1次预期lease恢复业务重试，不能统称重试0。两份新本地report已保存到文档目录；累计全量后的旧Case日志为legacy-worker.txt。
+
+正常R1本地：82文档/82任务/82向量、2结果、1Evidence恢复、编码82→0、3428.70ms、业务/持久化观察差0.76ms；R2：1任务/2attempt/1向量、编码1→0、3527.52ms、观察差14.13ms、stale lease拒绝4。后台意外异常0，质量仍false。正常应用重开是同进程重建服务对象；R2才是真实子进程退出，不夸大进程或服务器重启范围。
+
+已生成REAL-APPLICATION-CASE.md：拟以manifest 6473b9ae…的10份文件版本/50833bytes/82文档、q01/q21，复用既有Flash1024维和deepseek-chat，R1申请600秒（默认轮询等待下界200秒），R2 120秒。只读配置检查确认存在所需字段，网络请求0；真实Case仍待用户确认，不推进生产/业务质量或用户review状态。源码/脚本静态compileall及git diff --check退出0。
+
+独立review发现1项Important：R1重开结果仅比较completed状态，可能漏掉答案/引用/执行记录缺失。新增5项字段保留测试（先见缺失函数红灯），修复为原始持久结果全字段比较，HTTP附加messages不参与原字段集合。累计相关71/71通过、0失败、1warning、17.70s（pytest-focused-review.txt）；随后重跑全量，保留首次761日志，不用其覆盖最终结果。self-learning后置成功记录1项调度经验、1项预算建议，复用3条历史卡并写usage信号。
+
+最终全量766 passed、0 skipped、0 failed、7 warnings、66.13s（pytest-full-review.txt），相对728基线+38/+5.22%；本轮9个运行/测试文件，外部模型调用0、真实远程Case0、回归技术重试0。最终本地R1/R2分别23/13检查满足，3741.10/3179.57ms，R1持久观察差0.97ms/R2读回观察差13.72ms；结果见r1-local-review-report.json和r2-local-review-report.json。旧runner此前17/17保持，源代码之后未变更。源码compileall、git diff --check、3份主文档本地链接检查均退出0/断链0。阶段仅本地回归通过，远程验收/生产质量/用户review仍未推进。待确认的真实Case文档已落盘并给出固定输入、模型、独立存储与600/120秒预算。

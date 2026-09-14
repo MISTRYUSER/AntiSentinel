@@ -9,6 +9,7 @@ import sys
 import time
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from antisentinel.persistence.sqlite_database import SQLiteDatabase
 from antisentinel.retrieval.models import CodeSearchDocument,CodeSearchScope
 from antisentinel.retrieval.sqlite_store import SQLiteCodeSearchStore
@@ -18,6 +19,27 @@ from antisentinel.retrieval.milvus_adapter import MilvusAdapter
 
 SCOPE=CodeSearchScope('fixture','snapshot',1,'fixed-commit')
 TEMPLATE='path-symbol-source-v1'
+
+
+class CrashAfterFirstUpsert:
+    """Case-only crash injection after a successful write, never a production hook."""
+    def __init__(self, index, marker, crash=os._exit, exit_code=86):
+        self.index, self.marker, self.crash = index, Path(marker), crash
+        self.exit_code = exit_code
+
+    def __getattr__(self, name):
+        return getattr(self.index, name)
+
+    def upsert(self, points):
+        count = self.index.upsert(points)
+        if count != len(points):
+            raise ConnectionError('incomplete upsert cannot be a successful crash point')
+        with self.marker.open('w') as stream:
+            json.dump({'point_ids': [point.point_id for point in points], 'upserted': count}, stream)
+            stream.flush()
+            os.fsync(stream.fileno())
+        self.crash(self.exit_code)
+        raise RuntimeError('crash callback returned')
 
 
 class LocalEmbedder:
@@ -45,12 +67,8 @@ def wait_due(queue,rid):
 def child(output):
     queue=EmbeddingTaskStore(SQLiteDatabase(output/'facts.sqlite')).queue
     rid=enqueue(queue,'m1');base=index(output,'m1')
-    class CrashAfterWrite:
-        def __getattr__(self,name):return getattr(base,name)
-        def upsert(self,points):
-            base.upsert(points)
-            os._exit(17)
-    EmbeddingWorker(queue,CrashAfterWrite(),LocalEmbedder(output,'m1'),owner='crashed-process',lease_seconds=2).run_once(rid)
+    crash_index = CrashAfterFirstUpsert(base, output/'upsert-complete.json', exit_code=17)
+    EmbeddingWorker(queue,crash_index,LocalEmbedder(output,'m1'),owner='crashed-process',lease_seconds=2).run_once(rid)
     raise RuntimeError('crash hook was not reached')
 
 
@@ -126,6 +144,29 @@ def run(output):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);p.add_argument('--child',action='store_true');a=p.parse_args()
-    if a.child:child(a.output)
-    else:raise SystemExit(run(a.output))
+    p=argparse.ArgumentParser()
+    p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--child',action='store_true')
+    p.add_argument('--real-recovery',action='store_true')
+    p.add_argument('--local-embedding',action='store_true',help='Explicit offline substitute; never a real model acceptance')
+    p.add_argument('--repository',type=Path)
+    p.add_argument('--manifest',type=Path)
+    p.add_argument('--query-id')
+    p.add_argument('--milvus-uri')
+    p.add_argument('--timeout',type=float,default=120)
+    a=p.parse_args()
+    if a.real_recovery:
+        from scripts.prd005_embedding_recovery import recovery_child, run_real_recovery
+        if a.child:
+            recovery_child(a.output)
+        else:
+            if not all((a.repository, a.manifest, a.query_id, a.milvus_uri)):
+                p.error('real recovery requires repository, manifest, query-id and milvus-uri')
+            report = run_real_recovery(a.repository, a.manifest, a.output, a.milvus_uri, a.query_id,
+                                       a.timeout, local_embedding=a.local_embedding)
+            print(json.dumps(report,indent=2))
+            raise SystemExit(0 if report['case_pass'] else 1)
+    elif a.child:
+        child(a.output)
+    else:
+        raise SystemExit(run(a.output))

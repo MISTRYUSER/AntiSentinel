@@ -130,3 +130,32 @@ def test_false_citation_prevents_case_pass(tmp_path):
                  tmp_path / 'bad', str(tmp_path / 'bad-vectors.db'), 'q01', 'q21', factories=factories)
     assert not report['checks']['citations_disclosed']
     assert not report['case_pass']
+
+
+@pytest.mark.parametrize('mode,degraded,scope,accepted', [
+    ('hybrid', False, 'repo', True), ('keyword', False, 'repo', False),
+    ('hybrid', True, 'repo', False), ('hybrid', False, 'other', False),
+])
+def test_hybrid_acceptance_rejects_downgrade_and_wrong_scope(mode, degraded, scope, accepted):
+    from scripts.run_prd005_real_session_case import verified_hybrid_search
+    result = {'tool_calls': [{'tool_call_id': 'call', 'tool_name': 'code_retrieval.search',
+                              'arguments': {'mode': mode}}],
+              'attempts': [{'tool_call_id': 'call', 'status': 'succeeded', 'result_summary': json.dumps({
+                  'degraded': degraded, 'incomplete': False, 'error_code': None,
+                  'channel_statuses': {'keyword': 'ready', 'vector': 'ready'},
+                  'hits': [{'source_identity': {'repository_id': scope}}],
+              })}]}
+    assert verified_hybrid_search(result, {'repository_id': 'repo'}) is accepted
+
+
+@pytest.mark.parametrize('changed', ['final', 'evidence_refs', 'tool_calls', 'attempts', None])
+def test_reopened_result_must_preserve_answer_citations_and_execution(changed):
+    from scripts.run_prd005_real_session_case import restored_result_matches
+    original = {'status': 'completed', 'final': {'summary': 'answer'},
+                'evidence_refs': [{'evidence_id': 'evidence'}],
+                'tool_calls': [{'tool_name': 'code_retrieval.search'}],
+                'attempts': [{'status': 'succeeded'}]}
+    reopened = {**original, 'messages': []}
+    if changed:
+        reopened.pop(changed)
+    assert restored_result_matches(original, reopened) is (changed is None)

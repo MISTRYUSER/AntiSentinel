@@ -1,0 +1,12 @@
+{
+  "main_documents": 3,
+  "missing_local_links": [],
+  "placeholders": [],
+  "git_diff_check_exit": 0,
+  "source_diff_files": [],
+  "document_bytes": {
+    "docs/validation/prd005-resumption-20260914/PROGRESS.md": 4843,
+    "docs/research/prd005-resumption-research.md": 10038,
+    "docs/superpowers/specs/2026-09-14-prd005-resumption-design.md": 12052
+  }
+}
