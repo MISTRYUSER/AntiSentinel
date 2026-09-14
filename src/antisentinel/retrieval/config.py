@@ -1,5 +1,6 @@
 """Default-off application retrieval configuration; clients open at startup."""
 import os
+import re
 
 
 def coordinator_from_environment(service):
@@ -12,6 +13,9 @@ def coordinator_from_environment(service):
     uri = os.getenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_URI', '').strip()
     if not repositories or not uri:
         raise ValueError('retrieval requires repository allowlist and Milvus URI')
+    collection_base = os.getenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION', 'antisentinel_code').strip()
+    if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]{0,79}', collection_base) is None:
+        raise ValueError('invalid Milvus collection base')
     if service.code_map_store is None or service.code_map_evidence_store is None:
         raise ValueError('retrieval requires SQLite persistence and Evidence store')
     from antisentinel.code_map.source_context import SourceEvidenceService
@@ -28,7 +32,7 @@ def coordinator_from_environment(service):
         embedder.max_retries = 0  # The durable worker owns retry accounting.
         return embedder
     def index_factory(embedder):
-        return MilvusAdapter(uri, 'antisentinel_code', dimension=embedder.dimension,
+        return MilvusAdapter(uri, collection_base, dimension=embedder.dimension,
             model_revision=embedder.model_name, template_revision='path-symbol-source-v1',
             projection_revision=revision, rpc_timeout=10.0,
             token=os.getenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_TOKEN') or None,

@@ -2281,3 +2281,9 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 用户要求先合入 master、剩余列为 pending。仓库实际默认主分支为 main（origin/HEAD→origin/main），按主分支意图执行本地合入，不创建平行 master；fetch 后 main 与 origin/main 差异0/0。PRD-005及剩余清单明确生产/质量验收、图优化全部 pending，暂停后续实施，不标生产就绪。合入范围130个文件，包括RAG源码/脚本/测试/阶段证据及共享开发日志；其他阶段独立草稿和运行产物留在工作区。合入前全量pytest退出0、728项通过，原始日志 source-slicing-3ki805yl/pytest-premerge.log；git diff --cached --check通过。合入后再运行全量回归，结果作为Git主分支验证交付。此次仅本地合入，不推送远端。
 
 本地主分支快进合入完成：实现提交8b81db568ec96ad8a5c3e437260e18593eb63dea，冲突0；main合入后再次全量回归：728 passed, 7 warnings in 48.65s，退出0。日志 source-slicing-3ki805yl/pytest-main.log。源码/脚本/测试相对HEAD无未提交差异；其他阶段文档及产物保留。剩余验收pending，未推送origin。
+
+### 2026-09-14 PRD-005 真实应用 Case：collection 隔离前置
+
+新增 `ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION`。默认值保持 `antisentinel_code`；显式合法基名传给 `MilvusAdapter`，用于共享 Milvus 上的独立 Case collection。空值、数字开头、连字符、空格、长度超过80的值在客户端创建前以 `invalid Milvus collection base` 拒绝。实现仅改 `src/antisentinel/retrieval/config.py` 和 `tests/test_retrieval_coordinator.py`，默认 hybrid/投影/point identity 均未改。
+
+先写7项配置测试并观察到6失败（显式值仍为默认、5类非法值未拒绝），再实现最小配置读取和正则校验。针对性结果7 passed、0 failed、1 warning、1.76s；相关回归33 passed、0 failed、1 warning、4.65s。基线728项为此前同一HEAD记录，本 Step 未重跑全量；真实Case0、外部模型调用0、Milvus连接0、后台异常0、重试0。下一步为冻结输入和脱敏调用审计；当前阶段仅配置前置完成，尚未推进真实运行状态。

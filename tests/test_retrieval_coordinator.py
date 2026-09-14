@@ -107,6 +107,58 @@ def test_enabled_config_requires_allowlist_before_clients(monkeypatch):
         coordinator_from_environment(None)
 
 
+def test_enabled_config_uses_isolated_collection_base(monkeypatch):
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_ENABLED', 'true')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_REPOSITORIES', 'repo-a')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_URI', 'case.db')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION', 'prd005_case_a1b2')
+    captured = {}
+
+    class Adapter:
+        def __init__(self, uri, collection_name, **kwargs):
+            captured.update(uri=str(uri), collection_name=collection_name, **kwargs)
+
+    monkeypatch.setattr('antisentinel.retrieval.milvus_adapter.MilvusAdapter', Adapter)
+    service = SimpleNamespace(code_map_store=object(), code_map_evidence_store=object())
+
+    coordinator = coordinator_from_environment(service)
+
+    coordinator.index_factory(SimpleNamespace(model_name='m', dimension=3))
+
+    assert captured['collection_name'] == 'prd005_case_a1b2'
+
+
+def test_enabled_config_defaults_to_standard_collection_base(monkeypatch):
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_ENABLED', 'true')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_REPOSITORIES', 'repo-a')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_URI', 'case.db')
+    monkeypatch.delenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION', raising=False)
+    captured = {}
+
+    class Adapter:
+        def __init__(self, uri, collection_name, **kwargs):
+            captured['collection_name'] = collection_name
+
+    monkeypatch.setattr('antisentinel.retrieval.milvus_adapter.MilvusAdapter', Adapter)
+    service = SimpleNamespace(code_map_store=object(), code_map_evidence_store=object())
+
+    coordinator_from_environment(service).index_factory(SimpleNamespace(model_name='m', dimension=3))
+
+    assert captured['collection_name'] == 'antisentinel_code'
+
+
+@pytest.mark.parametrize('collection_base', ['', '1starts_with_number', 'has-dash', 'has space', 'a' * 81])
+def test_enabled_config_rejects_invalid_collection_base_before_client_construction(monkeypatch, collection_base):
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_ENABLED', 'true')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_REPOSITORIES', 'repo-a')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_URI', 'case.db')
+    monkeypatch.setenv('ANTISENTINEL_CODE_RETRIEVAL_MILVUS_COLLECTION', collection_base)
+    service = SimpleNamespace(code_map_store=object(), code_map_evidence_store=object())
+
+    with pytest.raises(ValueError, match='invalid Milvus collection base'):
+        coordinator_from_environment(service)
+
+
 def test_projection_corruption_is_quarantined_without_upload(tmp_path):
     store, _, _, _, source = setup_source(tmp_path)
     with store.database.transaction() as connection:
