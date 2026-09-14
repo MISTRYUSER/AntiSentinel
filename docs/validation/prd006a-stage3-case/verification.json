@@ -1,0 +1,9 @@
+{
+  "sqlite_integrity": "ok",
+  "revision_hash_checks": 6,
+  "receipt_links": 5,
+  "event_links": 20,
+  "constraint_handoffs": 5,
+  "stop_order_checks": 2,
+  "errors": 0
+}

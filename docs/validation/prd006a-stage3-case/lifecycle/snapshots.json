@@ -1,0 +1,256 @@
+[
+  {
+    "ambiguities": [],
+    "clarification": {
+      "candidates": [],
+      "question": "请补充 /entities/commit。",
+      "revision": 1
+    },
+    "confidence": null,
+    "constraints": [
+      {
+        "kind": "read_only",
+        "value": true
+      },
+      {
+        "kind": "forbid_restart",
+        "value": true
+      }
+    ],
+    "context_binding": {
+      "context_version": "c1",
+      "previous_intent": null,
+      "task": null
+    },
+    "control": null,
+    "entities": {},
+    "identity": {
+      "content_hash": "4dabbcf3f1d4caf8b6bc788b8df23536feafccfb63e683783718f9d342de1cb3",
+      "created_at": "1970-01-01T00:16:40+00:00",
+      "incident_id": "i1",
+      "intent_id": "c54acef7-5562-4cd3-80ae-5593686e88bf",
+      "message_id": "d01",
+      "revision": 1,
+      "schema_version": "1",
+      "session_id": "s1"
+    },
+    "intent_type": "diagnose",
+    "missing_fields": [
+      {
+        "code": "required",
+        "path": "/entities/commit",
+        "reason": "请补充 /entities/commit。"
+      }
+    ],
+    "objective": "排查订单超时，只分析，不要重启。",
+    "provenance": [
+      {
+        "path": "/objective",
+        "quote": "排查订单超时，只分析，不要重启。",
+        "ref": "d01",
+        "source": "user"
+      },
+      {
+        "path": "/constraints/0",
+        "quote": "排查订单超时，只分析，不要重启。",
+        "ref": "d01",
+        "source": "user"
+      },
+      {
+        "path": "/constraints/1",
+        "quote": "排查订单超时，只分析，不要重启。",
+        "ref": "d01",
+        "source": "user"
+      }
+    ],
+    "reason": "固定人工候选，用于契约验证",
+    "relation": "new_request",
+    "resolution_status": "needs_clarification",
+    "route": "clarify"
+  },
+  {
+    "ambiguities": [],
+    "clarification": null,
+    "confidence": null,
+    "constraints": [
+      {
+        "kind": "read_only",
+        "value": true
+      },
+      {
+        "kind": "forbid_restart",
+        "value": true
+      }
+    ],
+    "context_binding": {
+      "context_version": "c1",
+      "previous_intent": {
+        "intent_id": "c54acef7-5562-4cd3-80ae-5593686e88bf",
+        "revision": 1
+      },
+      "task": null
+    },
+    "control": null,
+    "entities": {
+      "commit": "B"
+    },
+    "identity": {
+      "content_hash": "3f8fa858646cbb856a5f8b296a1ee8db890acf13bcbae64c3760f7d55e88dd38",
+      "created_at": "1970-01-01T00:16:40+00:00",
+      "incident_id": "i1",
+      "intent_id": "c54acef7-5562-4cd3-80ae-5593686e88bf",
+      "message_id": "d03",
+      "revision": 2,
+      "schema_version": "1",
+      "session_id": "s1"
+    },
+    "intent_type": "diagnose",
+    "missing_fields": [],
+    "objective": "排查订单超时，只分析，不要重启。",
+    "provenance": [
+      {
+        "path": "/objective",
+        "quote": null,
+        "ref": "c1",
+        "source": "context"
+      },
+      {
+        "path": "/entities/commit",
+        "quote": "B",
+        "ref": "d03",
+        "source": "user"
+      },
+      {
+        "path": "/constraints/0",
+        "quote": null,
+        "ref": "c1",
+        "source": "context"
+      },
+      {
+        "path": "/constraints/1",
+        "quote": null,
+        "ref": "c1",
+        "source": "context"
+      }
+    ],
+    "reason": "固定人工候选，用于契约验证",
+    "relation": "continuation",
+    "resolution_status": "resolved",
+    "route": "plan"
+  },
+  {
+    "ambiguities": [],
+    "clarification": null,
+    "confidence": null,
+    "constraints": [
+      {
+        "kind": "forbid_restart",
+        "value": true
+      },
+      {
+        "kind": "read_only",
+        "value": true
+      }
+    ],
+    "context_binding": {
+      "context_version": "c1",
+      "previous_intent": {
+        "intent_id": "c54acef7-5562-4cd3-80ae-5593686e88bf",
+        "revision": 2
+      },
+      "task": null
+    },
+    "control": null,
+    "entities": {
+      "commit": "B"
+    },
+    "identity": {
+      "content_hash": "726c19095c0e16128fd7d4d417030e37d0fb46b8af330a2287b1dd90a3128f80",
+      "created_at": "1970-01-01T00:16:40+00:00",
+      "incident_id": "i1",
+      "intent_id": "c54acef7-5562-4cd3-80ae-5593686e88bf",
+      "message_id": "d04",
+      "revision": 3,
+      "schema_version": "1",
+      "session_id": "s1"
+    },
+    "intent_type": "diagnose",
+    "missing_fields": [],
+    "objective": "Do not change configuration, only analyze.",
+    "provenance": [
+      {
+        "path": "/objective",
+        "quote": "Do not change configuration, only analyze.",
+        "ref": "d04",
+        "source": "user"
+      },
+      {
+        "path": "/entities/commit",
+        "quote": null,
+        "ref": "c1",
+        "source": "context"
+      },
+      {
+        "path": "/constraints/0",
+        "quote": null,
+        "ref": "c1",
+        "source": "context"
+      },
+      {
+        "path": "/constraints/1",
+        "quote": "Do not change configuration, only analyze.",
+        "ref": "d04",
+        "source": "user"
+      }
+    ],
+    "reason": "固定人工候选，用于契约验证",
+    "relation": "correction",
+    "resolution_status": "resolved",
+    "route": "plan"
+  },
+  {
+    "ambiguities": [],
+    "clarification": null,
+    "confidence": null,
+    "constraints": [],
+    "context_binding": {
+      "context_version": "c1",
+      "previous_intent": null,
+      "task": {
+        "run_id": "r1",
+        "state_version": "v1",
+        "task_id": "t1"
+      }
+    },
+    "control": {
+      "operation": "status",
+      "target": null
+    },
+    "entities": {},
+    "identity": {
+      "content_hash": "3c398ca59dc0e3c8a0de16836f8aa4ac8059438a5b64189680bd79e1636c538a",
+      "created_at": "1970-01-01T00:16:40+00:00",
+      "incident_id": "i1",
+      "intent_id": "c024544f-3e5a-4cf7-bae4-4d0ee7698db0",
+      "message_id": "t01",
+      "revision": 1,
+      "schema_version": "1",
+      "session_id": "s1"
+    },
+    "intent_type": "task_control",
+    "missing_fields": [],
+    "objective": "刚才任务进度如何？",
+    "provenance": [
+      {
+        "path": "/objective",
+        "quote": "刚才任务进度如何？",
+        "ref": "t01",
+        "source": "user"
+      }
+    ],
+    "reason": "固定人工候选，用于契约验证",
+    "relation": "new_request",
+    "resolution_status": "resolved",
+    "route": "task_control"
+  }
+]

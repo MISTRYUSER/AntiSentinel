@@ -1,0 +1,82 @@
+{
+  "case_pass": true,
+  "provider": "deepseek",
+  "tool_handler_calls": 0,
+  "background_exceptions": 0,
+  "inputs": 4,
+  "outputs": 4,
+  "replayed_requests": 1,
+  "deliveries": 4,
+  "restored_intents": 4,
+  "restored_plans": 1,
+  "restored_cancelled_runs": 1,
+  "real_model_calls": 6,
+  "token_usage": [
+    {
+      "prompt_tokens": 818,
+      "completion_tokens": 129,
+      "total_tokens": 947,
+      "prompt_tokens_details": {
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 306
+    },
+    {
+      "prompt_tokens": 595,
+      "completion_tokens": 306,
+      "total_tokens": 901,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 595
+    },
+    {
+      "prompt_tokens": 826,
+      "completion_tokens": 166,
+      "total_tokens": 992,
+      "prompt_tokens_details": {
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 314
+    },
+    {
+      "prompt_tokens": 637,
+      "completion_tokens": 73,
+      "total_tokens": 710,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 509
+    },
+    {
+      "prompt_tokens": 927,
+      "completion_tokens": 292,
+      "total_tokens": 1219,
+      "prompt_tokens_details": {
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 415
+    },
+    {
+      "prompt_tokens": 928,
+      "completion_tokens": 290,
+      "total_tokens": 1218,
+      "prompt_tokens_details": {
+        "cached_tokens": 512
+      },
+      "prompt_cache_hit_tokens": 512,
+      "prompt_cache_miss_tokens": 416
+    }
+  ],
+  "runtime_cancel_requests": 1,
+  "total_seconds": 10.710734416999912,
+  "business_completed_at": 1789370371.10562,
+  "persistence_completed_at": 1789370371.1058528,
+  "persistence_lag_seconds": 0.00023293495178222656,
+  "note": "Real DeepSeek routing/answer/plan; runtime cancellation uses a controlled blocking model, not business tools."
+}

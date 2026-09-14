@@ -1,0 +1,59 @@
+{
+  "raw_candidate": {
+    "intent_type": "execute",
+    "relation": "new_request",
+    "objective": "重启 staging 服务",
+    "entities": {
+      "environment": "staging"
+    },
+    "constraints": [],
+    "provenance": [
+      {
+        "path": "/objective",
+        "source": "user",
+        "ref": "message-015",
+        "quote": "重启 staging 服务。"
+      },
+      {
+        "path": "/entities/environment",
+        "source": "context",
+        "ref": "context-015",
+        "quote": null
+      }
+    ],
+    "missing_fields": [],
+    "ambiguities": [],
+    "control": null,
+    "reason": "用户明确要求执行重启操作，环境staging来自已验证上下文",
+    "confidence": null
+  },
+  "parsed": {
+    "ambiguities": [],
+    "confidence": null,
+    "constraints": [],
+    "control": null,
+    "entities": {
+      "environment": "staging"
+    },
+    "intent_type": "execute",
+    "missing_fields": [],
+    "objective": "重启 staging 服务",
+    "provenance": [
+      {
+        "path": "/objective",
+        "quote": "重启 staging 服务。",
+        "ref": "message-015",
+        "source": "user"
+      },
+      {
+        "path": "/entities/environment",
+        "quote": null,
+        "ref": "context-015",
+        "source": "context"
+      }
+    ],
+    "reason": "用户明确要求执行重启操作，环境staging来自已验证上下文",
+    "relation": "new_request"
+  },
+  "model_calls": 1
+}

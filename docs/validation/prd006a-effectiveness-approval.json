@@ -1,0 +1,7 @@
+{
+  "approved": true,
+  "dataset_sha256": "e74725eb1881a8a4d1a4a7530ac47373aa8437fd511ef8e6b9485c851315fbd0",
+  "source": "user confirmation in conversation",
+  "confirmation": "确认标签和规则，运行评测",
+  "scope": "32 labels and scoring policy; objective outputs still require semantic review"
+}

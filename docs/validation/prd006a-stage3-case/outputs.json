@@ -1,0 +1,514 @@
+[
+  {
+    "delivery_status": "accepted",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "cd4ae90a4d5eb9032984687c17d1ea09ce215b313684f2e0e541bb71d00f17f6",
+        "created_at": "2026-09-14T06:31:37.509075+00:00",
+        "incident_id": "i1",
+        "intent_id": "cf8f15d4-06e2-4866-92a0-b35ef060da32",
+        "message_id": "q01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "question",
+      "missing_fields": [],
+      "objective": "连接池是什么？",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "连接池是什么？",
+          "ref": "q01",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "direct_answer"
+    },
+    "receipt": {
+      "key": "9969810c75f9637a442aa75850752767efa50eac0653750c892fa78520e902b0",
+      "intent_ref": {
+        "intent_id": "cf8f15d4-06e2-4866-92a0-b35ef060da32",
+        "revision": 1,
+        "content_hash": "cd4ae90a4d5eb9032984687c17d1ea09ce215b313684f2e0e541bb71d00f17f6",
+        "session_id": "s1",
+        "incident_id": "i1"
+      },
+      "route": "direct_answer",
+      "step": "main",
+      "receipt_id": "4f9ea2aa-77e3-42f4-a4db-4a7912f1062d",
+      "status": "accepted",
+      "receiver_kind": "contract",
+      "downstream_id": "contract-direct_answer-a3ae1cc9-1ca2-4987-820d-74e6066735b2"
+    }
+  },
+  {
+    "delivery_status": "accepted",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "cd4ae90a4d5eb9032984687c17d1ea09ce215b313684f2e0e541bb71d00f17f6",
+        "created_at": "2026-09-14T06:31:37.509075+00:00",
+        "incident_id": "i1",
+        "intent_id": "cf8f15d4-06e2-4866-92a0-b35ef060da32",
+        "message_id": "q01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "question",
+      "missing_fields": [],
+      "objective": "连接池是什么？",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "连接池是什么？",
+          "ref": "q01",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "direct_answer"
+    },
+    "receipt": {
+      "downstream_id": "contract-direct_answer-a3ae1cc9-1ca2-4987-820d-74e6066735b2",
+      "intent_ref": {
+        "content_hash": "cd4ae90a4d5eb9032984687c17d1ea09ce215b313684f2e0e541bb71d00f17f6",
+        "incident_id": "i1",
+        "intent_id": "cf8f15d4-06e2-4866-92a0-b35ef060da32",
+        "revision": 1,
+        "session_id": "s1"
+      },
+      "key": "9969810c75f9637a442aa75850752767efa50eac0653750c892fa78520e902b0",
+      "receipt_id": "4f9ea2aa-77e3-42f4-a4db-4a7912f1062d",
+      "receiver_kind": "contract",
+      "route": "direct_answer",
+      "status": "accepted",
+      "step": "main"
+    }
+  },
+  {
+    "delivery_status": "accepted",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [
+        {
+          "kind": "read_only",
+          "value": true
+        },
+        {
+          "kind": "forbid_restart",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "a05007b37728ba2d252a9b5c0586fc5c430c864522d858843e84ca3e91c47ad5",
+        "created_at": "2026-09-14T06:31:37.526538+00:00",
+        "incident_id": "i1",
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "message_id": "d01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "missing_fields": [],
+      "objective": "排查订单超时，只分析，不要重启。",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "排查订单超时，只分析，不要重启。",
+          "ref": "d01",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "plan"
+    },
+    "receipt": {
+      "key": "67632e3a5c71fcf484171e9e91f6c5f1a7b081d8fd2858926afa512b4bd5bd86",
+      "intent_ref": {
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "revision": 1,
+        "content_hash": "a05007b37728ba2d252a9b5c0586fc5c430c864522d858843e84ca3e91c47ad5",
+        "session_id": "s1",
+        "incident_id": "i1"
+      },
+      "route": "plan",
+      "step": "main",
+      "receipt_id": "4939595a-92e7-4586-81f0-b26a59a10f89",
+      "status": "accepted",
+      "receiver_kind": "contract",
+      "downstream_id": "contract-plan-83f2fd07-825e-4ab0-a56e-9ea0d3622276"
+    }
+  },
+  {
+    "delivery_status": "accepted",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": {
+          "run_id": "r1",
+          "state_version": "v1",
+          "task_id": "t1"
+        }
+      },
+      "control": {
+        "operation": "status",
+        "target": null
+      },
+      "entities": {},
+      "identity": {
+        "content_hash": "5523ddb15af2e1ae411cafba86a5fa2e30a9fe789e34c2281c3442ce0c190a19",
+        "created_at": "2026-09-14T06:31:37.532891+00:00",
+        "incident_id": "i1",
+        "intent_id": "2f462b81-dc48-4ea9-92fe-aa9adac8a7d3",
+        "message_id": "t01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "task_control",
+      "missing_fields": [],
+      "objective": "刚才任务进度如何？",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "刚才任务进度如何？",
+          "ref": "t01",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "task_control"
+    },
+    "receipt": {
+      "key": "849f22004d9ffe0d5890cca0f2c7ceb843d324247b73a3bae712589fbb918e88",
+      "intent_ref": {
+        "intent_id": "2f462b81-dc48-4ea9-92fe-aa9adac8a7d3",
+        "revision": 1,
+        "content_hash": "5523ddb15af2e1ae411cafba86a5fa2e30a9fe789e34c2281c3442ce0c190a19",
+        "session_id": "s1",
+        "incident_id": "i1"
+      },
+      "route": "task_control",
+      "step": "main",
+      "receipt_id": "476903a2-6178-4ea2-ad15-66b4a6776fdb",
+      "status": "accepted",
+      "receiver_kind": "contract",
+      "downstream_id": "contract-task_control-3995cbb6-ccae-41db-a6c2-5829ba1209c8"
+    }
+  },
+  {
+    "delivery_status": "clarify",
+    "intent": {
+      "ambiguities": [
+        {
+          "code": "ambiguous",
+          "path": "/objective",
+          "reason": "请明确要处理的目标。"
+        }
+      ],
+      "clarification": {
+        "candidates": [],
+        "question": "请明确要处理的目标。",
+        "revision": 1
+      },
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "960eaee1026b4f2ca359c6f1a1c1600125cbc68685f2761681da24969fd33b8f",
+        "created_at": "2026-09-14T06:31:37.542796+00:00",
+        "incident_id": "i1",
+        "intent_id": "4b43b046-0003-4c40-9111-8f62c2fbfa38",
+        "message_id": "u01",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "unknown",
+      "missing_fields": [],
+      "objective": "那个，算了又继续。",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "那个，算了又继续。",
+          "ref": "u01",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "needs_clarification",
+      "route": "clarify"
+    },
+    "receipt": null
+  },
+  {
+    "delivery_status": "unsupported",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "ef6d30fdf9bb4e8213a38b2d1438a652baf7c84ad94e23ac84563aaaed8808d8",
+        "created_at": "2026-09-14T06:31:37.545662+00:00",
+        "incident_id": "i1",
+        "intent_id": "9aaad923-822d-4f42-994f-905bbed4474d",
+        "message_id": "u03",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "unknown",
+      "missing_fields": [],
+      "objective": "替我办理护照。",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "替我办理护照。",
+          "ref": "u03",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "new_request",
+      "resolution_status": "unsupported",
+      "route": "unsupported"
+    },
+    "receipt": null
+  },
+  {
+    "delivery_status": "waiting_for_stop",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [
+        {
+          "kind": "forbid_restart",
+          "value": true
+        },
+        {
+          "kind": "read_only",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": {
+          "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+          "revision": 1
+        },
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "50bd877060bd211aa574c4d84750964fac2b421be199a130e71ef8f1baf51864",
+        "created_at": "2026-09-14T06:31:37.549871+00:00",
+        "incident_id": "i1",
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "message_id": "d04",
+        "revision": 2,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "missing_fields": [],
+      "objective": "Do not change configuration, only analyze.",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": null,
+          "ref": "c1",
+          "source": "context"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "correction",
+      "resolution_status": "resolved",
+      "route": "plan"
+    },
+    "receipt": {
+      "key": "520ba7bd8dba045c09a1124ac6b75f13f09428a1d42418fa55d36ef75810bd99",
+      "intent_ref": {
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "revision": 2,
+        "content_hash": "50bd877060bd211aa574c4d84750964fac2b421be199a130e71ef8f1baf51864",
+        "session_id": "s1",
+        "incident_id": "i1"
+      },
+      "route": "task_control",
+      "step": "stop",
+      "receipt_id": "0baf8be1-802e-4c30-8f3f-74a1e6aab0f2",
+      "status": "accepted",
+      "receiver_kind": "contract",
+      "downstream_id": "contract-task_control-f22f23aa-5500-45df-a4d9-d0b78109b02c"
+    }
+  },
+  {
+    "delivery_status": "accepted",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [
+        {
+          "kind": "forbid_restart",
+          "value": true
+        },
+        {
+          "kind": "read_only",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "c1",
+        "previous_intent": {
+          "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+          "revision": 1
+        },
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "50bd877060bd211aa574c4d84750964fac2b421be199a130e71ef8f1baf51864",
+        "created_at": "2026-09-14T06:31:37.549871+00:00",
+        "incident_id": "i1",
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "message_id": "d04",
+        "revision": 2,
+        "schema_version": "1",
+        "session_id": "s1"
+      },
+      "intent_type": "diagnose",
+      "missing_fields": [],
+      "objective": "Do not change configuration, only analyze.",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": null,
+          "ref": "c1",
+          "source": "context"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "Do not change configuration, only analyze.",
+          "ref": "d04",
+          "source": "user"
+        }
+      ],
+      "reason": "固定人工候选，用于契约验证",
+      "relation": "correction",
+      "resolution_status": "resolved",
+      "route": "plan"
+    },
+    "receipt": {
+      "key": "c0209944c7fc37d0fcb08d233f1648695f20e5e08b17738d1026e26e05589ad2",
+      "intent_ref": {
+        "intent_id": "648614db-d4b3-46a5-aa8c-62931f9c54ca",
+        "revision": 2,
+        "content_hash": "50bd877060bd211aa574c4d84750964fac2b421be199a130e71ef8f1baf51864",
+        "session_id": "s1",
+        "incident_id": "i1"
+      },
+      "route": "plan",
+      "step": "main",
+      "receipt_id": "a08866b5-5bf1-499c-9c54-02e213ec890b",
+      "status": "accepted",
+      "receiver_kind": "contract",
+      "downstream_id": "contract-plan-72ca16a7-0254-473e-b6b5-21598cffdbc8"
+    }
+  }
+]

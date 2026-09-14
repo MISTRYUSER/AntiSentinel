@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from threading import Lock
+from threading import Lock, Event as ThreadEvent
 from threading import Thread
 from typing import Any, Callable
 import os
@@ -56,6 +56,9 @@ class DiagnosisApplicationService:
     retrieval_coordinator: Any | None = None
     audit_degraded: list[str] = field(default_factory=list)
     skill_runtime_factory: Callable[[ToolRegistry, str, str, str | None], object] | None = None
+    _cancel_requests: dict[str, ThreadEvent] = field(default_factory=dict, repr=False)
+    _finished_runs: set[str] = field(default_factory=set, repr=False)
+    intent_runtime: Any | None = None
 
     @classmethod
     def default_fake(cls) -> "DiagnosisApplicationService":
@@ -228,6 +231,17 @@ class DiagnosisApplicationService:
         service.retrieval_coordinator = coordinator_from_environment(service)
         if service.retrieval_coordinator is not None:
             service.retrieval_tools = service.retrieval_coordinator
+        if os.getenv('ANTISENTINEL_INTENTS_ENABLED', '0') == '1':
+            from antisentinel.adapters.llm.deepseek_intent import DeepSeekIntentAdapter
+            from antisentinel.entry.live_intents import LiveIntentRuntime
+            import json
+            service.intent_runtime = LiveIntentRuntime(
+                service, root=Path(storage_root or 'storage')/'intent-runtime',
+                model=DeepSeekIntentAdapter(base_url=os.getenv('ANTISENTINEL_MODEL_BASE_URL','https://api.deepseek.com/v1'),
+                                           api_key=os.getenv('ANTISENTINEL_MODEL_API_KEY',''), model=os.getenv('ANTISENTINEL_MODEL_NAME','deepseek-chat')),
+                api_token=os.getenv('ANTISENTINEL_INTENT_API_TOKEN',''),
+                actor=os.getenv('ANTISENTINEL_INTENT_ACTOR','operator'),
+                bindings=json.loads(os.getenv('ANTISENTINEL_INTENT_BINDINGS','{}') or '{}'))
         return service
 
     def start_background_services(self) -> None:
@@ -303,6 +317,7 @@ class DiagnosisApplicationService:
                 self.application_store.save_incident(incident.to_dict())
                 self.application_store.save_session(session.to_dict())
             self.event_bus.publish(session_id, _lifecycle_event("session.started", incident, session))
+            self._cancel_requests[session_id] = ThreadEvent()
             Thread(
                 target=self._run_session,
                 args=(incident, session, model, registry, skill_runtime),
@@ -354,6 +369,7 @@ class DiagnosisApplicationService:
                     )) if self.memory_recorder is not None else None
                 ),
                 source_context_rehydrator=source_context_rehydrator,
+                cancel_requested=self._cancel_requests[session_id].is_set if session_id in self._cancel_requests else None,
             )
             if self.memory_recorder is not None:
                 self.memory_recorder.record(
@@ -365,13 +381,41 @@ class DiagnosisApplicationService:
             if self.application_store is not None:
                 self.application_store.save_session(session.to_dict())
                 self.application_store.save_result(session_id, _result_view(result, session))
-            terminal_type = "diagnosis.completed" if result.status == "completed" else "runtime.failed"
+            terminal_type = 'runtime.cancelled' if result.status == 'cancelled' else "diagnosis.completed" if result.status == "completed" else "runtime.failed"
             self.event_bus.publish(session_id, _lifecycle_event(terminal_type, incident, session, result.error))
+            self._finished_runs.add(session_id)
         except Exception as exc:  # noqa: BLE001 - keep background failures observable
             error = {"code": "runtime_background_failed", "message": str(exc)}
             self.results[session_id] = None  # type: ignore[assignment]
-            session.fail(error)
+            if session.status.value in {'active', 'waiting'}:
+                session.fail(error)
             self.event_bus.publish(session_id, _lifecycle_event("runtime.failed", incident, session, error))
+
+    def session_control_status(self, session_id: str, actor: str) -> dict:
+        session = self.sessions.get(session_id)
+        if session is None or actor not in session.participant_ids:
+            raise PermissionError('session unavailable')
+        event = self._cancel_requests.get(session_id)
+        result = self.results.get(session_id)
+        if session_id in self._finished_runs:
+            state = result.status if result is not None else 'failed'
+        elif event is not None:
+            state = 'cancel_requested' if event.is_set() else 'running'
+        else:
+            # Restored terminal sessions are persisted facts; active orphans are not live workers.
+            state = session.status.value if session.status.value in {'completed', 'failed', 'cancelled'} else 'unavailable'
+        return {'task_id': 'run:' + session_id, 'run_id': session_id, 'status': state,
+                'state_version': session.updated_at.isoformat() + ':' + state}
+
+    def request_session_cancel(self, session_id: str, actor: str) -> dict:
+        status = self.session_control_status(session_id, actor)
+        if status['status'] in {'completed', 'failed', 'cancelled'}:
+            return status
+        event = self._cancel_requests.get(session_id)
+        if event is None:
+            raise RuntimeError('no live worker to cancel')
+        event.set()
+        return self.session_control_status(session_id, actor)
 
     def get_session(self, session_id: str) -> dict[str, object]:
         session = self.sessions.get(session_id)

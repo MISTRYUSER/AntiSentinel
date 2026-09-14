@@ -1,0 +1,10 @@
+{
+  "fresh_process": true,
+  "intent_and_receipt_links": 8,
+  "immutable_plan_hash_checks": 1,
+  "cancelled_plan_count": 1,
+  "cancelled_runtime_count": 1,
+  "sqlite_integrity": "ok",
+  "model_calls": 0,
+  "errors": 0
+}

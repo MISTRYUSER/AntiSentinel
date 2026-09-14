@@ -1,0 +1,10 @@
+{
+  "fresh_process": true,
+  "association_checks": 8,
+  "immutable_plan_hash_checks": 1,
+  "plan_steps": 1,
+  "cancelled_runtime_restored": 1,
+  "incident_owner_records": 2,
+  "errors": 0,
+  "model_calls": 0
+}

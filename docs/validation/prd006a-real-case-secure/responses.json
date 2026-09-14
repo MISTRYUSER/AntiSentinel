@@ -1,0 +1,301 @@
+[
+  {
+    "delivery_status": "completed",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "dcbc4243f2e8fcb1a4bc4542b51281915a1d3804e1f33c3fcbf35bfaabdcc46b",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "8c2304ab0be2795b61f908db9a8d39a79ba2b1087f3b70885230ab5874e52f59",
+        "created_at": "2026-09-14T07:19:21.851759+00:00",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b",
+        "intent_id": "4dd30c74-f2f3-4f00-a8eb-fd2603643f96",
+        "message_id": "live-0",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206"
+      },
+      "intent_type": "question",
+      "missing_fields": [],
+      "objective": "解释连接池是什么",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "连接池是什么？",
+          "ref": "live-0",
+          "source": "user"
+        }
+      ],
+      "reason": "用户提出简单概念问题，不需要具体实体或环境信息。",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "direct_answer"
+    },
+    "receipt": {
+      "key": "78e660e17bcf882bdc682fd16c5c7bf6dae7cac933d0afc963ddbbca4c68da55",
+      "intent_ref": {
+        "intent_id": "4dd30c74-f2f3-4f00-a8eb-fd2603643f96",
+        "revision": 1,
+        "content_hash": "8c2304ab0be2795b61f908db9a8d39a79ba2b1087f3b70885230ab5874e52f59",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b"
+      },
+      "route": "direct_answer",
+      "step": "main",
+      "receipt_id": "15a08e36-ae9d-461b-bb2b-d314424c3d05",
+      "receiver_kind": "real",
+      "status": "completed",
+      "downstream_id": "answer-a7355ea0-64d1-4f87-8c4a-a97290b4ff74"
+    },
+    "role": "assistant",
+    "content": "连接池（Connection Pool）是一种用于管理数据库连接或其他网络连接的技术。它的核心思想是：在应用启动时预先创建一定数量的连接，并将这些连接放在一个“池”中复用，而不是每次请求都新建连接、用完就关闭。\n\n主要作用：\n\n1. **减少连接创建开销**：建立数据库连接通常需要 TCP 握手、认证等过程，耗时较长。复用已有连接可以显著降低延迟。\n\n2. **控制并发连接数**：限制同时打开的连接数量，避免数据库因连接过多而资源耗尽或崩溃。\n\n3. **提升性能与吞吐量**：请求到来时直接从池中获取空闲连接，用完归还，省去频繁创建/销毁的成本。\n\n4. **连接管理**：支持超时、心跳检测、失效连接剔除、最大/最小连接数等策略，保证连接可用性。\n\n常见参数包括：初始连接数、最大连接数、最小空闲连接数、获取连接超时时间、空闲连接存活时间等。常见实现有 HikariCP、Druid、C3P0（Java），以及各语言/框架自带的连接池组件。\n\n简单类比：连接池就像“共享单车停车点”——车（连接）提前准备好，谁要用谁骑走，用完还回来，避免每次出行都重新造一辆车。"
+  },
+  {
+    "delivery_status": "completed",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [
+        {
+          "kind": "read_only",
+          "value": true
+        },
+        {
+          "kind": "forbid_restart",
+          "value": true
+        }
+      ],
+      "context_binding": {
+        "context_version": "b77c67102f65395e0354cdfb5b745f0cdad5448c9b21d307f3207085c294e8a9",
+        "previous_intent": null,
+        "task": null
+      },
+      "control": null,
+      "entities": {},
+      "identity": {
+        "content_hash": "3d4fd3a116eb32aaad91bb94097debff48f14a691c7dc879e6f8b3009497b90e",
+        "created_at": "2026-09-14T07:19:25.952149+00:00",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b",
+        "intent_id": "056bba57-f67a-4c79-9275-f0d7bef6e73e",
+        "message_id": "live-1",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206"
+      },
+      "intent_type": "diagnose",
+      "missing_fields": [],
+      "objective": "分析请求超时的可能原因",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "分析请求超时的可能原因",
+          "ref": "live-1",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/0",
+          "quote": "只读",
+          "ref": "live-1",
+          "source": "user"
+        },
+        {
+          "path": "/constraints/1",
+          "quote": "不要重启",
+          "ref": "live-1",
+          "source": "user"
+        }
+      ],
+      "reason": "用户要求只读分析请求超时的可能原因，并明确不要重启",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "plan"
+    },
+    "receipt": {
+      "key": "f28f0dc0eafd61c1530cbc51bbef1106ffe616ee3be84759b80ef81bdd357bfd",
+      "intent_ref": {
+        "intent_id": "056bba57-f67a-4c79-9275-f0d7bef6e73e",
+        "revision": 1,
+        "content_hash": "3d4fd3a116eb32aaad91bb94097debff48f14a691c7dc879e6f8b3009497b90e",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b"
+      },
+      "route": "plan",
+      "step": "main",
+      "receipt_id": "a39d3bbe-452b-42a6-b1e5-2585d28017be",
+      "receiver_kind": "real",
+      "status": "completed",
+      "downstream_id": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+    },
+    "role": "assistant",
+    "content": "计划已保存，尚未执行。"
+  },
+  {
+    "delivery_status": "completed",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "797daf2e8f8756aeba97894aed90bc5e281b8118abb192369d87e855808f8f59",
+        "previous_intent": null,
+        "task": {
+          "run_id": null,
+          "state_version": "1",
+          "task_id": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+        }
+      },
+      "control": {
+        "operation": "status",
+        "target": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+      },
+      "entities": {
+        "task_target": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+      },
+      "identity": {
+        "content_hash": "0f2537207d871f86869ff4df4b687312d75a99bff254aa4af98068519fec4837",
+        "created_at": "2026-09-14T07:19:29.531973+00:00",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b",
+        "intent_id": "8eeb8cf6-bb9d-4997-9d1a-fa2e88b0d27c",
+        "message_id": "live-2",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206"
+      },
+      "intent_type": "task_control",
+      "missing_fields": [],
+      "objective": "查询刚才计划的状态",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "查询刚才计划的状态。",
+          "ref": "live-2",
+          "source": "user"
+        },
+        {
+          "path": "/entities/task_target",
+          "quote": null,
+          "ref": "797daf2e8f8756aeba97894aed90bc5e281b8118abb192369d87e855808f8f59",
+          "source": "context"
+        },
+        {
+          "path": "/control/target",
+          "quote": null,
+          "ref": "797daf2e8f8756aeba97894aed90bc5e281b8118abb192369d87e855808f8f59",
+          "source": "context"
+        }
+      ],
+      "reason": "用户要求查询已有计划的状态，属于任务控制",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "task_control"
+    },
+    "receipt": {
+      "key": "62d63cebcff2971e5bc52e7bf5e56c93c1b09abd0018b561d6c4d4c27296f57d",
+      "intent_ref": {
+        "intent_id": "8eeb8cf6-bb9d-4997-9d1a-fa2e88b0d27c",
+        "revision": 1,
+        "content_hash": "0f2537207d871f86869ff4df4b687312d75a99bff254aa4af98068519fec4837",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b"
+      },
+      "route": "task_control",
+      "step": "main",
+      "receipt_id": "01a3f9f0-2bef-4339-ad63-a28ed09d2abe",
+      "receiver_kind": "real",
+      "status": "completed",
+      "downstream_id": "control-0865f2c2-d4fd-46ed-9e1b-51f57a3f6e47"
+    },
+    "role": "assistant",
+    "content": "任务状态：draft"
+  },
+  {
+    "delivery_status": "completed",
+    "intent": {
+      "ambiguities": [],
+      "clarification": null,
+      "confidence": null,
+      "constraints": [],
+      "context_binding": {
+        "context_version": "8154cea10fcffb3a9c8dedf2347f9bfe0164a5f72a8053339b776694004a18dc",
+        "previous_intent": null,
+        "task": {
+          "run_id": null,
+          "state_version": "1",
+          "task_id": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+        }
+      },
+      "control": {
+        "operation": "cancel",
+        "target": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+      },
+      "entities": {
+        "task_target": "plan-aed6fcd5-8810-41a0-9278-1e0953b2401d"
+      },
+      "identity": {
+        "content_hash": "94c1d891b234b657a47fe6e1b5f2c130a8e3cf3f84a704842160663ff31fa941",
+        "created_at": "2026-09-14T07:19:31.061517+00:00",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b",
+        "intent_id": "9dee5835-4259-489c-b136-8efc1b9ba33f",
+        "message_id": "live-3",
+        "revision": 1,
+        "schema_version": "1",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206"
+      },
+      "intent_type": "task_control",
+      "missing_fields": [],
+      "objective": "取消刚才的计划",
+      "provenance": [
+        {
+          "path": "/objective",
+          "quote": "取消刚才的计划。",
+          "ref": "live-3",
+          "source": "user"
+        },
+        {
+          "path": "/entities/task_target",
+          "quote": null,
+          "ref": "8154cea10fcffb3a9c8dedf2347f9bfe0164a5f72a8053339b776694004a18dc",
+          "source": "context"
+        },
+        {
+          "path": "/control/target",
+          "quote": null,
+          "ref": "8154cea10fcffb3a9c8dedf2347f9bfe0164a5f72a8053339b776694004a18dc",
+          "source": "context"
+        }
+      ],
+      "reason": "用户明确要求取消计划任务",
+      "relation": "new_request",
+      "resolution_status": "resolved",
+      "route": "task_control"
+    },
+    "receipt": {
+      "key": "367da94dfd1ea03fbc00c2456397a0e7451744de4b518de4428337299d7e3a25",
+      "intent_ref": {
+        "intent_id": "9dee5835-4259-489c-b136-8efc1b9ba33f",
+        "revision": 1,
+        "content_hash": "94c1d891b234b657a47fe6e1b5f2c130a8e3cf3f84a704842160663ff31fa941",
+        "session_id": "9ac15981-8d16-452e-8289-f17fbe12b206",
+        "incident_id": "94057fa7-49fc-4767-9898-20623d25d54b"
+      },
+      "route": "task_control",
+      "step": "main",
+      "receipt_id": "aacbc69a-c550-48c4-b9e7-05d49024311d",
+      "receiver_kind": "real",
+      "status": "completed",
+      "downstream_id": "control-d1bc07e4-b678-4926-a543-83d88078f8c2"
+    },
+    "role": "assistant",
+    "content": "任务状态：cancelled"
+  }
+]

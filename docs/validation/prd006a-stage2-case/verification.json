@@ -1,0 +1,11 @@
+{
+  "sqlite_integrity": "ok",
+  "revision_checks": 4,
+  "identity_checks": 20,
+  "event_links": 11,
+  "message_links": 4,
+  "outbox_links": 3,
+  "question_links": 1,
+  "heads": 2,
+  "errors": 0
+}

@@ -5,7 +5,8 @@ from __future__ import annotations
 from contextlib import asynccontextmanager
 from asyncio import to_thread
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pathlib import Path
 import json
 from fastapi.responses import FileResponse, HTMLResponse
@@ -37,6 +38,10 @@ class StartSessionRequest(BaseModel):
 
 class SendMessageRequest(BaseModel):
     content: str = Field(min_length=1)
+    message_id: str | None = None
+    intent_id: str | None = None
+    expected_revision: int = 0
+    clarification_id: str | None = None
 
 
 def _chat_content(result) -> str:
@@ -66,6 +71,65 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
     app = FastAPI(title="AntiSentinel Runtime API", lifespan=lifespan)
     app.state.service = resolved_service
     app.state.memory_metrics = app.state.service.memory_metrics or MemoryMetrics()
+    if resolved_service.intent_runtime is not None:
+        runtime=resolved_service.intent_runtime
+
+        @app.middleware('http')
+        async def authenticate_intent_api(request, call_next):
+            if (request.url.path.startswith('/api/') or request.url.path.startswith('/v1/')) and request.url.path!='/api/runtime/config':
+                try:
+                    request.state.actor=runtime.authenticate(request.headers.get('authorization'))
+                    parts=request.url.path.split('/')
+                    if len(parts)>3 and parts[1:3]==['api','sessions']:
+                        runtime.authorize(request.state.actor,parts[3])
+                    if len(parts)>3 and parts[1:3]==['api','incidents']:
+                        runtime.authorize_incident(request.state.actor,parts[3])
+                    if len(parts)>4 and parts[1:4]==['api','observability','sessions']:
+                        runtime.authorize(request.state.actor,parts[4])
+                except PermissionError:
+                    return JSONResponse({'detail':{'code':'authentication_required'}},status_code=401)
+                except ValueError:
+                    return JSONResponse({'detail':{'code':'session_unavailable'}},status_code=403)
+            return await call_next(request)
+
+        @app.post('/api/intent/sessions',status_code=201)
+        def create_intent_session(payload:dict,request:Request):
+            return runtime.create_session(request.state.actor,payload.get('title') or '对话')
+
+        @app.post('/api/intent/sessions/{session_id}/messages')
+        def intent_message(session_id:str,payload:dict,request:Request):
+            from antisentinel.ports.intent_store import IntentAccessDenied, IntentConflict
+            from antisentinel.entry.intent_application import IntentRecognitionError
+            try:
+                return runtime.submit(request.state.actor,session_id,message_id=payload.get('message_id'),content=payload.get('content'),
+                                      expected_revision=payload.get('expected_revision',0),intent_id=payload.get('intent_id'),
+                                      clarification_id=payload.get('clarification_id'))
+            except IntentAccessDenied as exc:raise HTTPException(403,detail={'code':'scope_denied'}) from exc
+            except IntentConflict as exc:raise HTTPException(409,detail={'code':'intent_conflict','message':str(exc)}) from exc
+            except TimeoutError as exc:raise HTTPException(504,detail={'code':'model_timeout'}) from exc
+            except IntentRecognitionError as exc:raise HTTPException(503,detail={'code':str(exc)}) from exc
+            except ValueError as exc:raise HTTPException(422,detail={'code':'invalid_intent_input','message':str(exc)}) from exc
+            except RuntimeError as exc:raise HTTPException(502,detail={'code':'downstream_unavailable'}) from exc
+
+        @app.get('/api/intent/sessions/{session_id}/artifacts/{artifact_id}')
+        def intent_artifact(session_id:str,artifact_id:str,request:Request):
+            try:return runtime.routes.artifact(request.state.actor,session_id,artifact_id)
+            except (KeyError,ValueError) as exc:raise HTTPException(404,detail={'code':'artifact_not_found'}) from exc
+
+        @app.get('/api/intent/sessions/{session_id}/tasks')
+        def intent_tasks(session_id:str,request:Request):
+            try:return runtime.routes.tasks(session_id,request.state.actor)
+            except ValueError as exc:raise HTTPException(403,detail={'code':'scope_denied'}) from exc
+
+        @app.get('/api/sessions/{session_id}/control')
+        def runtime_control_status(session_id:str,request:Request):
+            return resolved_service.session_control_status(session_id,request.state.actor)
+
+        @app.post('/api/sessions/{session_id}/cancel')
+        def runtime_cancel(session_id:str,request:Request):
+            try:result=resolved_service.request_session_cancel(session_id,request.state.actor)
+            except RuntimeError as exc:raise HTTPException(409,detail={'code':'no_live_worker'}) from exc
+            return JSONResponse(result,status_code=202 if result['status']=='cancel_requested' else 200)
     @app.get('/api/retrieval/status')
     def retrieval_status():
         coordinator = app.state.service.retrieval_coordinator
@@ -79,6 +143,10 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         def dashboard():
             return FileResponse(frontend_dir / "dashboard.html", media_type="text/html")
 
+        @app.get('/intent',include_in_schema=False)
+        def intent_ui():
+            return FileResponse(frontend_dir/'intent.html',media_type='text/html')
+
         @app.get("/dashboard.css", include_in_schema=False)
         def dashboard_styles():
             return FileResponse(frontend_dir / "dashboard.css", media_type="text/css")
@@ -89,6 +157,8 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
 
         @app.get("/", include_in_schema=False)
         def index():
+            if resolved_service.intent_runtime is not None:
+                return FileResponse(frontend_dir/'intent.html',media_type='text/html')
             mode = app.state.service.model_mode
             html = (frontend_dir / "index.html").read_text(encoding="utf-8")
             html = html.replace("<body>", f'<body data-model-mode="{mode}">', 1)
@@ -97,9 +167,11 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
             return HTMLResponse(html)
 
     @app.post("/api/incidents", status_code=201)
-    def create_incident(payload: CreateIncidentRequest):
+    def create_incident(payload: CreateIncidentRequest, request: Request):
         try:
             incident = app.state.service.create_incident(**payload.model_dump())
+            if resolved_service.intent_runtime is not None:
+                runtime.register_incident(request.state.actor,incident.incident_id)
         except Exception as exc:
             raise HTTPException(status_code=422, detail={"code": "invalid_incident", "message": str(exc)}) from exc
         return {
@@ -109,11 +181,11 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         }
 
     @app.post("/api/incidents/{incident_id}/sessions", status_code=202)
-    def start_session(incident_id: str, payload: StartSessionRequest):
+    def start_session(incident_id: str, payload: StartSessionRequest, request: Request):
         try:
             start = app.state.service.start_session(
                 incident_id=incident_id,
-                participant_ids=payload.participant_ids,
+                participant_ids=[request.state.actor] if resolved_service.intent_runtime is not None else payload.participant_ids,
                 model_mode=payload.model_mode,
                 api_key=payload.api_key,
                 model_name=payload.model_name,
@@ -143,7 +215,11 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
             raise HTTPException(status_code=404, detail={"code": "session_not_found", "id": str(exc)}) from exc
 
     @app.post("/api/sessions/{session_id}/messages")
-    def send_message(session_id: str, payload: SendMessageRequest):
+    def send_message(session_id: str, payload: SendMessageRequest, request: Request):
+        if resolved_service.intent_runtime is not None:
+            body=payload.model_dump()
+            body['message_id']=body['message_id'] or str(uuid4())
+            return intent_message(session_id,body,request)
         try:
             return app.state.service.send_message(session_id, payload.content)
         except KeyError as exc:
@@ -161,7 +237,7 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         defaults = RuntimeConfig()
         model_name = getattr(app.state.service, "model_name", None)
         resolved = defaults.resolved_max_context_tokens(model=model_name if isinstance(model_name, str) else None)
-        return {
+        result = {
             "model_mode": app.state.service.model_mode,
             "model_provider": getattr(app.state.service, "model_provider", "fake"),
             "model_name": model_name,
@@ -175,6 +251,8 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
             "source_pin_policy": defaults.source_pin_policy,
             "target_fill_ratio": defaults.target_fill_ratio,
         }
+        if resolved_service.intent_runtime is not None:result['intents_enabled']=True
+        return result
 
     @app.post("/v1/chat/completions")
     def chat_completions(payload: dict):
@@ -218,14 +296,19 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         return PlainTextResponse(app.state.memory_metrics.render(), media_type="text/plain; version=0.0.4")
 
     @app.get("/api/observability/tree")
-    def observability_tree():
+    def observability_tree(request: Request):
         result = []
         for incident_id, incident in app.state.service.incidents.items():
+            if resolved_service.intent_runtime is not None:
+                try:runtime.authorize_incident(request.state.actor,str(incident_id))
+                except ValueError:continue
             sessions = []
             for session_id in incident.session_ids:
                 session = app.state.service.sessions.get(session_id)
                 runtime = app.state.service.results.get(session_id)
                 if session is None:
+                    continue
+                if resolved_service.intent_runtime is not None and request.state.actor not in session.participant_ids:
                     continue
                 sessions.append({"session_id": session_id, "status": runtime.status if runtime else "running", "turn_count": len(runtime.turns) if runtime else 0, "input_tokens": runtime.token_usage.input_tokens if runtime else 0, "output_tokens": runtime.token_usage.output_tokens if runtime else 0, "turns": [{"status": turn.status.value, "task_count": len(turn.task_ids)} for turn in runtime.turns] if runtime else []})
             result.append({"incident_id": incident_id, "title": incident.title, "status": incident.status.value, "sessions": sessions})

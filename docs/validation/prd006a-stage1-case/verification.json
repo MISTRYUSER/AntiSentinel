@@ -1,0 +1,22 @@
+{
+  "fresh_process_records_verified": 32,
+  "identity_associations_verified": 160,
+  "route_checks": 32,
+  "constraint_checks": 32,
+  "dataset_sha256": "2d717b580a6d350aeba6bbd5328c47c8a8cb8fb401e0a46d62426fac29922211",
+  "timing_runs": 5,
+  "seconds": [
+    0.005562625001402921,
+    0.005859124999915366,
+    0.00578562500049884,
+    0.005407832999480888,
+    0.005701500000213855
+  ],
+  "median_seconds": 0.005701500000213855,
+  "baseline_kind": "first_implementation_fixed_candidate_baseline",
+  "regression_result": "N/A: no preimplementation equivalent",
+  "case_runs": 1,
+  "timing_probes": 5,
+  "errors": 0,
+  "stage_pass": false
+}

@@ -1,0 +1,14 @@
+{
+  "context": "after full regression finished",
+  "samples_seconds": [
+    0.005936957997619174,
+    0.005801749997772276,
+    0.005444458998681512,
+    0.005446333001600578,
+    0.005314500001986744
+  ],
+  "median_seconds": 0.005446333001600578,
+  "baseline_seconds": 0.005336165999324294,
+  "change_percent": 2.064534766913817,
+  "threshold_percent": 5
+}

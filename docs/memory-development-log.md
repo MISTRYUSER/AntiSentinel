@@ -2281,3 +2281,247 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 用户要求先合入 master、剩余列为 pending。仓库实际默认主分支为 main（origin/HEAD→origin/main），按主分支意图执行本地合入，不创建平行 master；fetch 后 main 与 origin/main 差异0/0。PRD-005及剩余清单明确生产/质量验收、图优化全部 pending，暂停后续实施，不标生产就绪。合入范围130个文件，包括RAG源码/脚本/测试/阶段证据及共享开发日志；其他阶段独立草稿和运行产物留在工作区。合入前全量pytest退出0、728项通过，原始日志 source-slicing-3ki805yl/pytest-premerge.log；git diff --cached --check通过。合入后再运行全量回归，结果作为Git主分支验证交付。此次仅本地合入，不推送远端。
 
 本地主分支快进合入完成：实现提交8b81db568ec96ad8a5c3e437260e18593eb63dea，冲突0；main合入后再次全量回归：728 passed, 7 warnings in 48.65s，退出0。日志 source-slicing-3ki805yl/pytest-main.log。源码/脚本/测试相对HEAD无未提交差异；其他阶段文档及产物保留。剩余验收pending，未推送origin。
+
+## 2026-09-14 PRD-006A 设计文档供 review
+
+新增设计1份、基线报告1份；修改开发记录1份；源码修改0，Case运行0，重试0。静态覆盖检查12/12，占位符0；src文件209、tests文件135，较上轮均变化0（0%）。证据：docs/validation/prd006a-design-baseline/report.json。检查耗时0.035秒。测试执行/通过/失败、后台异常、模型效果与性能N/A（未运行），INSUFFICIENT_DATA，不推进实现验收。待核验依赖2项：授权控制入口、真实006B接收入口。设计见docs/superpowers/specs/2026-09-14-prd006a-intent-recognition-design.md。复核命令：python3 -m json.tool docs/validation/prd006a-design-baseline/report.json；rg -n "6A\.[1-4]|IntentCandidate|ResolvedIntent|TaskControlGateway|context_version|case_pass|30秒|120秒|24小时" docs/superpowers/specs/2026-09-14-prd006a-intent-recognition-design.md。下一步：用户review具体设计后编制实施计划；可执行Case命令在实现阶段提供后确认。后置learning：本轮新增接口为设计建议，未升级为长期事实。
+
+
+## 2026-09-14 PRD006A 6A.1 回归基线
+
+命令：`python3 -m pytest -q`；726 passed，2 skipped，0 failed，7 warnings，52.69s；重试0，Case0。源码实施尚未开始，性能分类N/A。计划：docs/superpowers/plans/2026-09-14-prd006a-intent-recognition.md。下一步：契约红灯测试。
+
+
+### 6A.1 契约红灯
+
+`python3 -m pytest tests/test_intent_contract.py -q`：27 failed，0 passed，0.18s，原因均为意图模块尚未实现；这是预期TDD红灯。下一步新增契约与确定性校验。Case0、重试0。
+
+
+### 6A.1 契约实现与针对性绿灯
+
+新增生产模块2、测试文件1；`python3 -m pytest tests/test_intent_contract.py -q`：27 passed、0 failed、0.05s；相对红灯失败27→0。Case0。实现为纯契约校验，不代表应用入口接入。下一步：补强重新hash的非法绑定拒绝及冻结fixture。
+
+
+### 6A.1 冻结样本与绑定补强
+
+新增红灯4（非法绑定2、候选目标保留1、样本缺失1）；修复后`python3 -m pytest tests/test_intent_contract.py tests/test_intent_fixtures.py -q`：31 passed、0 failed、0.06s。固定样本32，五类均>=4，中英齐备，标签状态draft_requires_user_review，非人工已验收标签，不报告模型F1。Case0。下一步：独立Case runner准备与累计回归。
+
+
+### 6A.1 Case报告器与命令准备
+
+报告器红灯3→绿灯3；累计命令`python3 -m pytest tests/test_intent_contract.py tests/test_intent_fixtures.py tests/test_intent_case_report.py -q`：34 passed、0 failed、0.09s。`python3 scripts/case_prd006a_contract.py --help`返回0。Case脚本未运行、Case数0，已提供隔离目录和32条输入/输出/落盘预期，等待用户确认。下一步全量回归。
+
+
+### 6A.1 全量回归与用户先review选择
+
+`python3 -m pytest -q`：760 passed（基线726，+34）、2 skipped、0 failed、7 warnings、50.38s（52.69s→50.38s，-2.31s/-4.38%）；单轮耗时不构成5轮fixture性能验收。新增生产文件4、测试3、fixture1、计划1、review文档1、测试报告1，修改日志1；Case0、重试0。用户明确选择先看代码和样本，Case未运行。报告：docs/validation/prd006a-stage1-unit-report.json；review：docs/validation/prd006a-stage1-review.md。未解决验收项3：人工标签review、独立Case、5轮性能基线；模型效果和后台异常N/A。不得称6A.1阶段完成，不进入6A.2。
+
+
+### 6A.1 Case前针对性复核
+
+用户“继续”确认运行已提出的隔离Case。`python3 -m pytest tests/test_intent_contract.py tests/test_intent_fixtures.py tests/test_intent_case_report.py -q`：34 passed、0 failed、0.10s，较前轮通过数变化0。Case尚未执行，下一步运行已确认命令，上限120s，最多重试2次。
+
+
+### 6A.1 隔离契约Case
+
+命令：`python3 scripts/case_prd006a_contract.py --output docs/validation/prd006a-stage1-case`，exit0。Case0→1；32输入/32输出/32落盘/32回读/32关联检查，错误0，后台worker0、后台异常0、业务dispatch0、模型调用0；总耗时0.011045208999348688s；业务完成=1789362501.729861，落盘完成=1789362501.7305422，差值=0.0006811618804931641s。产物2：intents.jsonl、report.json。重试0。case_pass=true仅覆盖固定候选契约，不代表模型效果、进程重启或生产控制；stage_pass=false。下一步独立进程回读及5轮计时基线。
+
+
+### 6A.1 独立回读与5轮基线
+
+独立Python进程回读32条，身份关联160/160、route32/32、constraint32/32，错误0；5次纯契约计时中位数0.005701500000213855s。此为首个实现基线，无实施前等价链路，性能劣化N/A。新增verification.json与acceptance.md，本轮Case产物累计4，生产代码改动0，Case1，重试0。case_pass=true仅契约范围，stage_pass=false。剩余验收2：人工标签review、性能回归比较不可用；不进入6A.2。后置learning判断：本轮没有新增跨任务事实，保留验证证据，不重复创建已有契约边界经验。
+
+
+## 6A.2 开始
+
+用户确认继续。6A.1针对性基线命令`python3 -m pytest tests/test_intent_contract.py tests/test_intent_fixtures.py tests/test_intent_case_report.py -q`：34 passed、0 failed、0.08s。当前生命周期Case0、SQLite意图库实现0；分类效果N/A。计划已展开，下一步生命周期红灯。
+
+
+### 6A.2 生命周期红灯
+
+`python3 -m pytest tests/test_intent_lifecycle.py -q`：11 failed，0 passed，0.12s；均为持久化模块缺失的预期红灯。下一步实现事务存储与服务。Case0，重试0。
+
+
+### 6A.2 事务服务与边界补强
+
+首轮11红灯→11绿灯（0.33s）；新增边界测试发现3处失败（必需字段丢失、无问题ID的过期回复、合并掩盖伪造来源），修复后累计命令`python3 -m pytest tests/test_intent_lifecycle.py tests/test_intent_contract.py tests/test_intent_fixtures.py tests/test_intent_case_report.py -q`：49 passed、0 failed、0.40s。新生产模块3、修改生产模块2、新测试模块1。Case0；下一步全回归和Case准备。
+
+
+### 6A.2 性能复核与Case准备
+
+6A.1相同32条固定候选5轮中位数5.34ms（原5.70ms），-6.41%，劣化<=5%门槛满足；原始数据docs/validation/prd006a-stage2-performance.json。这不是模型延迟。Case脚本已准备并通过--help；未运行，等待确认。目标37输入（32固定+5生命周期），4持久化revision，3outbox中2pending/1superseded，独立进程恢复4条。
+
+
+### 6A.2 全量回归
+
+`python3 -m pytest -q`：775 passed、2 skipped、0 failed、7 warnings、46.95s；基线760 passed/50.38s，新增15通过、耗时-3.43s（-6.81%）。源码新增3修改2、测试新增1、Case脚本新增1；重试0。报告docs/validation/prd006a-stage2-unit-report.json。累计Case脚本只验证--help，实际Case0，等待用户确认。运行与落盘状态未验收，不推进6A.3。
+
+
+### 6A.2 累计Case前复核
+
+用户“继续”确认已提出的累计Case。`python3 -m pytest tests/test_intent_lifecycle.py tests/test_intent_contract.py tests/test_intent_fixtures.py tests/test_intent_case_report.py -q`：49 passed、0 failed、0.28s；通过数变化0。下一步执行隔离Case，120秒上限，最多重试2次。
+
+
+### 6A.2 累计Case运行
+
+命令`python3 scripts/case_prd006a_lifecycle.py --output docs/validation/prd006a-stage2-case`返回0。Case0→1、重试0；37输入/37输出，持久化revision4、恢复4、关联20；outbox3（pending2、superseded1）、重复新增路由0、事件11、问题1；后台worker0、异常0、模型调用0、业务dispatch0。耗时0.07195554099962465s；业务完成1789366339.3962271、落盘完成1789366339.396582、差值0.000354766845703125s。产物目录docs/validation/prd006a-stage2-case；case_pass=true仅固定候选与SQLite生命周期，stage_pass=false。下一步数据库独立关联核验。
+
+
+### 6A.2 独立数据库核验与报告
+
+SQLite integrity_check=ok；4版本、20身份、11审计、4消息、3outbox、1问题关联核验，错误0。证据docs/validation/prd006a-stage2-case/verification.json；7列验收表acceptance.md。Case产物6，源码改动0，日志修改1，重试0。case_pass=true，stage_pass=false；人工标签review仍待确认。停止在6A.2，不自动进入6A.3。
+
+
+## 6A.3 开始
+
+用户继续进入路由交接。针对性基线49 passed/0 failed；原全回归775 passed/2 skipped。Plan/Control入口仍skeleton，采用contract接收器，实际模型/业务调用0。复用learning aha_b18391a2938a、rec_803b39eb4969为发送前校验要求。下一步路由失败测试。
+
+
+### 6A.3 路由交接首轮
+
+首次测试导入路径错误1，修正后预期红灯13（dispatcher不存在）；新增接口/dispatcher/contract接收器并扩展存储后`python3 -m pytest tests/test_intent_dispatch.py -q`：13 passed、0 failed、0.19s。真实网关0，Case0。下一步补强回执和停止目标关联、模型无工具入口。
+
+
+### 6A.3 消息入口与路由审计
+
+入口红灯4→绿灯4；路由补强3处（回执共享引用、接收后纠正、停止目标关联）已验证；新增Plan回执事件关联红灯1后补齐metadata迁移。累计命令pytest六个intent测试文件：70 passed、0 failed。无工具模型Port与消息入口使用固定响应接通存储及dispatcher；真实provider/HTTP认证未接入。下一步全回归和累计Case准备。
+
+
+### 6A.3 首次性能检查未达门槛
+
+全回归并发运行期间，32条固定候选5次中位数6.4565ms，基线5.3362ms，+20.9951%，阈值<=5%，未通过。原始数据docs/validation/prd006a-stage3-performance.json。停止功能扩展，待全回归结束后无并发负载复核一次；不删除原始失败数据，不声称性能通过。
+
+
+### 6A.3 接收事务保护
+
+原全回归796 passed/2 skipped/0 failed/7 warnings、54.32s。新增接收事务测试先红灯1，修复后累计针对性71 passed、0 failed、0.85s。SQLite revision_guard在短接收提交期间阻止并发纠正，不能用于长期业务执行；真实远端适配器仍需实现等价版本边界。性能无并发复核5.4463ms，对5.3362ms基线+2.0645%，满足<=5%，保留首次受并发回归影响的超限记录。用户确认累计Case；先重跑全回归再执行。
+
+
+### 6A.3 最终全量回归
+
+`python3 -m pytest -q`：797 passed、2 skipped、0 failed、7 warnings、66.30s；阶段基线775 passed、46.95s，新增22通过。全suite耗时升高，不以其替代固定fixture性能门槛；固定fixture独立复核+2.06%满足<=5%。针对性71/71，下一步执行用户已确认的累计Case。
+
+
+### 6A.3 累计契约Case
+
+命令`python3 scripts/case_prd006a_dispatch.py --output docs/validation/prd006a-stage3-case`返回0；45输入/45输出，本阶段6版本/5回执恢复；固定模型调用6、真实模型0、真实业务0、后台worker0/异常0、重复接收0、旧版本拒绝1、撤权拒绝1；耗时0.5270766660032677s；业务完成1789367497.563731，落盘完成1789367497.564688，差值0.0009570121765136719s。主Case1，包含6A.1–2子Case1，重试0。case_pass=true仅contract范围；stage_pass=false，真实适配器/HTTP授权/人工标签仍未验收。下一步独立关联核验。
+
+
+### 6A.3 独立核验与验收报告
+
+6版本hash、5回执、20审计、5次限制交接和2项停止顺序核验均满足，错误0；verification.json与acceptance.md已保存，Case目录产物12个。本阶段生产新增5修改2、测试新增2、脚本新增1；最终针对性71/71，全回归797 passed/2 skipped/0 failed，Case主1+子1，重试0。真实provider/HTTP授权/真实下游/人工标签共4项待集成或验收。学习usage signal写入2条。停止在6A.3，等待review。
+
+
+## 真实DeepSeek接入开始
+
+用户明确复用DeepSeek配置；安全检查host=api.deepseek.com、model=deepseek-chat、密钥存在（未展示/未验证）。既有针对性基线71/71。DeepSeek适配器红灯5→绿灯5，连同消息入口测试9 passed、0 failed、0.51s。采用JSON mode、无tools、asyncio总网络deadline、标准化脱敏错误；暂无真实API调用。下一步真实Plan/回答接收和Runtime取消。
+
+
+### 真实接入回归与兼容性修复
+
+Runtime取消2项红灯后绿灯；曾因threading.Event与domain.Event名称冲突导致2项回归失败，别名修复后7/7通过。真实HTTP+回执测试21/21通过。首次全量809 passed/1 failed/2 skipped，52.63s；唯一失败为关闭意图层时配置响应新增字段，已恢复旧模式原契约。用户确认真实Case；DeepSeek配置保留，ignored .env.local新增独立服务token及enabled开关（不输出secret）。下一步全回归通过后执行120秒隔离真实Case。
+
+
+### 真实接入最终全量复核
+
+全量复核前一次出现Code Map build_timeout（120s），伴随gRPC/fork警告，完整耗时166.74s；该单项隔离复跑1 passed/0.42s。未更改Code Map代码。随后`python3 -m pytest -q`：810 passed、2 skipped、0 failed、7 warnings、42.38s。保留间歇性风险记录，不声称消除fork问题。已确认真实Case现在执行，最多120s/最多重试2次。
+
+
+### 真实DeepSeek端到端Case
+
+`python3 scripts/case_prd006a_real.py --output docs/validation/prd006a-real-case`返回0，case_pass=true。4输入/4输出、4真实回执、4意图恢复、1计划恢复、1已取消Runtime恢复；重复请求1无新增调用/产物；DeepSeek调用7、Token总数6896；耗时9.826583042002312s；业务至文件落盘差值0.0003409385681152344s。实际业务工具调用0、后台异常0，Case重试0。Runtime取消用受控阻塞模型验证真实线程停止，不冒充DeepSeek推理即时中断。下一步独立进程及数据库关联核验。
+
+
+### 真实接入执行意图补强
+
+真实Case后自审发现Plan交接缺少intent_type，导致execute会按诊断草案处理。新增2个红灯测试，补齐交接字段并生成plan_type=execution；缺少写工具时明确needs_capability且execution_status=not_submitted。启用意图层时主页使用新对话页面。下一步完成回归后用相同4条消息在新隔离目录复核真实Case。
+
+
+### 真实接入最终回归
+
+针对性33 passed/0 failed/0.94s；`python3 -m pytest -q`：812 passed、2 skipped、0 failed、7 warnings、39.66s。较接入前797通过增加15。此前Code Map间歇性超时保留记录，此轮通过。运行相同真实Case作变更后复核（新目录，非覆盖、非故障重试）。
+
+
+### 真实接入Incident权限补强
+
+新增测试证实已完成的他人Incident可被旧会话创建入口使用（202而非403）；修复为持久化incident_owners+旧Session归属核对。旧API创建Incident记录服务端actor，观测树按可访问Incident/Session过滤。真实Case的Runtime Incident改经HTTP创建，避免内部创建绕过所有者登记。下一步完成最终回归后复核已授权Case。
+
+
+### 权限补强最终回归
+
+针对性20 passed/0 failed/0.88s；完整`python3 -m pytest -q`：813 passed、2 skipped、0 failed、7 warnings、41.06s。新增权限用例1通过。执行已确认相同真实Case的权限变更后复核，新目录保留所有原始成功产物。
+
+
+### 真实接入最终验收
+
+最后一次真实Case4/4、6次DeepSeek调用、5987 Tokens、10.710734416999912s，故障重试0；独立进程关联8/8、计划hash1/1、取消Runtime恢复1、Incident owner2，错误0。真实Case共3次成功，API调用19次、Token总量18695，均保留产物。验收报告docs/validation/prd006a-real-case-secure/acceptance.md；使用说明docs/guides/intent-live-integration.md。计划仅草案/不自动执行；模型效果全集尚未评测。既有部署未重启。
+
+
+## 6A.4 评测准备
+
+保留v1契约集，新建model-v2 32条，hash e74725eb1881a8a4d1a4a7530ac47373aa8437fd511ef8e6b9485c851315fbd0。补齐代码/结论/原目标上下文并匿名化ID；未做真实模型评测。标签与评分口径待用户确认。评分器6红灯→6绿灯，评测驱动2红灯→2绿灯；`python3 -m pytest tests/test_intent_effectiveness.py -q` 8 passed、0 failed、0.04s。runner --help通过。技术失败留分母、不用标签驱动重试；objective单独人工review，stage_pass保持false。
+
+
+### 6A.4 标签确认与正式评测启动
+
+用户确认32条标签/评分口径及真实评测；approval绑定e74725eb1881a8a4d1a4a7530ac47373aa8437fd511ef8e6b9485c851315fbd0，原数据不变。全量基线821 passed/2 skipped/7 warnings、62.22s。增加未测安全指标不能放行测试并修复；评分/模型适配器/消息入口最新针对性18 passed、0 failed、1.00s。按PRD和已确认标签修正question新证据、复合诊断及能力关闭不改类别的提示，未根据模型成绩改标签。正式批次最多120秒、每输入最多2次修复，不dispatch。
+
+
+### 6A.4 首轮模型效果未通过
+
+正式冻结集32输入/31有效输出/32落盘，37次DeepSeek调用、38526 Tokens、55.06s；macro-F1=0.91604（>=0.90），route=87.5%（<95%），字段99/104=95.19%，禁止约束6/6=100%；危险歧义clarify9/10=90%，误放行1，技术失败1。case_pass=false，停止扩展，先分析case-023安全误放行及case-015结构失败。数据与标签保持不变。
+
+
+### 6A.4 首轮失败修复
+
+安全失败根因：用户明确other而模型引用context中的t1，来源存在检查无法识别目标替换。新增中英显式任务ID不替换测试2红灯→绿灯；服务端在路由前核对显式ID，不靠提示词放行。结构失败case-015诊断调用1次未复现，保存raw_candidate与parsed，未混入评测；初次日志丢失错误详情，现补充具体校验消息及修复反馈。按已确认规则澄清continuation继承类别、新限制为correction、缺对象但操作明确仍execute、明确unsupported不问澄清。冻结数据和标签不变；下轮为相同集第1次复测。
+
+
+### 6A.4 第一次复测前回归
+
+中英任务/计划显式ID替换共4项回归覆盖；最新针对性71 passed/0 failed/4.21s，完整826 passed/2 skipped/7 warnings、53.29s。数据集hash不变；复测仍包含全部32条，不筛题。case-015诊断是独立1次调用，不进入得分。复测run2是第1次批次重试，预算120秒。
+
+
+### 6A.4 第一次复测仍未通过
+
+run2完整32条、31有效输出、38次API/45295 Tokens、52.29s。macro-F1=0.96643，route=90.625%，字段98/104=94.23%，禁止限制5/6=83.33%，危险clarify9/10、误放行0、技术失败1。case_pass=false。误放行已由服务端补强归零，但case-010限制结构、case-021来源结构、case-015多问阻断仍须定位。case-015和case-017连续两轮未达预期，停止扩展，只处理失败原因，不改数据标签。下一次最多为第2次批次重试。
+
+
+### 6A.4 第二轮修复与性能
+
+修复空指代来源允许审计但不绑定；在原来源验证后，规范化已被read_only完整覆盖的配置变更同义other，未知限制仍保留；对明确独立禁止指令校验保留，日志内容不作用户限制。3项红灯后修复；5个旧并发测试的合成候选曾遗漏其输入“只分析”的限制，补齐合成候选而未弱化断言。针对性91 passed/0 failed/1.79s。新增校验初次固定集5次中位数6.1778ms，相对5.282ms基线+16.96%未达标；去除hash校验不必要JSON往返后4.4268ms，-16.19%，保留全部校验，针对性83 passed/0 failed/0.85s。冻结标签不变，准备第2次且最后一次批次重试。
+
+
+### 6A.4 最后一次模型复测启动
+
+完整基线831 passed/2 skipped/7 warnings、42.97s。补充来源索引保持回归1红灯后修复：若规范化会移动已验证context源地址则保留原表示，不伪造来源；最新相关92 passed、0 failed、1.37s。固定集性能4.43ms低于5.282ms基线。模型run3为第2次批次重试（最后一次），仍32条同hash同标签；不得挑选各轮最好单题拼接。
+
+
+### 6A.4 最后一次复测结果
+
+run3 32输入/32有效/32落盘，32次API、40316 Tokens、45.53s。macro-F1=0.96643；字段104/104=100%；禁止6/6=100%；危险clarify10/10=100%、误放行0、技术失败0。route=27/32=84.375%仍低于95%，case_pass=false。5条期望Plan却提前澄清；另case-017类别偏差在F1门槛内。重试2/2已用完，停止真实模型重跑，不改标签，不拼接各轮最佳结果。下一步整理路由边界分歧与最终回归/累计契约验证，不宣称6A Done。
+
+
+### 6A.4 最终工程回归
+
+`python3 -m pytest -q`：832 passed、2 skipped、0 failed、7 warnings、49.34s。效能模型评测run3仍case_pass=false（route27/32），不得用工程测试通过替代模型效果。下面只复跑此前确认的累计契约Case，无外部模型或业务调用。
+
+
+### 6A.4 本轮结论
+
+真实模型三轮评测107次API、124137 Tokens，另1次诊断调用Token未记录。最终路由27/32未达95%，其余自动指标达标；effectiveness_pass=false，stage_pass=false，重试2/2用完。完整回归832 passed/2 skipped/0 failed/49.34s。累计契约Case45/45、0重复、6版本5回执恢复、0.32s（仅合同范围）。独立核验32记录/64输入context hash/32结果源/4代码hash，评分重算一致。报告docs/validation/prd006a-effectiveness-acceptance.md；目标人工review表prd006a-objective-review.md。不改标签、不拼最佳单题、不再调用模型；等待路由缺口归属review及新的评测预算。
+
+
+### PRD006A 推送前验证
+
+用户明确要求push。仅提交本轮意图实现、测试、PRD006A、研究/设计和评测文本证据，共105文件；其他PRD草稿与共享日志中的旧条目留在工作区。`python3 -m pytest -q`：832 passed、2 skipped、0 failed、7 warnings、45.82s；staged diff检查通过。本地密钥、运行数据库和.agents记忆未纳入提交。模型路由准确率84.38%仍未达到95%，不标记006A Done。推送目标origin/codex/prd006a-intent-contract。
+
+
+### PRD006A 合入main：冲突解决与针对性验证
+
+用户授权合入main。远端main已新增PRD002B上下文/命名空间变更，使用独立worktree保留原工作区草稿。合并2个冲突文件：api/app.py保留全部上下文预算配置并增加意图开关；runtime/loop.py保留working-set与source pins并加入取消检查。系统Python无pytest，改用已有miniconda3解释器。针对性命令pytest runtime_cancel/runtime_loop/runtime_context/integration_smoke/live_intent_http：52 passed、0 failed、1.68s；冲突标记0。下一步全量回归再完成合并。
+
+
+### PRD006A 合入main：全量回归
+
+合并父分支origin/main=2dbda2d与意图分支de760b0；2处文本冲突已保留两边意图。完整命令`/Users/xuewentao/miniconda3/bin/python -m pytest -q`：896 passed、3 skipped、0 failed、7 warnings、51.35s。较意图分支832通过增加64（main新上下文用例）；模型效果route84.38%未达95%仍pending，不因合并改为Done。此步只Git集成，无真实模型/业务调用。

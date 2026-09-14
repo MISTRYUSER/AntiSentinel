@@ -1,0 +1,26 @@
+{
+  "counts": {
+    "source_files": 209,
+    "test_files": 135
+  },
+  "checks": {
+    "6A.1": true,
+    "6A.2": true,
+    "6A.3": true,
+    "6A.4": true,
+    "IntentCandidate": true,
+    "ResolvedIntent": true,
+    "TaskControlGateway": true,
+    "context_version": true,
+    "case_pass": true,
+    "30秒": true,
+    "120秒": true,
+    "24小时": true
+  },
+  "checks_passed": 12,
+  "checks_total": 12,
+  "placeholder_count": 0,
+  "case_runs": 0,
+  "test_execution": "N/A",
+  "elapsed_seconds": 0.035
+}
