@@ -2345,3 +2345,17 @@ R2首轮退出0，13/13检查满足；真实Qwen Flash1请求/1响应/814tokens�
 相关106 passed、0 failed、1warning、20.32s（pytest-real-focused.txt）；全量773 passed、0 skipped、0 failed、7warnings、70.59s（pytest-real-full.txt），相对766新增7项/+0.91%，相对最初728新增45项/+6.18%。本轮7个运行/测试文件修改，compileall与git diff --check退出0。R1三轮+R2一轮共4次真实运行、两次技术重试；最后成功两轮核心36检查、独立审计11检查均满足，前两轮失败保留。四轮runner耗时总867.73s；外部请求266（Embedding252、模型14），已报告tokens108436，2条无响应调用usage未知，不伪造账单。意外后台异常0；停止本次启动的3个隔离容器，compose ps运行容器0，卷/所有轮次产物保留。两个成功报告和独立审计已复制到docs/validation/prd005-real-app-20260914，完整结果见REAL-RESULTS.md。当前真实运行通过、回归通过，用户review未完成；生产、业务质量、多实例/运行中Session恢复等8类边界仍待验收。
 
 本阶段提交范围28文件（含7个运行/测试文件与21份文档/证据项），已排除所有DB、向量文件、私有console/child日志和凭证。2份成功报告、2份失败报告与对应执行/独立审计均保留。记录1项provider别名经验及1项manifest建议成功；后置learning没有阻塞交付。工作保持独立分支，未merge/push，等待本阶段用户review后再进入下一阶段。
+
+### 2026-09-14 R1/R2用户review通过，进入开发质量评测
+
+用户在阶段结果汇报后回复“继续”，本阶段记为用户review通过（证据：REAL-RESULTS.md、真实36核心/11独立检查及773项回归）。随后用户明确选择“先整理现有24题做开发评测，正式业务验收保持待定”。不扩大语料外发范围；新真实质量批次仍先设计/确认。
+
+本轮只读输入审计audit_inputs.py退出0：24题（20有答案、4无答案）、82文档、50833bytes、标签proposed；金标数分布0:4/1:16/2:3/3:1，严格P@5宏平均上限0.25，小于原0.80。R1运行时82个active文档与旧评测document_id交集0，但Scope/node/chunk/path/source_hash完整身份82/82唯一匹配，缺失0/歧义0；不直接拿旧ID给切片结果打分。脚本、逐题表和映射见docs/validation/prd005-quality-dev-20260914/input-audit.json，运行时DB写入0，外部调用0。
+
+已运行现有evaluate_code_retrieval.py --diagnostic（未指定向量/模型）：24题×5轮=120观测，执行错误0，重复结果0；严格P@5=.14、Recall@5=.55、MRR=.485，逐题最小值三项均0；exact Hit@1=1、无答案FPR=.25、P50/P95=5.14/8.92ms、5轮总查询时间中位132.81ms、runner总941.10ms。金标只有20个独立可回答题，不把100个重复观测当新样本。原报告quality_pass/case_pass=false保持；原始产物/tmp/antisentinel-quality-dev.J9pmT2/keyword，报告压缩归档keyword-report.json.gz，解压后SHA fcb4debc…；本轮没有实现/测试新增、没有外部模型调用。下一步离线Ragas ID指标核对及开发评测设计。
+
+离线Ragas0.4.3实际执行120观测、invalid_inputs0、外部调用0：ID precision=.203571，70有定义/50无定义；ID recall=.55，100有定义/20无定义。无定义null保留，控制台缺失ID提示是预期数学边界，不当执行异常。原始报告压缩归档ragas-id-report.json.gz，解压SHA c8f5c8aa…；Faithfulness/Relevancy未评分。独立重算及指纹核对7/7满足（.14/.55/.485），未修改任何标签、指标分母或QUALITY_THRESHOLDS。
+
+本轮新增一手调研、阶段B设计草案、BASELINE报告、只读审计脚本、input-audit和2份原始压缩评测报告。设计推荐完整来源映射→固定keyword/hybrid开发对照→真实Session上下文捕获与答案评估；3候选方案/4阶段，正式业务质量仍pending。外部调用0、运行时写入0、新增测试0、真实Case0；上一阶段773项只是既有回归证据，不冒充本轮重跑。设计待用户review，尚未编制或执行新真实批次。
+
+设计/基线自审：3份主文档本地链接缺失0、占位符0、git diff --check退出0；对原始压缩报告重算P@5/Recall/MRR及输入指纹的7项检查满足。后置learning记录1个跨投影身份经验、1条开发profile建议成功。新增交付7文件、既有状态/记录更新7文件，共14文件；生产代码改动0、原标签改动0。下一步待阶段B推荐方案review，数据来源选择不再重复询问。

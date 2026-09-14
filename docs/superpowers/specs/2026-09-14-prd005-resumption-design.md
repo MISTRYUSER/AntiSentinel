@@ -1,6 +1,6 @@
 # PRD-005 恢复开发技术设计（待确认草案）
 
-日期：2026-09-14。类型：architectural（跨 Code Map、Worker、Runtime、Evidence、存储）。本稿恢复设计和验收准备，不撤销图优化 pending，不代表 PRD Done。方案和真实 Case 尚未获本轮确认；不进入实施计划。
+日期：2026-09-14。类型：architectural（跨 Code Map、Worker、Runtime、Evidence、存储）。本稿为恢复时的设计记录；方案A、真实R1/R2及用户review现已通过，结果见阶段报告。用户选择继续现有24题开发评测，新的设计见2026-09-14-prd005-development-quality-design.md。图优化仍pending，不代表PRD Done；下文基线与提案数字保留历史口径。
 
 关联：[进度核对](../../validation/prd005-resumption-20260914/PROGRESS.md)、[一手调研](../../research/prd005-resumption-research.md)、[原 PRD](../../prd/PRD-005%20Code%20Retrieval%20and%20RAG.md)、[剩余项](../../validation/prd005-stage5/OPEN-ITEMS.md)。
 

@@ -1,6 +1,6 @@
 # PRD-005 R1/R2：离线验证结果与真实 Case 提案
 
-日期：2026-09-14。状态：真实R1/R2与最终773项回归通过，用户review待完成。实际运行与两次失败后的修复见[真实结果](REAL-RESULTS.md)；下文保留提案与运行前基线。默认 hybrid，图优化 pending。工作分支 `codex/prd005-real-application-case`，原 main 的未提交文档保持原样。
+日期：2026-09-14。状态：真实R1/R2、最终773项回归及用户review通过，已转入现有24题开发评测。实际运行与两次失败后的修复见[真实结果](REAL-RESULTS.md)；下文保留提案与运行前基线。默认 hybrid，图优化 pending。工作分支 `codex/prd005-real-application-case`，原 main 的未提交文档保持原样。
 
 ## 1. 本轮实际结果
 

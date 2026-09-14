@@ -1,7 +1,7 @@
 # PRD-005 Code Retrieval and RAG
 
 - 日期：2026-09-07
-- 状态：原实现已合入主分支；2026-09-14用户恢复方案A，正常应用真实R1及Worker恢复R2运行通过，修复后773项回归通过，用户review待完成。本轮修复在独立分支尚未合入main。生产验收、业务质量和图优化仍pending；默认hybrid不变。详见 `docs/validation/prd005-stage5/OPEN-ITEMS.md` 及 `docs/validation/prd005-real-app-20260914/REAL-RESULTS.md`。
+- 状态：原实现已合入主分支；2026-09-14方案A的真实R1/R2、773项回归与用户review通过，开始现有24题开发评测。正式业务验收保持待定；原P@5门槛不变，不以开发分数宣布质量通过。本轮修复在独立分支尚未合入main。生产验收和图优化仍pending；默认hybrid不变。详见 `docs/validation/prd005-stage5/OPEN-ITEMS.md`、`docs/validation/prd005-real-app-20260914/REAL-RESULTS.md` 和 `docs/validation/prd005-quality-dev-20260914/BASELINE.md`。
 - 优先级：P0
 - 依赖：PRD-005A发布的代码快照、源码回读、Incident绑定；PRD-003 Evidence/Trace；PRD-004工具接入。
 - 已明确方向：固定Commit事实DB + 独立Embedding投影；全文与向量召回结合代码关系，所有答案回到源码Evidence。

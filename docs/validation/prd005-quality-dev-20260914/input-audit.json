@@ -1,0 +1,695 @@
+{
+  "commit": "36e51b440b07f5738936c9350230368a3c94f6b2",
+  "source_python_files": 204,
+  "test_files": 130,
+  "preflight": {
+    "query_count": 24,
+    "unique_queries": 24,
+    "sample_sufficient": true,
+    "sample_minimum": 20,
+    "answerable_count": 20,
+    "no_answer_count": 4,
+    "precision_ceiling": 0.25,
+    "precision_goal_feasible": false,
+    "categories": {
+      "exact": 5,
+      "error_code": 5,
+      "semantic_zh": 4,
+      "cross_function": 2,
+      "semantic_en": 1,
+      "version": 3,
+      "no_answer": 4
+    },
+    "errors": [],
+    "documents": 82,
+    "input_bytes": 50833,
+    "fingerprints": {
+      "corpus_version": "code-retrieval-local-v1",
+      "query_version": "queries-v1-proposed",
+      "source_count": 10,
+      "commits": {
+        "current": "c89b679db7080b25590ef3cc99e4cb4116f41f95",
+        "previous": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+      },
+      "manifest_sha256": "6473b9ae5f596fb3dc2287a747ad24f97da15165ce7fc77f7a1cd97d2adab3d0",
+      "corpus_sha256": "90257f8335c25f7d3ad6a1b65c460d02d263642fbe928bd9e50264299464bafe",
+      "queries_sha256": "c854ca0e184276861447e2693b3d83d238b86a089901c3fbc079019973114d44",
+      "resolved_labels_sha256": "a84e13b04de9df34ce3e35213aaa347f7f865ad331ade97f08f38bdbe1d74815",
+      "label_status": "proposed_for_user_review",
+      "top_k": 5,
+      "random_seed": null
+    },
+    "label_status": "proposed_for_user_review"
+  },
+  "gold_count_distribution": {
+    "1": 16,
+    "2": 3,
+    "3": 1,
+    "0": 4
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "query": "CodeMapWorker.run_once",
+      "category": "exact",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "4a7570d77520b85c749cbf63dbc7b72714d3518224362cbedf64c708a98b0176"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q02",
+      "query": "CodeMapQuery.find_symbols",
+      "category": "exact",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "b549011cb6d99018ca2e2d7bf40579a79ac6b2d8afe95e1c958ed35678a55f31"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q03",
+      "query": "SubprocessGitReader.read_blob",
+      "category": "exact",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "f89a8bcba9cc8fbc828595cf6c864c48efff8920a1d3f3602774d829975e5160"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q04",
+      "query": "SourceEvidenceService.rehydrate",
+      "category": "exact",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "e19d1f216a4f1d36ad49e8f4f5ca322883d856d467ab398dc2b63f71e231103b"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q05",
+      "query": "snapshot_id_for",
+      "category": "exact",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "075b33ed2873b8452619c29b127521a066daa7c022ed8766f4f6c21a98c69b00"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q06",
+      "query": "build_timeout",
+      "category": "error_code",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "4a7570d77520b85c749cbf63dbc7b72714d3518224362cbedf64c708a98b0176"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q07",
+      "query": "source_not_found",
+      "category": "error_code",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "97dc48729d885ed158c3151409c26bfa9f655bee770e8407662db8e611a4dc09"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q08",
+      "query": "remote_not_allowed",
+      "category": "error_code",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "82f318337bb5a9ae1c0fd659ed001fc6995ef357f2fbe6c6dfe39c58a1ae303f"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q09",
+      "query": "budget_exceeded",
+      "category": "error_code",
+      "gold_count": 2,
+      "precision_at_5_ceiling": 0.4,
+      "old_relevant_ids": [
+        "ae22639fc6a11eac890614590c3aeb53193bfd36d8cbf50878336676b76e7def",
+        "f89a8bcba9cc8fbc828595cf6c864c48efff8920a1d3f3602774d829975e5160"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q10",
+      "query": "scope_mismatch",
+      "category": "error_code",
+      "gold_count": 3,
+      "precision_at_5_ceiling": 0.6,
+      "old_relevant_ids": [
+        "13abe35e8ad8f913a4ad70c2f59dc1b02b698b08efa3f96f94f08138036ea790",
+        "6f57c077b8906d05e0ff0690b4d2b1204edbafb32af776f091166f8258db0206",
+        "e94bb761715894ab5259edb285e3b216533d82d8593f285bdca425b317cfe7e3"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q11",
+      "query": "如何读取固定提交中的文件内容？",
+      "category": "semantic_zh",
+      "gold_count": 2,
+      "precision_at_5_ceiling": 0.4,
+      "old_relevant_ids": [
+        "ea4dc88dcf4e37fe427268d9e341844079410f9432f99740b434d62ff3219d93",
+        "f89a8bcba9cc8fbc828595cf6c864c48efff8920a1d3f3602774d829975e5160"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q12",
+      "query": "用哪些条件校验诊断绑定后才能读取代码？",
+      "category": "semantic_zh",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "13abe35e8ad8f913a4ad70c2f59dc1b02b698b08efa3f96f94f08138036ea790"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q13",
+      "query": "怎样判断回读源码有没有被改动？",
+      "category": "cross_function",
+      "gold_count": 2,
+      "precision_at_5_ceiling": 0.4,
+      "old_relevant_ids": [
+        "97dc48729d885ed158c3151409c26bfa9f655bee770e8407662db8e611a4dc09",
+        "e19d1f216a4f1d36ad49e8f4f5ca322883d856d467ab398dc2b63f71e231103b"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q14",
+      "query": "当构建进程不响应终止信号时如何处理？",
+      "category": "semantic_zh",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "4a7570d77520b85c749cbf63dbc7b72714d3518224362cbedf64c708a98b0176"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q15",
+      "query": "代码地图 ID 包含哪些版本字段？",
+      "category": "semantic_zh",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "075b33ed2873b8452619c29b127521a066daa7c022ed8766f4f6c21a98c69b00"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q16",
+      "query": "How are renamed files detected between two commits?",
+      "category": "semantic_en",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "118c26f52addd557550c1ac775d973fd8ccfa304d8a7d56cfb1e4073c4186bf4"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q17",
+      "query": "旧提交中的 Worker 如何领取构建任务？",
+      "category": "version",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "15216466467d8b6fbda9cd9e9a23fa50e25091e99f823405dad63e4682828077"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "884befe164559e36b26b7894b5cebd1ad596a71900e0896f95b8d4abad7c127d",
+        "published_generation": 1,
+        "commit_sha": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+      }
+    },
+    {
+      "id": "q18",
+      "query": "构建结果何时从子进程队列读取？",
+      "category": "version",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "4a7570d77520b85c749cbf63dbc7b72714d3518224362cbedf64c708a98b0176"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q19",
+      "query": "旧提交中的源码恢复是否重新验证内容哈希？",
+      "category": "version",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "44828f54d79f0b3ae654a984df8b9908ef50e4a2aa9fd6d55c2cfed12288b47a"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "884befe164559e36b26b7894b5cebd1ad596a71900e0896f95b8d4abad7c127d",
+        "published_generation": 1,
+        "commit_sha": "21ad8faf354c97c83fdc29d7525ba24e81106077"
+      }
+    },
+    {
+      "id": "q20",
+      "query": "查找入边和出边时如何避免循环？",
+      "category": "cross_function",
+      "gold_count": 1,
+      "precision_at_5_ceiling": 0.2,
+      "old_relevant_ids": [
+        "4f814683f98058298c22a6abd0f6c73e53c72f3d216fe66844966310c5b6c6d7"
+      ],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q21",
+      "query": "QQQ_NONEXISTENT_ERROR_90001",
+      "category": "no_answer",
+      "gold_count": 0,
+      "precision_at_5_ceiling": null,
+      "old_relevant_ids": [],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q22",
+      "query": "KAFKA_CONSUMER_REBALANCE_XYZ",
+      "category": "no_answer",
+      "gold_count": 0,
+      "precision_at_5_ceiling": null,
+      "old_relevant_ids": [],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q23",
+      "query": "支付退款金额如何转成人民币？",
+      "category": "no_answer",
+      "gold_count": 0,
+      "precision_at_5_ceiling": null,
+      "old_relevant_ids": [],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    },
+    {
+      "id": "q24",
+      "query": "登录短信验证码如何切换供应商？",
+      "category": "no_answer",
+      "gold_count": 0,
+      "precision_at_5_ceiling": null,
+      "old_relevant_ids": [],
+      "scope": {
+        "repository_id": "antisentinel-evaluation",
+        "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+        "published_generation": 1,
+        "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+      }
+    }
+  ],
+  "runtime_projection": {
+    "active_documents": 82,
+    "projection_revisions": [
+      "utf8-slices-8192-v1"
+    ],
+    "same_document_ids": 0,
+    "exact_source_matches": 82,
+    "missing_source_matches": 0,
+    "ambiguous_source_matches": 0,
+    "mapping_policy": "same scope/node/chunk/path/source_hash only; never infer partial-slice relevance",
+    "document_id_mapping": {
+      "ee28a55a584dde2e4c98fb6ad7872aa9efc6d57ae70a93acf9df4ff9d259ce9f": [
+        "365a2577029313f63529203ef31d605da31175058cf5c0686b541501bcf8157f"
+      ],
+      "95df930c1594f138db7a132ed25eb7e92ca35ff36457072fa32254276bed3d88": [
+        "9481f387af7a22222bafcef69e848d1ecab5d6b238e5f36be3d5cfb9601d9487"
+      ],
+      "35971f1b28c7b0998f33af71337651703e8acb8c75d02fac2c1e15d9abf4b9b5": [
+        "6791c818f65729ae53a33491b46641da1745834846ddd44f5aefbb4db32018e5"
+      ],
+      "4a7570d77520b85c749cbf63dbc7b72714d3518224362cbedf64c708a98b0176": [
+        "aa5854e1cb10c6c4a2b6c2fb6360aff81d8a4f1f36a7bd8bd128a1739b057027"
+      ],
+      "ba7ecea69ade3dfb621225f800b3b247dde7bd3cdb6edcd30bdf760a445569fa": [
+        "81d2f43bc868d668894cea2843c37d6242eed75fae6763d88bc4c0d8af1a8d2a"
+      ],
+      "6271ab9b5f678a6e887c47fff2fdbac5ca5ddc89080cfef764df05107ea7bcca": [
+        "524a2a1d13093bc2a0cd017832d06ecad9df31db275d0cc48eb45945dd30a888"
+      ],
+      "1c0e5b56dfc679d3d49759a17e39cfe707ba7613ec790b5b25608c8ab0716446": [
+        "ebe595bad18559c171ba8bdca640f02416e7382469cddb44d3ec6d07a1c7ccc1"
+      ],
+      "79292006c078d24299d9ecaee7801f3380c8d84867c30d9167f7b80975873c01": [
+        "66658796ed525ecb7769c8a06618b68100111439dbf670cd532c3aab79e0cda9"
+      ],
+      "254d1a4f0456b2245bf07bbb855f4a185e253876664242ceb95a36a0465659f2": [
+        "d9c189fbd9ea3e10934b71c21b0a5efe1526170fd8d1bf5425854a730c650cb5"
+      ],
+      "40be8ecddc3e46bfcb42f2bab482ea8a11165e2d6faac99e615e8f7750758212": [
+        "d63adcbc1bffd067f7752a0be7c2b92e0cd86cbe7d3d43ead03c0a8eff937f33"
+      ],
+      "b549011cb6d99018ca2e2d7bf40579a79ac6b2d8afe95e1c958ed35678a55f31": [
+        "2cdf1524131ce784b38514c5dea08d0967188ec28d482e3b9650056fa853db4d"
+      ],
+      "4f814683f98058298c22a6abd0f6c73e53c72f3d216fe66844966310c5b6c6d7": [
+        "a6c6a68258d6cb16ae5459c8d4df2ce904bcd8fc4062e6d7d0dd657a7e29a179"
+      ],
+      "faa93433c28ff1d0312f60a734e142d5a61e8beea004e28ee742a48f3d0112be": [
+        "281be3a00326273b05b1c56ef4294f1c2e9dfae776ee31b01b62188c06951b61"
+      ],
+      "97dc48729d885ed158c3151409c26bfa9f655bee770e8407662db8e611a4dc09": [
+        "c0fcb88c1a094a96ac83be384d89a28879ff6e2f4b3689154ed61584b4ac2cf1"
+      ],
+      "6f57c077b8906d05e0ff0690b4d2b1204edbafb32af776f091166f8258db0206": [
+        "fda3ad4d803642b4a9956938b8b3b72d89fb1c64ba190a0a0c7310883ad68e26"
+      ],
+      "e94bb761715894ab5259edb285e3b216533d82d8593f285bdca425b317cfe7e3": [
+        "470c80e424109e79fc963e98167cf5a04f2a50500eb74967427e25c2df5b2165"
+      ],
+      "f945f0502953f8e800c222425e28db54362833e799d27c8a1f5e027fbb841aac": [
+        "de8184d3a41f9a324c1ce8689c2ff28cc53bcb62de1d1178b8dcdf5b7b5a6ee7"
+      ],
+      "b66b4add64c453e33acfe315f9f979b1ae89998e77c4d22ab61948075c10dccb": [
+        "fab1b09cdf32fedc98f445fbbaab619ca7e5a0eea77fce0493b1c09c3bb32f63"
+      ],
+      "f850adcb7c676605b2c820dd26de0a9be75e6fca91b4214108a8f1407b8b4a20": [
+        "640b56f7c02d26556370f245e4d8f701c647f322a6796c22b9e53b86b68464eb"
+      ],
+      "a4ea6d700333f4ed8811ffe6ac1fb428b238ba24ef567265d575f9ff6ffc6cb5": [
+        "19c94e1a01efdd2c0ab719accb1752570b43790ef14ec186903eea2dd29d35da"
+      ],
+      "5c2403f61dbafdf648cf4593f2e97089c334483e1f31114663aab9d359480ed6": [
+        "e4cbefda1aeb58d972af19756dbcabf42101020585ea3b304a8dd6fd10ee7ad6"
+      ],
+      "8f22ac5823dbdbbf6397fc42007d72c8660cc507a5482fbf4a16270a7912c33e": [
+        "796f1704000f2d8d9e6eaeb3db38c08d84b10744e68672e20bd379b0a6095d28"
+      ],
+      "14663dccaef6a09fcb8240ebc517bef40d3156e0007833d1bc3fd578a01e3c45": [
+        "261a4fa76af654c57bb8cd031972a27a7d731607d56da1d8f6e554eb461925be"
+      ],
+      "ae22639fc6a11eac890614590c3aeb53193bfd36d8cbf50878336676b76e7def": [
+        "9f4ce627f9f3055a7f8a984137de9b4c1c674423a11027670bf4cfb3a93deb27"
+      ],
+      "f89a8bcba9cc8fbc828595cf6c864c48efff8920a1d3f3602774d829975e5160": [
+        "a1661895a7057a6fb97d6fd6d477edd0ebf66fb0fc5673f6e6bac534559bdabf"
+      ],
+      "118c26f52addd557550c1ac775d973fd8ccfa304d8a7d56cfb1e4073c4186bf4": [
+        "1bde70045829cc817f673e18af66f24198abe073b63e42aa24e302636409e174"
+      ],
+      "82f318337bb5a9ae1c0fd659ed001fc6995ef357f2fbe6c6dfe39c58a1ae303f": [
+        "f023c84a32a8df8414f9cd1456c6733681b7624bd2180a50e93163c4a7f1a5b2"
+      ],
+      "b42a42e3e2b4df8bbafc2ddbd45ba4a7756fdb3af5fe31c5103ed6136ede049d": [
+        "8f6adec45b533c043eceddd5c5df7c1f5b72832345641182248421308ea43869"
+      ],
+      "068793e71a56902e6093d89adbcdb82a835870ae2a9e6968854242845afc7455": [
+        "f453054aa65667dc8ac38459be1c829b2adaa008c7a8d8c15d2e6bd97a60978f"
+      ],
+      "2b45345fefbcc90fd7c4e266c5403efabfb00b90343e476c138cd8eca61f0aaf": [
+        "5ed78c6dddcdc1b7a6b6d80a4f9a0a5cc540c93deb2543df8f748a14c7f9bf99"
+      ],
+      "ea4dc88dcf4e37fe427268d9e341844079410f9432f99740b434d62ff3219d93": [
+        "18f883f086c98faaf8caab76f841609eef5740b02fd33069e09bc2be1f15738f"
+      ],
+      "fe326a86b3bee0963061c4dc8319ec7b518e58896ac2a37ceb4035867a3fa151": [
+        "284b7b12dbd340eb6d1cd94f74adb498a6081e826f3df0214533c37e70caf928"
+      ],
+      "58d96519f658d43e0d24b5452eb0dbd0edc87846f14e319d8bb7a17984f57e1e": [
+        "ab48f5e294b1c002cb68469e8a05198d9ab8266b23be3ac3ed7806e58ec19077"
+      ],
+      "b542599870884256941a843bb6d845ec6bdc507f5721d840aea7ad21d0780beb": [
+        "2a5406cb7deb4fd5cb4197eaa9600c1636ecd749295e2a871433f9b366f3ea9b"
+      ],
+      "4d4695c28e101baa7c5322ae3d545e21a889104450470bbf91e83f208499b3a7": [
+        "587fe1d49927ddad55931edcf4332f5a8522dfb24e546dbcf930df10dc5272a6"
+      ],
+      "13abe35e8ad8f913a4ad70c2f59dc1b02b698b08efa3f96f94f08138036ea790": [
+        "ad1390bbc6f6b8095db61c00fd97605677c394c075221e2bdf20a3474864a92a"
+      ],
+      "e19d1f216a4f1d36ad49e8f4f5ca322883d856d467ab398dc2b63f71e231103b": [
+        "32bc73bd7cf285806e2382b8288e843f46c02d43a533b2b1a983ebbee9c4ddde"
+      ],
+      "2b49c7f01150ee9741b05dbd5c6981e6e692e2ace62dc9f26dedc4d1bbfe577a": [
+        "e5ac2c0c1d185643c5bfafb95965d9abf64cbf0bd2a46ea0cede92a498cade41"
+      ],
+      "075b33ed2873b8452619c29b127521a066daa7c022ed8766f4f6c21a98c69b00": [
+        "f687affe571a01abd95e3354ed9eeb52b7d296744dea0a7b1bf6879f90af5095"
+      ],
+      "000cc8f1098f9393c4d23ed619889fb278a7428f560027d7c62c1044007aa57b": [
+        "42288c54dbc7ee322a262a4bd2b0f9b54813c2e551400c992f42a2de167a297a"
+      ],
+      "78a638db44ae91d1cc026aed29dfe0fa8f1c3a85d4003a015fd7d5bc5001bb6b": [
+        "e2d29b2a56b8232ce4b144d5879455bb1ff2876bfe286d6f62c0cf45cd2d7686"
+      ],
+      "78b4bbe6efdf4cf2583b786239e59f29297221dec4096198629d265b35c8451a": [
+        "748d2a3eae3014f5b65de4487114a741c63a9558cf19a115d94abdc5106f1d6a"
+      ],
+      "b28c52e5dd94a0e85864b7916df2eb08af171addb8c3f2fce6530dce02f0e096": [
+        "d24d348438be967d9337ace0177f05472915854766a35ec7986b1623839ba533"
+      ],
+      "a5b4551fe22961d73feb19dc801974d2681c6b4150f9e481e6ba7891d568eff2": [
+        "f3b52557f2a0e79620a8227e7b776f8a220c0e3f74b3c963f7aa73edd76938f4"
+      ],
+      "15216466467d8b6fbda9cd9e9a23fa50e25091e99f823405dad63e4682828077": [
+        "0027ca58a5153e5b8cf420114359e01a0909befba786a07057e5a790e085db56"
+      ],
+      "addeee641a549f0ab9bd8248e91f8217e3b02f91b2afbdc1eecbc3a2ae0b0aae": [
+        "6e2a5d3a19a161bd03e14892dcdb8da8cef9c1195feb4c8767c1bbb17899edb8"
+      ],
+      "586a1db6d6fafb49ff92e9973cb3cf3f0801e947a08bf4ad0d1fb11205d8a0e5": [
+        "d45a100feca9c04307892dabdc722b04cb1e1bf58652e2a148700710be5cdf5c"
+      ],
+      "09e226aabe7b45bb1aac34f7fdc86911ccc91268a845c193e8fffbb2a5ee6ca6": [
+        "e43c300d10a2a89e8216221c9676acca6154e524d3d0f8f607a101634b4a3d88"
+      ],
+      "95aec89f1c39d78ac84594c2718232baeca97bb771658b2cd699f08e11735b39": [
+        "3e504cf6aaa71b827e000d4addc04da5cf73b3de60518603b91aec4da599b4d9"
+      ],
+      "b8dd311447ae567ea4335f7a0cb18c0ad2afd05ce057f08e9ffcfba33f6baaaa": [
+        "7d69c4e370fdcc766482fa007c18bae8fe1a33fbaf1a04463e46324f00a1d9c4"
+      ],
+      "d911ea344d30f16e89791bbe5af4afbfc311591055b200a1645907f7d179bf76": [
+        "16cf427e08e87607292d2a63dd824fbbf7598ee6b51861864ecb734cc5e22159"
+      ],
+      "31e0379e9cb52fc880c7bf6de2e3df3b4d824dc0447891a002d0d9ecb6cd6696": [
+        "08a73a30dc05969b76b1132b3b2e17ae5ddaf768c3b9c9217939fdaf52dfcc04"
+      ],
+      "793cfbf876292f5edd244c1c7ae496d340dd3d4529edabfd418a18b4f0531c84": [
+        "90736f55a7749bf37f401ebd7b26684a719fd84f4a70fdb6e2f4f496bcedbf33"
+      ],
+      "3b46d839b8f444fa51aa809f6f461a5e6c66a68e8f3cbbea61e59dbfd94dca27": [
+        "d0ba866b0d149cfe7efc108cb8999daf2f8874a6e7021f19c7cefd9a79c2286c"
+      ],
+      "d831f4c791f245707ae111ed30692e88194a0aa667481326dfb346f3c6d35277": [
+        "78640151760d0bf4cdfe987d8e01a6bd30a6ad1a30ac57a1e280b1de7f1f9408"
+      ],
+      "5bf870319405e339177c9dba4d2b92ae6029cd71883c8529a00af98c88c16aaa": [
+        "6c1cf17957aaf37f18765fcd0919851ee83fceb3a29a5a840e7f8a6f7bcbdcb4"
+      ],
+      "cd62ec07a1337bc875aeb5d029d70179dfe64160f1158ec8e7d5fb5a259552ca": [
+        "9568cbc059a898cdf5c8672b5085da147165630f7501ba24c0a68e695a6c7bab"
+      ],
+      "e58bc8ba0b45070ff09ec1eb37e22a7638227c2325d59c1486c8a667b51b5bba": [
+        "adba0f26ab19729aed61dc52f70266177d85bb37c5103b89862daa7130f6bdb9"
+      ],
+      "68702116170ec039b44a23f4f281298c413f40653b0990b2a93536e972935799": [
+        "b81fe22715ec817fa41504f01f88ccecd87eab9cc1ed0057ed410dad113ccab2"
+      ],
+      "8a02e6221f115eb20f44d4ab618c43814fd68ed7db6d3b165131d56ec8ee29bc": [
+        "967182c843dc8e0aff409d280cd3ca40dc760162e0bf375a2f77ce874e1559ef"
+      ],
+      "0de511fa69f862a928f7e6f9626b53b52e1a5ed470cfd03567826b23ae1327c3": [
+        "ff1cb75c2024dff8506bb77e35a075220ced7c1622e1db7fca47f3b8ec2a914e"
+      ],
+      "92d299fa9b4819c676a30984659c7dd99dcef103e5dcfe32bea9db0824cda5c4": [
+        "17794b28b1acf6a207f8e50f6841bd7e51870f251a3839369af4500794f600dc"
+      ],
+      "e354c2a13a83720496d392cd304c3599b1cc4fb557976d78f087864ba12eced7": [
+        "4473dee4a98154bed7c1bfd52e35c22cb5051b72da30f6549580f494ebc0c987"
+      ],
+      "9b46d2e73b64e82b86860640a2f21401701da97a94fa9c2e08a7f1eaad861b98": [
+        "b974dae578a0255856678ee0d886c025d59142012a06174478f3c7ae6a981c39"
+      ],
+      "edc21ed51a27245e81a608e7cfc4e363598ef8e2577f46cb5f22331c48608cb9": [
+        "b915658ecf39bc404574968779c64556c61741dd6b3c140645d751e3e48a78a6"
+      ],
+      "724ee135f93396776dba653a7aea5f18905c4edc79be272a65c49d92e558f600": [
+        "f8c2c42afcac6faef322bfc3f9941383be56b551a7a1503d9963e9e6e69023bd"
+      ],
+      "e063b15c0e007b1e766476ff2dbbb3527de0b9ecd94635aa151b25b3d8360e49": [
+        "c63c8a2219d3d1c79338ec51d3a23714928957f61b51c47bedec82a9e6a89f7b"
+      ],
+      "743f5ea44b879a562863b377ab9f4ab5c9c0e8a017d634994eaef9d5756dcb9c": [
+        "da6bb0f8a901cc27afadd951ebc0da20d1c610aa5f70c59afa0e613c4f6ee6ff"
+      ],
+      "7b31cc2bfa3e4a815a1dd59508e2a81dc38a2d0b59cf76d9807d27b4bc2cb226": [
+        "e219df9300293ad75b42f7d84b542ee4882edc6ea8b74765ec430e814f3c1f17"
+      ],
+      "d9c9295ce139217bf4656b5bcb7dfd4b292c6f2370a517eeec2b2c63b790b446": [
+        "51018ba3c5e26dc84a071e2a17b7d2da97dfde42254990d43511f809584812be"
+      ],
+      "779648fcf182d3fa7d5534f5671da2edacbf8c5386578aef1be6ff63b6c9f1e7": [
+        "a3ec36b1a82ac82f8376d3826ec0028567d9d39761127153ede73ae61bc57329"
+      ],
+      "7eda9c0c201ae7b1cd8a9aeeeef594187d1219d88b36107afc765956a1a0846f": [
+        "8ce0d5c054b12b1d7198ddfb5a13ef23e854ecc7003fb23cbb5bfc0dbbd1f710"
+      ],
+      "52d90536d940557c28dafee7dd3bedc3887696e7b9d660240cedfd3453a82632": [
+        "77370974c1033f79d50eb7d242ca44c7b9c667e78324517b28d1089d88c9da77"
+      ],
+      "779dd9459ea7b3c0daa85f4211033797b65ccb3aff05f9ecbf8502d90f6dfffd": [
+        "77ffec345b4fca394770be5410144606a655cf1cf709fff479ee813ed3a43b0d"
+      ],
+      "6e68a000ed09a27c618cf795d0e707f1dcb705af694335b3abb80fb9e29f302e": [
+        "a93f6ac57787b240ee07dd6c681e3e27d65303b646a148410549d2bcd620f4fa"
+      ],
+      "40fe18d3a8e642931a360b7a4ecf86fa2c42d7f24960c4b1646a0f9f2c49091e": [
+        "751932de09b93b669d250c6d7656a9f05cb08eb9eb457b2be6721b660a46c95d"
+      ],
+      "22ecc904c232761647afbd16fa2c9cd3b78b8985ae65e2ee0f4a705f07938bc4": [
+        "2a36ba33e0a8528d57ad26c8f3da2393f9d687f22800474a9f627d10caa4714e"
+      ],
+      "44828f54d79f0b3ae654a984df8b9908ef50e4a2aa9fd6d55c2cfed12288b47a": [
+        "965c6ed28f9d356840de4b8395570cebec7c141469d91c00fc3f09ea3ff1eee3"
+      ],
+      "be666ebb9aa3592f6ad4dfe5a3cddea16ac6991c3f70cf9673dc443a5452f09e": [
+        "ddc7f50f0d14e38fa240b447c8808e94a9f245555ed5435cd95f8641fe35dfda"
+      ],
+      "749cb6f74a240231ac7b3307f46750c28483bcfc35ab8ca165bbeca6c2117000": [
+        "fcbbe10c8f448ba40b70e7a1d4f434e617337f110482630e43009107c9002233"
+      ],
+      "6c4da9c2addf91abd7b4571de477cdaee14d4199fac3cda8e8ceb6a9f9740c2f": [
+        "cf1174b586cda3b336e7d6d5059c7e7dccad87ebf8e0938afbb73c549b2c9cab"
+      ],
+      "2b30544ef8bec7edec961c4bd2455d331b01417875a7aea1137bc8ec65382af4": [
+        "139b750465c8c152c9fe8669d04cea43bca89115658aab354a7e3a7f8781d3f6"
+      ]
+    }
+  },
+  "external_model_calls": 0,
+  "runtime_database_writes": 0,
+  "business_quality_pass": false
+}
