@@ -1,0 +1,35 @@
+{
+  "name": "r1-retry1",
+  "command": [
+    "/Users/xuewentao/.local/share/antisentinel/venvs/ragas-0.4.3/bin/python",
+    "scripts/run_prd005_real_session_case.py",
+    "--repository",
+    "/Users/xuewentao/.codex/worktrees/antisentinel-prd005-real-app",
+    "--manifest",
+    "tests/fixtures/code_retrieval/v1/manifest.json",
+    "--output",
+    "/Users/xuewentao/.local/share/antisentinel/cases/prd005-real-application-20260914/r1-retry1",
+    "--milvus-uri",
+    "http://127.0.0.1:29530",
+    "--answerable-query-id",
+    "q01",
+    "--no-answer-query-id",
+    "q21",
+    "--timeout",
+    "600"
+  ],
+  "started_at": "2026-09-14T02:29:04.220566+00:00",
+  "supervisor_timeout_seconds": 630,
+  "watchdog_terminated": false,
+  "pid": 25392,
+  "exit_code": 1,
+  "elapsed_seconds": 282.2721982920002,
+  "effective_case_pass": false,
+  "failed_checks": [
+    "answerable_has_evidence",
+    "retrieval_tools_executed",
+    "tool_attempts_succeeded",
+    "hybrid_channels_and_scope",
+    "remote_calls_observed"
+  ]
+}

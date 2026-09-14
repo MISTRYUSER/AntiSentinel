@@ -62,7 +62,15 @@ def build_code_retrieval_tools(service, scope_provider: Callable[[dict[str, Any]
 
     definitions = [ToolDefinition(
         "code_retrieval.search", "Search published code. Default hybrid fuses keyword/vector. Experimental hybrid_graph expands fused seeds through verified contains relations; graph uses keyword seeds.",
-        {"type": "object", "properties": {"query": {"type": "string"}, "mode": {"type": "string"}, "query_vector": {"type": "array"}, "top_k": {"type": "integer"}, "candidate_limit": {"type": "integer"}}, "required": ["query"], "additionalProperties": False},
+        {"type": "object", "properties": {
+            "query": {"type": "string", "minLength": 1},
+            "mode": {"type": "string", "enum": ["keyword", "vector", "hybrid", "graph", "hybrid_graph"], "default": "hybrid"},
+            "query_vector": {"type": "array"},
+            "top_k": {"type": "integer", "minimum": 1, "maximum": 5, "default": 5,
+                      "description": "Final result count, at most 5. Omit to use 5."},
+            "candidate_limit": {"type": "integer", "minimum": 1, "maximum": 30, "default": 30,
+                                "description": "Recall candidates per channel; must be at least top_k and at most 30."},
+        }, "required": ["query"], "additionalProperties": False},
         search,
     )]
     if graph_expander is not None:
@@ -102,7 +110,19 @@ def build_code_retrieval_tools(service, scope_provider: Callable[[dict[str, Any]
             )
         definitions.append(ToolDefinition(
             "code_retrieval.read_evidence", "Read-only access to source facts; appends internal Evidence only after scope, hash and budget checks.",
-            {"type": "object", "properties": {"candidates": {"type": "array"}, "max_fragments": {"type": "integer"}, "max_bytes": {"type": "integer"}}, "required": ["candidates"], "additionalProperties": False},
+            {"type": "object", "properties": {
+                "candidates": {"type": "array", "description": "Copy source_identity objects from code_retrieval.search hits unchanged. A document ID, symbol or chunk ID alone is insufficient.",
+                    "items": {"type": "object", "properties": {
+                        "repository_id": {"type": "string"}, "snapshot_id": {"type": "string"},
+                        "published_generation": {"type": "integer", "minimum": 1},
+                        "commit_sha": {"type": "string"}, "chunk_id": {"type": "string"},
+                        "source_hash": {"type": "string"}, "node_id": {"type": "string"},
+                        "path": {"type": "string"}, "byte_start": {"type": "integer", "minimum": 0},
+                        "byte_end": {"type": "integer", "minimum": 1}, "parent_source_hash": {"type": "string"},
+                    }, "required": ["repository_id", "snapshot_id", "published_generation", "commit_sha", "chunk_id", "source_hash"]}},
+                "max_fragments": {"type": "integer", "minimum": 1, "maximum": 4, "default": 4},
+                "max_bytes": {"type": "integer", "minimum": 1, "maximum": 32768, "default": 32768},
+            }, "required": ["candidates"], "additionalProperties": False},
             read_evidence,
         ))
     if query_encoder is not None:

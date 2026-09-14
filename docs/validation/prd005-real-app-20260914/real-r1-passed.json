@@ -1,0 +1,142 @@
+{
+  "case": "prd005-r1-real-application-session",
+  "case_pass": true,
+  "execution_pass": true,
+  "quality_pass": false,
+  "quality_reason": "two-query integration pilot is not a reviewed quality set",
+  "checks": {
+    "normal_http_entry": true,
+    "sessions_completed": true,
+    "answerable_has_evidence": true,
+    "model_calls_observed": true,
+    "citations_disclosed": true,
+    "retrieval_tools_executed": true,
+    "tool_attempts_succeeded": true,
+    "hybrid_channels_and_scope": true,
+    "reopened_results": true,
+    "evidence_rehydrated": true,
+    "evidence_to_active_document": true,
+    "evidence_to_vector_version": true,
+    "all_vectors_reconciled": true,
+    "projection_revision_matches": true,
+    "sqlite_integrity": true,
+    "coordinators_stopped": true,
+    "audit_writes_succeeded": true,
+    "session_threads_stopped": true,
+    "no_document_reembedding": true,
+    "background_errors_zero": true,
+    "all_records_present": true,
+    "all_results_persisted": true,
+    "remote_calls_observed": true
+  },
+  "input": {
+    "manifest_sha256": "6473b9ae5f596fb3dc2287a747ad24f97da15165ce7fc77f7a1cd97d2adab3d0",
+    "input_files": 10,
+    "input_bytes": 50833,
+    "input_documents": 82,
+    "answerable_query_id": "q01",
+    "no_answer_query_id": "q21",
+    "scope": {
+      "repository_id": "antisentinel-evaluation",
+      "snapshot_id": "07a08b389811214182ea269bd867ec7d8fad204c2a9fba76f4a0bea1791ace2b",
+      "published_generation": 1,
+      "commit_sha": "c89b679db7080b25590ef3cc99e4cb4116f41f95"
+    },
+    "projection_revision": "utf8-slices-8192-v1",
+    "collection_base": "prd005_case_0c80388582e845aac609",
+    "poll_seconds": 5.0,
+    "model_kind": "remote"
+  },
+  "counts": {
+    "sessions": 2,
+    "persisted_results": 2,
+    "rehydrated_evidence": 2,
+    "documents": 82,
+    "tasks": 82,
+    "ready_tasks": 82,
+    "evidence": 2,
+    "evidence_references": 2,
+    "identity_matches": 2,
+    "vectors": 82,
+    "embedding_attempts": 82
+  },
+  "embedding": {
+    "document_inputs_per_start": [
+      82,
+      0
+    ],
+    "http": {
+      "kind": "embedding",
+      "requests": 84,
+      "responses": 84,
+      "input_tokens": 24091,
+      "output_tokens": 0,
+      "total_tokens": 24091,
+      "usage_responses": 84
+    },
+    "unanswered_transport_failures": 0
+  },
+  "model": {
+    "http": {
+      "kind": "model",
+      "requests": 5,
+      "responses": 5,
+      "input_tokens": 15205,
+      "output_tokens": 1590,
+      "total_tokens": 16795,
+      "usage_responses": 5
+    },
+    "calls_per_session": {
+      "4249b893-9dd1-4542-8ce0-495a082adbab": 3,
+      "b717678a-b883-4802-9f3a-b679e026e796": 2
+    }
+  },
+  "retries": 0,
+  "unexpected_background_exceptions": 0,
+  "health": [
+    {
+      "state": "running",
+      "ticks": 41,
+      "projection_errors": 0,
+      "thread_alive": true,
+      "runs": {
+        "ready": 2
+      }
+    },
+    {
+      "state": "running",
+      "ticks": 1,
+      "projection_errors": 0,
+      "thread_alive": true,
+      "runs": {
+        "ready": 2
+      }
+    },
+    {
+      "state": "stopped",
+      "ticks": 43,
+      "projection_errors": 0,
+      "thread_alive": false,
+      "runs": {
+        "ready": 2
+      }
+    },
+    {
+      "state": "stopped",
+      "ticks": 1,
+      "projection_errors": 0,
+      "thread_alive": false,
+      "runs": {
+        "ready": 2
+      }
+    }
+  ],
+  "business_completed_ms": 281858.65408300015,
+  "persistence_completed_ms": 281859.62966700026,
+  "storage_verified_ms": 282106.58308300027,
+  "persistence_lag_ms": 0.9755840001162142,
+  "verification_lag_ms": 247.92900000011286,
+  "elapsed_ms": 282114.026792,
+  "evidence_projection_identity_persisted": false,
+  "timing_semantics": "API terminal/result persistence are polling observations; verification gap includes reopen"
+}

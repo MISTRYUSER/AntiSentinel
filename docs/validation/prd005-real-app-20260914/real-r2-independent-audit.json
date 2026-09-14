@@ -1,0 +1,22 @@
+{
+  "counts": {
+    "documents": 1,
+    "tasks": 1,
+    "vectors": 1,
+    "identity_matches": 1,
+    "ready_tasks": 1,
+    "persisted_results": 0,
+    "final_references": 0,
+    "restored_final_references": 0,
+    "attempts": 2
+  },
+  "checks": {
+    "all_points_and_fields": true,
+    "all_tasks_ready": true,
+    "sqlite_integrity": true,
+    "final_reference_hashes": true,
+    "single_task_two_attempts": true
+  },
+  "audit_pass": true,
+  "source_text_logged": false
+}

@@ -2315,3 +2315,33 @@ Qwen预算内查询用独立AsyncClient与取消计时，预留20%剩余时间�
 独立review发现1项Important：R1重开结果仅比较completed状态，可能漏掉答案/引用/执行记录缺失。新增5项字段保留测试（先见缺失函数红灯），修复为原始持久结果全字段比较，HTTP附加messages不参与原字段集合。累计相关71/71通过、0失败、1warning、17.70s（pytest-focused-review.txt）；随后重跑全量，保留首次761日志，不用其覆盖最终结果。self-learning后置成功记录1项调度经验、1项预算建议，复用3条历史卡并写usage信号。
 
 最终全量766 passed、0 skipped、0 failed、7 warnings、66.13s（pytest-full-review.txt），相对728基线+38/+5.22%；本轮9个运行/测试文件，外部模型调用0、真实远程Case0、回归技术重试0。最终本地R1/R2分别23/13检查满足，3741.10/3179.57ms，R1持久观察差0.97ms/R2读回观察差13.72ms；结果见r1-local-review-report.json和r2-local-review-report.json。旧runner此前17/17保持，源代码之后未变更。源码compileall、git diff --check、3份主文档本地链接检查均退出0/断链0。阶段仅本地回归通过，远程验收/生产质量/用户review仍未推进。待确认的真实Case文档已落盘并给出固定输入、模型、独立存储与600/120秒预算。
+
+### 2026-09-14 用户确认真实 R1/R2 Case
+
+用户在完整Case提案之后答复“继续”，确认该固定本项目语料、既有Flash1024/DeepSeek、独立Standalone及R1 600秒/R2 120秒预算。状态推进为Case已确认，未提前宣称运行通过。代码基线1ade362、766项回归已通过且代码未再变。首次环境预检发现Docker Engine未运行，磁盘36148326400bytes；启动Docker Desktop后再次预检ready=true，空闲35522277376bytes、Docker29.4.1、8CPU/8321994752bytes内存，达到10GiB/4CPU/8GB本地门槛。原Milvus镜像ID dbc112bf…与历史证明一致；仅启动既有antisentinel-milvus-_8k570ob项目，pull never，无新镜像下载/全局清理。新产物根/Users/xuewentao/.local/share/antisentinel/cases/prd005-real-application-20260914，目录权限0700；凭证仅加载到子进程环境。下一步串行R1→产物核对→R2→回归。
+
+### 2026-09-14 真实R1首轮：参数manifest缺口
+
+R1退出1，runner264126.97ms、父进程265.69s，未触发630秒看门狗。82文档/82任务/82向量、82attempt全ready、重开编码82→0、后台异常0、技术重试0；模型4次请求7127tokens，Embedding82次请求24042tokens。2个Session持久结果但Evidence0，因此23检查中4项失败（answerable_has_evidence/retrieval_tools_executed/tool_attempts_succeeded/hybrid_channels_and_scope），case_pass=false。持久结果显示模型两次传top_k=10（后端最大5）；无答案场景还猜repository_id=prd005-r1-case，被scope校验拒绝。没有远程query编码、没有跨域结果放行。原始report、SQLite、console及execution receipt保留在新产物根/r1及同名前缀文件。停止R2，先修复模型可见manifest未声明数值上限与允许selector值的缺口，再同输入重试。
+
+参数manifest修复：在现有search参数中公开top_k=1..5/candidate_limit=1..30及mode枚举；在每次构建Incident工具集合时，把该Incident且allowlist内的repo/snapshot写入可选selector枚举，提醒模型可省略且不可从title/source猜ID。后端每次调用的scope检查未变，不自动扩大/回退scope。新增2项模型可见manifest与撤销绑定隔离测试先红后绿；相关58 passed、0 failed、1 warning、21.27s（pytest-manifest-fix.txt）。`shasum -a256`确认manifest仍6473b9ae…，只修复已有约束的模型可见描述，没有改变输入、标签、排名或权限规则。开始r1-retry1，技术重试1/最多2，仍600秒Case/630秒看门狗。
+
+### 2026-09-14 R1第一次重试：JSON工具别名接线缺口
+
+r1-retry1仍退出1，runner279301.92ms、父进程282.27s；82文档/任务/向量、84attempt（2次transport后恢复）、文档编码84→0、后台异常0。Embedding85请求83响应24063tokens；模型5请求11504tokens。search首次使用top_k5成功，但模型随后在JSON tasks中输出provider别名antisentinel_code_retrieval_read_evidence/search，适配器仅对native tool_calls反向映射，导致unknown_tool；候选也只带chunk/node ID。Evidence0，23检查中5失败。两次失败后停止扩展R2，已定位并在本地复现。
+
+修复：OpenAI-compatible适配器对JSON任务也只反向映射当前请求明确注册的别名，未知名称仍交原权限检查；Evidence候选manifest显式给出scope/chunk/hash/范围字段并要求复制search source_identity。新增别名3项与候选1项测试；同时补充HTTP审计对“请求已发、异常结束且无响应”的计数，保留transport失败，不再把已持久重试并恢复的连接错误误判成未审计调用。2次旧transport已由SQLite attempt独立证实；新计数只在实际抛异常的Embedding调用边界记录，不凭数量估计。测试修复中有一次断言插入位置错误，恢复后观察到正确红灯；不涉及真实重试预算。下一步本地回归通过后最后一次同输入技术重试r1-retry2。
+
+### 2026-09-14 真实R1第二次技术重试通过
+
+修复后相关64/64通过、14.41s，独立只读review无新增Critical/Important；manifest未变。r1-retry2退出0，23/23检查满足，runner282114.03ms/父进程283.69s，未超600/630秒；技术重试共2次，最终轮业务重试0。82文档/82任务/82向量/82attempt、2个持久结果、2Evidence均恢复、文档编码82→0、后台异常0。Embedding84请求/84响应/24091tokens，模型5请求/5响应/16795tokens，未响应传输失败0。业务观察281858.65ms/持久结果观察281859.63ms，差0.98ms，重开核验差247.93ms。独立审计另读82个Milvus point逐字段匹配82/82，最终引用2/2重开hash通过、SQLite完整性通过，audit_pass=true。原始路径新产物根/r1-retry2、r1-retry2.execution.json、r1-retry2.independent-audit.json；前两轮完整保留。限定状态真实运行通过，quality_pass仍false；R2随后运行。
+
+### 2026-09-14 真实R2通过
+
+R2首轮退出0，13/13检查满足；真实Qwen Flash1请求/1响应/814tokens，子进程写后exit86一次，40秒lease到期后新Worker恢复。1文档3518bytes/1任务/1向量/2attempt，首次编码1/恢复0，旧lease的4种写操作均拒绝；业务重试1（lease到期）、技术重试0、后台异常0。runner42191.02ms、父进程44.62s，满足120/150秒；ready观察42158.54ms、存储读回42189.54ms，差31.00ms。独立审计读取单point字段全匹配、SQLite完整性与2attempt通过，audit_pass=true。产物新根/r2、r2.execution.json、r2.independent-audit.json；不把R2的Evidence0解释为缺失（该Case只验Embedding）。接下来执行修复后的累计/全量回归并停止本次启动的隔离容器，数据/报告保留。
+
+### 2026-09-14 真实Case后最终回归与清理
+
+相关106 passed、0 failed、1warning、20.32s（pytest-real-focused.txt）；全量773 passed、0 skipped、0 failed、7warnings、70.59s（pytest-real-full.txt），相对766新增7项/+0.91%，相对最初728新增45项/+6.18%。本轮7个运行/测试文件修改，compileall与git diff --check退出0。R1三轮+R2一轮共4次真实运行、两次技术重试；最后成功两轮核心36检查、独立审计11检查均满足，前两轮失败保留。四轮runner耗时总867.73s；外部请求266（Embedding252、模型14），已报告tokens108436，2条无响应调用usage未知，不伪造账单。意外后台异常0；停止本次启动的3个隔离容器，compose ps运行容器0，卷/所有轮次产物保留。两个成功报告和独立审计已复制到docs/validation/prd005-real-app-20260914，完整结果见REAL-RESULTS.md。当前真实运行通过、回归通过，用户review未完成；生产、业务质量、多实例/运行中Session恢复等8类边界仍待验收。
+
+本阶段提交范围28文件（含7个运行/测试文件与21份文档/证据项），已排除所有DB、向量文件、私有console/child日志和凭证。2份成功报告、2份失败报告与对应执行/独立审计均保留。记录1项provider别名经验及1项manifest建议成功；后置learning没有阻塞交付。工作保持独立分支，未merge/push，等待本阶段用户review后再进入下一阶段。

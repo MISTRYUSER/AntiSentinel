@@ -55,6 +55,7 @@ class CaseFactories:
     remote: bool = False
     disclosures: dict = field(default_factory=dict)
     model_calls: dict = field(default_factory=dict)
+    unanswered_embedding_failures: Callable[[], int] = lambda: 0
 
 
 class LocalEncoder:
@@ -195,7 +196,7 @@ def real_case_factories():
         )
         embedder.client.event_hooks['request'].append(embedding_audit.request)
         embedder.client.event_hooks['response'].append(embedding_audit.response)
-        counted = CountingEncoder(embedder)
+        counted = CountingEncoder(embedder, embedding_audit)
         encoders.append(counted)
         return counted
 
@@ -225,24 +226,38 @@ def real_case_factories():
         model_audit=model_audit,
         close=close,
         remote=True,
+        unanswered_embedding_failures=lambda: sum(encoder.unanswered_failures for encoder in encoders),
     )
 
 
 class CountingEncoder:
-    def __init__(self, delegate):
+    def __init__(self, delegate, audit=None):
         self.delegate = delegate
         self.document_inputs = self.query_inputs = 0
+        self.audit = audit
+        self.unanswered_failures = 0
 
     def __getattr__(self, name):
         return getattr(self.delegate, name)
 
     def embed_documents(self, texts):
         self.document_inputs += len(texts)
-        return self.delegate.embed_documents(texts)
+        return self._call(self.delegate.embed_documents, texts)
 
     def embed_query(self, texts):
         self.query_inputs += len(texts)
-        return self.delegate.embed_query(texts)
+        return self._call(self.delegate.embed_query, texts)
+
+    def _call(self, method, texts):
+        before = self.audit.snapshot() if self.audit else None
+        try:
+            return method(texts)
+        except Exception:
+            if before is not None:
+                after = self.audit.snapshot()
+                self.unanswered_failures += max(0, (after['requests'] - before['requests'])
+                    - (after['responses'] - before['responses']))
+            raise
 
     def close(self):
         self.delegate.close()
@@ -514,7 +529,7 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
         embedding_http, model_http = factories.embedding_audit.snapshot(), factories.model_audit.snapshot()
         checks['remote_calls_observed'] = (not factories.remote or (
             embedding_http['requests'] > 0 and model_http['requests'] > 0
-            and embedding_http['responses'] == embedding_http['requests']
+            and embedding_http['responses'] + factories.unanswered_embedding_failures() == embedding_http['requests']
             and model_http['responses'] == model_http['requests']))
         factories.close()
         retries = sum(max(0, row[0] - 1) for row in database.query('SELECT attempt FROM code_embedding_tasks'))
@@ -544,6 +559,7 @@ def run(repository, manifest, output, milvus_uri, answerable_query_id, no_answer
             'embedding': {
                 'document_inputs_per_start': document_inputs,
                 'http': factories.embedding_audit.snapshot(),
+                'unanswered_transport_failures': factories.unanswered_embedding_failures(),
             },
             'model': {'http': factories.model_audit.snapshot(), 'calls_per_session': factories.model_calls},
             'retries': retries,

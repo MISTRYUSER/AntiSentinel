@@ -44,7 +44,20 @@ class IncidentRetrievalTools:
                     commit_sha=row['requested_commit'])
 
     def for_incident(self, incident_id):
-        return build_code_retrieval_tools(
+        definitions = build_code_retrieval_tools(
             self.service, lambda arguments: self.scope(incident_id, arguments),
             graph_expander=self.graph_expander, evidence_assembler=self.evidence_assembler,
             query_encoder=self.query_encoder, scope_selectors=True)
+        rows = self.store.database.query(
+            'SELECT DISTINCT repository_id,snapshot_id FROM code_map_diagnosis_bindings WHERE incident_id=?',
+            (incident_id,))
+        allowed = [row for row in rows if row['repository_id'] in self.allowed_repositories]
+        for definition in definitions:
+            for field in ('repository_id', 'snapshot_id'):
+                selector = definition.argument_schema['properties'][field]
+                selector['description'] = (
+                    'Optional selector within this incident binding. Omit when unambiguous; '
+                    'never infer this ID from the incident source or title. Binding is checked on each call.')
+                if allowed:
+                    selector['enum'] = sorted({row[field] for row in allowed})
+        return definitions

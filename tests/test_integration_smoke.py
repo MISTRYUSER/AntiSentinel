@@ -157,6 +157,29 @@ def test_fake_provider_completes_without_credentials():
     assert response.final.diagnosis == "healthy"
 
 
+@pytest.mark.parametrize('returned_name,expected', [
+    ('antisentinel_code_retrieval_search', 'code_retrieval.search'),
+    ('code_retrieval.search', 'code_retrieval.search'),
+    ('antisentinel_unknown', 'antisentinel_unknown'),
+])
+def test_json_tool_calls_use_same_alias_mapping_as_native_calls(returned_name, expected):
+    from dataclasses import replace
+    payload = {'tasks': [{'task_id': 'search', 'objective': 'inspect', 'tool_calls': [
+        {'tool_name': returned_name, 'arguments': {'query': 'code', 'top_k': 5}},
+    ]}]}
+    client = httpx.Client(transport=httpx.MockTransport(lambda _: provider_response(payload)))
+    adapter = OpenAICompatibleModelAdapter(base_url='https://model.example/v1', api_key='test-key',
+                                          model='test-model', client=client)
+    try:
+        result = adapter.complete(replace(request(), tools=[{
+            'name': 'code_retrieval.search', 'argument_schema': {'type': 'object'},
+        }]))
+        assert result.tasks[0].tool_calls[0].tool_name == expected
+        assert result.tasks[0].tool_calls[0].arguments == {'query': 'code', 'top_k': 5}
+    finally:
+        client.close()
+
+
 def test_api_creates_incident_starts_session_and_returns_structured_runtime_result():
     client = TestClient(create_app(DiagnosisApplicationService.default_fake()))
 

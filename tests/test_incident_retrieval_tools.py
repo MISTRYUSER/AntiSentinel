@@ -93,3 +93,39 @@ def test_normal_application_session_reads_persistent_evidence(tmp_path):
 
 def test_default_application_has_no_retrieval_clients():
     assert DiagnosisApplicationService.default_fake().retrieval_tools is None
+
+
+def test_provider_manifest_exposes_search_limits_and_bound_selectors(tmp_path):
+    from antisentinel.adapters.llm.openai_compatible import _provider_tool
+    tools, _, scope, _, _, calls, encoded = setup_tools(tmp_path)
+    registry = ToolRegistry(auto_discover=False)
+    registry.register(tools.for_incident('incident-a')[0])
+    properties = _provider_tool(registry.manifests()[0])['function']['parameters']['properties']
+    assert properties['top_k']['minimum'] == 1
+    assert properties['top_k']['maximum'] == 5
+    assert properties['candidate_limit']['maximum'] == 30
+    assert properties['repository_id']['enum'] == ['repo-a']
+    assert properties['snapshot_id']['enum'] == [scope['snapshot_id']]
+    assert calls == encoded == []
+
+
+def test_selector_manifest_does_not_leak_other_incident_bindings(tmp_path):
+    tools, store, scope, _, _, _, _ = setup_tools(tmp_path)
+    store.bind_incident('incident-b', 'repo-a', scope['snapshot_id'])
+    first = tools.for_incident('incident-a')[0]
+    with store.database.transaction() as connection:
+        connection.execute('DELETE FROM code_map_diagnosis_bindings WHERE incident_id=?', ('incident-a',))
+    other = tools.for_incident('incident-a')[0]
+    assert first.argument_schema['properties']['snapshot_id']['enum'] == [scope['snapshot_id']]
+    assert 'enum' not in other.argument_schema['properties']['snapshot_id']
+    with pytest.raises(DomainError, match='unbound'):
+        first.handler({'query': 'previous manifest cannot restore authorization'})
+
+
+def test_evidence_manifest_requires_complete_candidate_identity(tmp_path):
+    tools, _, _, _, _, _, _ = setup_tools(tmp_path)
+    read = next(tool for tool in tools.for_incident('incident-a') if tool.name == 'code_retrieval.read_evidence')
+    item = read.argument_schema['properties']['candidates']['items']
+    assert set(item['required']) == {'repository_id', 'snapshot_id', 'published_generation', 'commit_sha', 'chunk_id', 'source_hash'}
+    assert item['properties']['byte_start']['type'] == 'integer'
+    assert 'parent_source_hash' in item['properties']

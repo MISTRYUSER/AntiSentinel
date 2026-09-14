@@ -159,3 +159,31 @@ def test_reopened_result_must_preserve_answer_citations_and_execution(changed):
     if changed:
         reopened.pop(changed)
     assert restored_result_matches(original, reopened) is (changed is None)
+
+
+def test_audit_accounts_for_transport_failure_without_a_response(monkeypatch):
+    from antisentinel.persistence.local_vector_memory import QwenFlashEmbedder
+    monkeypatch.setenv('ANTISENTINEL_EMBEDDING_BASE_URL', 'https://embedding.example/v1')
+    monkeypatch.setenv('DASHSCOPE_API_KEY', 'test-secret')
+    monkeypatch.setenv('ANTISENTINEL_EMBEDDING_DIMENSION', '256')
+    calls = []
+    def response(request):
+        calls.append(request)
+        if len(calls) == 1:
+            raise httpx.ConnectError('injected transport failure')
+        return httpx.Response(200, json={'model': QwenFlashEmbedder.model_name,
+            'data': [{'index': 0, 'embedding': [1.] + [0.] * 255}], 'usage': {'total_tokens': 3}})
+    original_client = httpx.Client
+    monkeypatch.setattr(httpx, 'Client', lambda **kwargs: original_client(transport=httpx.MockTransport(response), **kwargs))
+    factories = real_case_factories()
+    encoder = factories.embedder_factory()
+    try:
+        with pytest.raises(RuntimeError, match='embedding_transport_error'):
+            encoder.embed_documents(['document'])
+        encoder.embed_documents(['document'])
+        assert factories.embedding_audit.snapshot()['requests'] == 2
+        assert factories.embedding_audit.snapshot()['responses'] == 1
+        assert factories.unanswered_embedding_failures() == 1
+    finally:
+        encoder.close()
+        factories.close()

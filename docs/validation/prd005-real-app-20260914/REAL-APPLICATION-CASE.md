@@ -1,6 +1,6 @@
 # PRD-005 R1/R2：离线验证结果与真实 Case 提案
 
-日期：2026-09-14。状态：本地回归通过；真实 Case 尚未确认/运行。默认 hybrid，图优化 pending。工作分支 `codex/prd005-real-application-case`，原 main 的未提交文档保持原样。
+日期：2026-09-14。状态：真实R1/R2与最终773项回归通过，用户review待完成。实际运行与两次失败后的修复见[真实结果](REAL-RESULTS.md)；下文保留提案与运行前基线。默认 hybrid，图优化 pending。工作分支 `codex/prd005-real-application-case`，原 main 的未提交文档保持原样。
 
 ## 1. 本轮实际结果
 
@@ -38,7 +38,7 @@ R2 预期子进程退出1次（exit86），业务重试1次（租约到期后att
 
 其他修正：异步HTTP hook使用async函数；真实文档编码计数与query编码分离；坏usage不影响业务响应；CLI从其他目录可启动；blocked、failed及时终止；伪造引用、keyword替代hybrid、隐式降级、跨scope结果均不通过验收；collection基名按输出路径摘要隔离。
 
-## 3. 真实 R1 提案（等待确认）
+## 3. 真实 R1 提案（已确认）
 
 输入仓库：`/Users/xuewentao/.codex/worktrees/antisentinel-prd005-real-app`。读取冻结Git blobs，不读取当前工作区源码。
 
@@ -71,7 +71,7 @@ cd /Users/xuewentao/.codex/worktrees/antisentinel-prd005-real-app
 
 清理仅本Case创建的进程/collection/临时文件；保留事实库与报告。若现有Standalone未运行，先用既有Case控制文件完成空间/Engine预检，再启动已核验镜像；不下载新镜像、不重置Docker、不清理其他项目。旧Standalone控制目录见 `docs/validation/prd005-stage5/STANDALONE-VERIFIED.md`。
 
-## 4. 真实 R2 提案（等待确认）
+## 4. 真实 R2 提案（已确认）
 
 输入同一manifest的q01首个按ID排序的相关文档：`src/antisentinel/code_map/worker.py` 的3518字节片段；保持其 `evaluation-projection-v1`，不假装使用R1切片版本。input_hash=`6a6ea5c47ad34237b5a4c423cad2774b35f062b1a43af7cbecbc586b929132f1`。
 

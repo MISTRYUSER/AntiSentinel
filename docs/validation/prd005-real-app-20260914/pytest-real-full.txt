@@ -1,0 +1,27 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 37%]
+........................................................................ [ 46%]
+........................................................................ [ 55%]
+........................................................................ [ 65%]
+........................................................................ [ 74%]
+........................................................................ [ 83%]
+........................................................................ [ 93%]
+.....................................................                    [100%]
+=============================== warnings summary ===============================
+../../../.local/share/antisentinel/venvs/ragas-0.4.3/lib/python3.13/site-packages/starlette/testclient.py:53
+  /Users/xuewentao/.local/share/antisentinel/venvs/ragas-0.4.3/lib/python3.13/site-packages/starlette/testclient.py:53: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = Callable[[], AbstractContextManager[anyio.abc.BlockingPortal]]
+
+tests/test_code_map_builder.py::test_worker_publishes_builder_rows_not_an_empty_snapshot
+tests/test_code_map_builder.py::test_builder_persists_file_blob_and_reads_chunk_source_by_snapshot
+tests/test_code_map_worker.py::test_worker_run_once_builds_and_publishes_a_job
+tests/test_code_map_worker.py::test_worker_failure_is_persisted_and_releases_slot
+tests/test_code_map_worker.py::test_worker_drains_large_child_result_before_join
+tests/test_code_map_worker.py::test_worker_kills_child_that_ignores_sigterm
+  /Users/xuewentao/miniconda3/lib/python3.13/multiprocessing/popen_fork.py:67: DeprecationWarning: This process (pid=28001) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+773 passed, 7 warnings in 70.59s (0:01:10)

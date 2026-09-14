@@ -107,7 +107,12 @@ class OpenAICompatibleModelAdapter:
         try:
             usage = _parse_usage(body.get("usage"))
             _set_usage_attributes(current, usage)
-            return parse_model_response(content, usage=usage)
+            parsed = parse_model_response(content, usage=usage)
+            # Providers can emit either native calls or the requested JSON tasks schema.
+            # Both formats use the same advertised names; map only this request's known aliases.
+            return replace(parsed, tasks=tuple(replace(task, tool_calls=tuple(
+                replace(call, tool_name=provider_tool_names.get(call.tool_name, call.tool_name))
+                for call in task.tool_calls)) for task in parsed.tasks))
         except Exception as exc:  # noqa: BLE001 - normalize parser boundary errors
             if has_tool_results and content:
                 try:
