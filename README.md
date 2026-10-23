@@ -61,8 +61,26 @@ See [deployment notes](deploy/README.md).
 - Memory: session tree, preferences, asynchronous extraction and trusted recall.
 - Persistence: SQLite primary storage, JSONL audit and Redis cache/job queue.
 - Observability: runtime events and OpenTelemetry instrumentation.
-- RAG strategy modules and DAG orchestration are currently scaffolding.
+- Code retrieval includes Git/AST snapshots, lexical/vector fusion and source evidence; quality acceptance remains pending.
+- Plan DAG execution includes dependency validation, bounded concurrency, SQLite recovery and an authenticated, explicitly invoked read-only execution API.
 - `vendor/agno_infra` is an isolated upstream dependency candidate with its own license.
+
+## 五项能力验收与计划执行
+
+本轮依据 [开源源码核验](docs/research/2026-10-23-open-source-runtime-verification.md)
+补齐 DAG 执行层，复用现有 Runtime、Memory、Skill 和代码检索。
+完整用法及恢复边界见 [计划执行说明](docs/guides/plan-dag-execution.md)。
+
+```bash
+# 安装项目依赖、pytest；Ragas ID 评测还需 ragas-evaluation 可选依赖。
+python -m pip install -e '.[ragas-evaluation]' pytest
+python scripts/validate_five_capabilities.py --output /tmp/antisentinel-five-capabilities
+python scripts/run_plan_recovery_case.py --output /tmp/antisentinel-plan-recovery
+```
+
+输出目录必须不存在。第一条验收命令只执行离线组件回归，明确排除真实模型集成测试；
+`regression_pass` 与 `acceptance_pass` 分别记录。组件测试通过不代表
+LongMemEval、代码检索质量、真实模型规划延迟或 50 条复合指令指标达标。
 
 ## 本地开发启动
 

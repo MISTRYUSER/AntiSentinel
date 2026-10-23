@@ -44,6 +44,10 @@ class SendMessageRequest(BaseModel):
     clarification_id: str | None = None
 
 
+class ExecutePlanRequest(BaseModel):
+    expected_version: int = Field(ge=1, strict=True)
+
+
 def _chat_content(result) -> str:
     """Render runtime-native structured output as readable chat text."""
     if result.final is not None:
@@ -120,6 +124,21 @@ def create_app(service: DiagnosisApplicationService | None = None) -> FastAPI:
         def intent_tasks(session_id:str,request:Request):
             try:return runtime.routes.tasks(session_id,request.state.actor)
             except ValueError as exc:raise HTTPException(403,detail={'code':'scope_denied'}) from exc
+
+        @app.post('/api/intent/sessions/{session_id}/plans/{plan_id}/execute')
+        def execute_plan(session_id: str, plan_id: str, payload: ExecutePlanRequest, request: Request):
+            from antisentinel.ports.intent_store import IntentAccessDenied, IntentConflict
+            from antisentinel.orchestration.store import PlanBusy
+            try:
+                return runtime.routes.execute_plan(request.state.actor, session_id, plan_id, payload.expected_version)
+            except IntentAccessDenied as exc:
+                raise HTTPException(403, detail={'code': 'scope_denied'}) from exc
+            except (IntentConflict, PlanBusy) as exc:
+                raise HTTPException(409, detail={'code': 'plan_conflict', 'message': str(exc)}) from exc
+            except KeyError as exc:
+                raise HTTPException(404, detail={'code': 'plan_not_found'}) from exc
+            except ValueError as exc:
+                raise HTTPException(422, detail={'code': 'invalid_plan', 'message': str(exc)}) from exc
 
         @app.get('/api/sessions/{session_id}/control')
         def runtime_control_status(session_id:str,request:Request):

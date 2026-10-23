@@ -1,0 +1,26 @@
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 22%]
+........................................................................ [ 30%]
+........................................................................ [ 38%]
+........................................................................ [ 45%]
+...................................s.................................... [ 53%]
+........................................................................ [ 60%]
+........................................................................ [ 68%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+........................................................................ [ 91%]
+........................................................................ [ 98%]
+...........                                                              [100%]
+=============================== warnings summary ===============================
+tests/test_code_map_builder.py::test_worker_publishes_builder_rows_not_an_empty_snapshot
+tests/test_code_map_builder.py::test_builder_persists_file_blob_and_reads_chunk_source_by_snapshot
+tests/test_code_map_worker.py::test_worker_run_once_builds_and_publishes_a_job
+tests/test_code_map_worker.py::test_worker_failure_is_persisted_and_releases_slot
+tests/test_code_map_worker.py::test_worker_drains_large_child_result_before_join
+tests/test_code_map_worker.py::test_worker_kills_child_that_ignores_sigterm
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=5) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+946 passed, 1 skipped, 6 warnings in 89.04s (0:01:29)

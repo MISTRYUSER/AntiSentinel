@@ -24,6 +24,7 @@ class ToolDefinition:
     handler: Callable[[dict[str, Any]], Any]
     requires_approval: bool = False
     read_only: bool = True
+    implementation_version: str | None = None
 
     def __post_init__(self) -> None:
         require_non_empty(self.name, "name")
@@ -34,15 +35,20 @@ class ToolDefinition:
             raise InvalidInputError("argument_schema must be an object")
         require_json(self.argument_schema, "argument_schema")
         object.__setattr__(self, "argument_schema", deepcopy(self.argument_schema))
+        if self.implementation_version is not None:
+            require_non_empty(self.implementation_version, 'implementation_version')
 
     def manifest(self) -> dict[str, Any]:
-        return {
+        manifest = {
             "name": self.name,
             "description": self.description,
             "argument_schema": deepcopy(self.argument_schema),
             "requires_approval": self.requires_approval,
             "read_only": self.read_only,
         }
+        if self.implementation_version is not None:
+            manifest['implementation_version'] = self.implementation_version
+        return manifest
 
 
 @dataclass(frozen=True)

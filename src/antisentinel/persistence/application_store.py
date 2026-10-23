@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
+import tempfile
 from threading import Lock
 from typing import Any
 
@@ -34,7 +36,23 @@ class FileApplicationStore:
     def _write(self, path: Path, value: dict[str, Any]) -> None:
         with self._lock:
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(json.dumps(value, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+            temporary = None
+            try:
+                with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=path.parent,
+                                                 prefix='.' + path.name + '.', suffix='.tmp', delete=False) as handle:
+                    temporary = Path(handle.name)
+                    handle.write(json.dumps(value, ensure_ascii=False, separators=(",", ":")))
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.replace(temporary, path)
+                descriptor = os.open(path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(descriptor)
+                finally:
+                    os.close(descriptor)
+            finally:
+                if temporary is not None:
+                    temporary.unlink(missing_ok=True)
 
     @staticmethod
     def _read(path: Path) -> dict[str, Any] | None:

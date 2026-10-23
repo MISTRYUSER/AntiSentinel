@@ -1,0 +1,409 @@
+{
+  "scope": "offline_pack_estimator_only",
+  "provider_model_calls": 0,
+  "budget": 32000,
+  "scenarios": [
+    {
+      "scenario": "scenario_s1_working",
+      "estimated_wire_tokens": 1218,
+      "max_tokens": 32000,
+      "within_budget": true,
+      "elapsed_ms": 0.46558699978049845,
+      "report": {
+        "estimate_version": "utf8_ceil_div3_v1",
+        "max_context_tokens": 32000,
+        "total_estimated": 1218,
+        "within_budget": true,
+        "strict": true,
+        "packing_mode": "floors_degrade",
+        "degrade_step_count": 0,
+        "blocks": {
+          "system": {
+            "used": 11,
+            "limit": 1600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "working": {
+            "used": 902,
+            "limit": 9600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "memory": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "source": {
+            "used": 0,
+            "limit": 8000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "skill": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "tools": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          }
+        },
+        "truncated_slice_count": 0,
+        "dropped_count": 0,
+        "dropped_reasons": [],
+        "compacted_turns": 17,
+        "recent_turn_count": 3,
+        "tool_event_count": 3,
+        "truncated_slices": [],
+        "dropped": []
+      }
+    },
+    {
+      "scenario": "scenario_s2_source",
+      "estimated_wire_tokens": 30273,
+      "max_tokens": 32000,
+      "within_budget": true,
+      "elapsed_ms": 3.387488999578636,
+      "report": {
+        "estimate_version": "utf8_ceil_div3_v1",
+        "max_context_tokens": 32000,
+        "total_estimated": 30273,
+        "within_budget": true,
+        "strict": true,
+        "packing_mode": "floors_degrade",
+        "degrade_step_count": 0,
+        "blocks": {
+          "system": {
+            "used": 11,
+            "limit": 1600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "working": {
+            "used": 134,
+            "limit": 9600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "memory": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "source": {
+            "used": 24960,
+            "limit": 24960,
+            "truncated": true,
+            "dropped": 6
+          },
+          "skill": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "tools": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          }
+        },
+        "truncated_slice_count": 1,
+        "dropped_count": 6,
+        "dropped_reasons": [
+          "slice_cap"
+        ],
+        "compacted_turns": 0,
+        "recent_turn_count": 0,
+        "tool_event_count": 0,
+        "truncated_slices": [
+          {
+            "path": "file_3.py",
+            "evidence_id": "ev-3",
+            "before_tokens": 6680,
+            "after_tokens": 4723
+          }
+        ],
+        "dropped": [
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_4.py"
+          },
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_5.py"
+          },
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_6.py"
+          },
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_7.py"
+          },
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_8.py"
+          },
+          {
+            "kind": "source",
+            "reason": "slice_cap",
+            "ref": "file_9.py"
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "scenario_s3_skill",
+      "estimated_wire_tokens": 6335,
+      "max_tokens": 32000,
+      "within_budget": true,
+      "elapsed_ms": 0.9050099997693906,
+      "report": {
+        "estimate_version": "utf8_ceil_div3_v1",
+        "max_context_tokens": 32000,
+        "total_estimated": 6335,
+        "within_budget": true,
+        "strict": true,
+        "packing_mode": "floors_degrade",
+        "degrade_step_count": 0,
+        "blocks": {
+          "system": {
+            "used": 11,
+            "limit": 1600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "working": {
+            "used": 264,
+            "limit": 9600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "memory": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "source": {
+            "used": 0,
+            "limit": 8000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "skill": {
+            "used": 4899,
+            "limit": 26286,
+            "truncated": false,
+            "dropped": 0
+          },
+          "tools": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          }
+        },
+        "truncated_slice_count": 0,
+        "dropped_count": 0,
+        "dropped_reasons": [],
+        "compacted_turns": 0,
+        "recent_turn_count": 1,
+        "tool_event_count": 1,
+        "truncated_slices": [],
+        "dropped": []
+      }
+    },
+    {
+      "scenario": "scenario_s4_tools",
+      "estimated_wire_tokens": 9878,
+      "max_tokens": 32000,
+      "within_budget": true,
+      "elapsed_ms": 0.819373999547679,
+      "report": {
+        "estimate_version": "utf8_ceil_div3_v1",
+        "max_context_tokens": 32000,
+        "total_estimated": 9878,
+        "within_budget": true,
+        "strict": true,
+        "packing_mode": "floors_degrade",
+        "degrade_step_count": 0,
+        "blocks": {
+          "system": {
+            "used": 11,
+            "limit": 1600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "working": {
+            "used": 134,
+            "limit": 9600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "memory": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "source": {
+            "used": 0,
+            "limit": 8000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "skill": {
+            "used": 0,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "tools": {
+            "used": 7784,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          }
+        },
+        "truncated_slice_count": 0,
+        "dropped_count": 0,
+        "dropped_reasons": [],
+        "compacted_turns": 0,
+        "recent_turn_count": 0,
+        "tool_event_count": 0,
+        "truncated_slices": [],
+        "dropped": []
+      }
+    },
+    {
+      "scenario": "scenario_s5_extreme",
+      "estimated_wire_tokens": 26884,
+      "max_tokens": 32000,
+      "within_budget": true,
+      "elapsed_ms": 2.527271999497316,
+      "report": {
+        "estimate_version": "utf8_ceil_div3_v1",
+        "max_context_tokens": 32000,
+        "total_estimated": 26884,
+        "within_budget": true,
+        "strict": true,
+        "packing_mode": "floors_degrade",
+        "degrade_step_count": 0,
+        "blocks": {
+          "system": {
+            "used": 11,
+            "limit": 1600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "working": {
+            "used": 902,
+            "limit": 9600,
+            "truncated": false,
+            "dropped": 0
+          },
+          "memory": {
+            "used": 1330,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "source": {
+            "used": 8000,
+            "limit": 8000,
+            "truncated": true,
+            "dropped": 8
+          },
+          "skill": {
+            "used": 3902,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          },
+          "tools": {
+            "used": 7784,
+            "limit": 32000,
+            "truncated": false,
+            "dropped": 0
+          }
+        },
+        "truncated_slice_count": 1,
+        "dropped_count": 8,
+        "dropped_reasons": [
+          "over_block"
+        ],
+        "compacted_turns": 17,
+        "recent_turn_count": 3,
+        "tool_event_count": 3,
+        "truncated_slices": [
+          {
+            "path": "file_1.py",
+            "evidence_id": "ev-1",
+            "before_tokens": 6680,
+            "after_tokens": 1219
+          }
+        ],
+        "dropped": [
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_2.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_3.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_4.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_5.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_6.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_7.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_8.py"
+          },
+          {
+            "kind": "source",
+            "reason": "over_block",
+            "ref": "file_9.py"
+          }
+        ]
+      }
+    }
+  ],
+  "overflow_count": 0,
+  "pass": true
+}

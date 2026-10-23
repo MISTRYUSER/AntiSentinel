@@ -1,6 +1,54 @@
 import time
 
 
+def test_completed_result_is_not_visible_before_durable_save(tmp_path):
+    from threading import Event
+    from antisentinel.entry.application import DiagnosisApplicationService
+    from antisentinel.persistence.application_store import FileApplicationStore
+
+    entered, release = Event(), Event()
+    class BlockingStore(FileApplicationStore):
+        def save_result(self, session_id, result):
+            entered.set()
+            assert release.wait(3)
+            super().save_result(session_id, result)
+
+    service = DiagnosisApplicationService.default_fake()
+    service.application_store = BlockingStore(tmp_path)
+    incident = service.create_incident(title='publication ordering', summary=None, source='test')
+    started = service.start_session(incident_id=incident.incident_id, participant_ids=['owner'], model_mode='fake')
+    assert entered.wait(2)
+    try:
+        assert service.get_session(started['session_id'])['status'] == 'running'
+        assert service.application_store.load_result(started['session_id']) is None
+    finally:
+        release.set()
+        deadline = time.monotonic() + 3
+        while started['session_id'] not in service._finished_runs and time.monotonic() < deadline:
+            time.sleep(0.001)
+        assert started['session_id'] in service._finished_runs
+
+
+def test_result_file_replacement_keeps_previous_json_until_commit(tmp_path, monkeypatch):
+    import os
+    from pathlib import Path
+    from antisentinel.persistence.application_store import FileApplicationStore
+
+    store = FileApplicationStore(tmp_path)
+    store.save_result('s', {'generation': 1})
+    target = store.root/'results'/'s.json'
+    observed = []
+    replace = os.replace
+    def verify_publication(source, destination):
+        if Path(destination) == target:
+            observed.append(store.load_result('s'))
+        return replace(source, destination)
+    monkeypatch.setattr(os, 'replace', verify_publication)
+    store.save_result('s', {'generation': 2})
+    assert observed == [{'generation': 1}]
+    assert store.load_result('s') == {'generation': 2}
+
+
 def test_application_reloads_incident_session_and_result_from_disk(monkeypatch, tmp_path):
     from antisentinel.entry.application import DiagnosisApplicationService
 
