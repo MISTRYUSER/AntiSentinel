@@ -1,0 +1,8 @@
+{
+  "passed": 946,
+  "failed": 0,
+  "skipped": [
+    "tests.test_memory_isolation_e2e::test_application_real_full_chain_memory_isolation"
+  ],
+  "command": "OTEL_TRACES_SAMPLER=always_on python -m pytest -q -o faulthandler_timeout=30 --junitxml=full-suite.xml"
+}

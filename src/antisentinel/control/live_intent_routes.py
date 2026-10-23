@@ -6,8 +6,11 @@ import sqlite3
 from uuid import uuid4
 
 from antisentinel.control.planning import PlanningService
-from antisentinel.domain.intent import canonical, object_fields, require, text
+from antisentinel.domain.intent import canonical, content_hash, object_fields, require, text
 from antisentinel.ports.intent_store import IntentConflict, IntentAccessDenied
+from antisentinel.orchestration.runtime import PlanRuntime
+from antisentinel.orchestration.store import SQLitePlanStore
+from antisentinel.worker.execution.tool_executor import ToolExecutionScope
 
 
 class NewEvidenceRequired(RuntimeError):
@@ -18,12 +21,15 @@ class LiveIntentRoutes:
     def __init__(self, application, contexts, model, root):
         self.application, self.contexts, self.model = application, contexts, model
         self.path = Path(root)/'live-routes.sqlite'
+        self.execution_store = SQLitePlanStore(Path(root)/'plan-executions.sqlite')
         with self.db() as db:
             db.executescript('''
                 CREATE TABLE IF NOT EXISTS deliveries(key TEXT PRIMARY KEY,session TEXT NOT NULL,
                     request TEXT NOT NULL,receipt TEXT NOT NULL,result TEXT NOT NULL);
                 CREATE TABLE IF NOT EXISTS plans(plan_id TEXT PRIMARY KEY,session TEXT NOT NULL,
                     status TEXT NOT NULL,version INTEGER NOT NULL,payload TEXT NOT NULL);
+                CREATE TABLE IF NOT EXISTS plan_executions(plan_id TEXT PRIMARY KEY,
+                    requested_version INTEGER NOT NULL,run_id TEXT NOT NULL);
             ''')
 
     @contextmanager
@@ -73,12 +79,8 @@ class LiveIntentRoutes:
             require(text(data['answer']),'empty answer')
             downstream='answer-'+str(uuid4())
         elif route=='plan':
-            registry=self.application.registry_factory()
             incident=self.application.incidents[request['intent_ref']['incident_id']]
-            self.application._bind_code_map_tools(registry,incident)
-            if self.application.retrieval_tools is not None:
-                for tool in self.application.retrieval_tools.for_incident(str(incident.incident_id)):
-                    if registry.resolve(tool.name) is None:registry.register(tool)
+            registry=self._plan_registry(incident)
             data=PlanningService(self.model,registry).generate(request)
             downstream=data['plan_id']
         elif route=='task_control':
@@ -111,12 +113,86 @@ class LiveIntentRoutes:
             db.execute('INSERT INTO deliveries VALUES (?,?,?,?,?)',(request['key'],sid,canonical(request),canonical(receipt),canonical(data)))
         return receipt
 
+    def _plan_registry(self, incident):
+        registry = self.application.registry_factory()
+        self.application._bind_code_map_tools(registry, incident)
+        if self.application.retrieval_tools is not None:
+            for tool in self.application.retrieval_tools.for_incident(str(incident.incident_id)):
+                if registry.resolve(tool.name) is None:
+                    registry.register(tool)
+        return registry
+
+    def execute_plan(self, actor, session, plan_id, expected_version):
+        """Explicit, read-only execution of an already authorized, persisted draft."""
+        current_session = self.contexts.authorize(actor, session)
+        if type(expected_version) is not int or expected_version < 1:
+            raise ValueError('expected_version must be a positive integer')
+        with self.db() as db:
+            row = db.execute('SELECT * FROM plans WHERE plan_id=? AND session=?', (plan_id, session)).fetchone()
+        if row is None:
+            raise KeyError('plan not found')
+        definition = json.loads(row['payload'])
+        claimed = definition.get('content_hash')
+        actual = content_hash({k: v for k, v in definition.items() if k != 'content_hash'})
+        if claimed != actual:
+            raise IntentConflict('stored plan content hash mismatch')
+        ref = definition['intent_ref']
+        if ref.get('session_id') != session or ref.get('incident_id') != str(current_session.incident_id):
+            raise IntentAccessDenied('plan scope mismatch')
+        bindings = getattr(self.contexts, 'bindings', {})
+        if any(bindings.get('/entities/' + key) != value for key, value in definition.get('scope', {}).items()):
+            raise IntentAccessDenied('plan targets require fresh authorization')
+        incident = self.application.incidents[str(current_session.incident_id)]
+        registry = self._plan_registry(incident)
+        if definition['tool_catalog_hash'] != content_hash({'tools': registry.manifests()}):
+            raise IntentConflict('tool catalog changed; regenerate the plan')
+        scope = ToolExecutionScope(frozenset(t['name'] for t in registry.manifests()), read_only_mode=True)
+        from antisentinel.orchestration.plan_validator import validate_plan
+        validate_plan(definition['steps'], registry, scope=scope)
+        with self.db() as db:
+            db.execute('BEGIN IMMEDIATE')
+            current = db.execute('SELECT * FROM plans WHERE plan_id=? AND session=?', (plan_id, session)).fetchone()
+            if current is None or current['payload'] != row['payload']:
+                raise IntentConflict('plan changed before execution')
+            delivery = db.execute('SELECT * FROM plan_executions WHERE plan_id=?', (plan_id,)).fetchone()
+            if delivery is not None:
+                if delivery['requested_version'] != expected_version:
+                    raise IntentConflict('execution version mismatch')
+                run_id = delivery['run_id']
+            else:
+                if current['version'] != expected_version or current['status'] != 'draft':
+                    raise IntentConflict('plan version or state changed')
+                run_id = 'plan-run-' + content_hash({'plan_id': plan_id, 'version': expected_version, 'hash': actual})
+                db.execute('INSERT INTO plan_executions VALUES (?,?,?)', (plan_id, expected_version, run_id))
+                db.execute("UPDATE plans SET status='executing',version=version+1 WHERE plan_id=?", (plan_id,))
+
+        def cancelled():
+            try:
+                self.contexts.authorize(actor, session)
+            except ValueError:
+                return True
+            with self.db() as db:
+                current = db.execute('SELECT status FROM plans WHERE plan_id=?', (plan_id,)).fetchone()
+            return current is None or current['status'] == 'cancelled'
+
+        runtime = PlanRuntime(registry, self.execution_store, telemetry=self.application.engine.telemetry)
+        report = runtime.run(definition, run_id=run_id, scope=scope, cancel_requested=cancelled)
+        with self.db() as db:
+            db.execute("UPDATE plans SET status=?,version=version+1 WHERE plan_id=? AND status!=? AND status!='cancelled'",
+                       (report['status'], plan_id, report['status']))
+        return report
+
     def artifact(self,actor,session,artifact_id):
         self.contexts.authorize(actor,session)
         with self.db() as db:
             row=db.execute('SELECT * FROM plans WHERE plan_id=? AND session=?',(artifact_id,session)).fetchone()
-            if row:return {'plan_id':row['plan_id'],'definition':json.loads(row['payload']),
-                           'status':row['status'],'state_version':str(row['version']),'execution_status':'not_submitted'}
+            if row:
+                delivery = db.execute('SELECT run_id FROM plan_executions WHERE plan_id=?', (artifact_id,)).fetchone()
+                execution = self.execution_store.load(delivery['run_id']) if delivery else None
+                return {'plan_id':row['plan_id'],'definition':json.loads(row['payload']),
+                        'status':row['status'],'state_version':str(row['version']),
+                        'execution_status':execution['status'] if execution else 'accepted' if delivery else 'not_submitted',
+                        'execution':execution}
             for row in db.execute('SELECT receipt,result FROM deliveries WHERE session=?',(session,)):
                 if json.loads(row['receipt'])['downstream_id']==artifact_id:return json.loads(row['result'])
         raise KeyError('artifact not found')

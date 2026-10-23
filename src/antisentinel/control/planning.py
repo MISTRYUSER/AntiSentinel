@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from antisentinel.domain.intent import canonical, content_hash, object_fields, require, text
+from antisentinel.orchestration.plan_validator import validate_plan
 
 
 class PlanningService:
@@ -15,7 +16,8 @@ class PlanningService:
         result = self.model.complete_json(
             '生成诊断计划JSON，格式为{"hypotheses":["可证伪假设"],"checks":[{"purpose":"检查目的","tool_name":"目录中精确名称","arguments":{}}]}。'
             '如果intent_type是execute，生成执行变更草案，hypotheses可以为空，不要将用户目标改成排障。'
-            '只使用提供的工具目录，不执行任何工具。保留只读/禁止重启限制。缺少可用工具时checks返回空数组，不编造工具。最多8条检查。',
+            '只使用提供的工具目录，不执行任何工具。保留只读/禁止重启限制。缺少可用工具时checks返回空数组，不编造工具。最多8条检查。'
+            '可为每条检查指定唯一step_id与depends_on数组；无依赖的检查显式填[]，依赖检查填写前置step_id。不得产生循环依赖。省略depends_on表示依次执行。',
             {'intent': request, 'tool_catalog': catalog}, timeout_seconds=30)
         object_fields(result, {'hypotheses', 'checks'}, 'diagnostic plan response')
         require(isinstance(result['hypotheses'], list) and (0 if execution else 1) <= len(result['hypotheses']) <= 8
@@ -24,14 +26,20 @@ class PlanningService:
         read_only = any(c['kind'] in {'read_only', 'forbid_restart'} for c in request['constraints'])
         steps = []
         for index, check in enumerate(result['checks']):
-            object_fields(check, {'purpose', 'tool_name', 'arguments'}, 'plan check')
+            require(isinstance(check, dict), 'plan check must be an object')
+            required = {'purpose', 'tool_name', 'arguments'}
+            require(required <= check.keys() <= required | {'step_id', 'depends_on'}, 'invalid plan check fields')
             require(text(check['purpose']) and text(check['tool_name']), 'invalid check description')
             tool = self.registry.resolve(check['tool_name'])
             require(tool is not None, 'unknown planned tool')
             require(not self.registry.validate_arguments(tool, check['arguments']), 'invalid planned arguments')
             require(not read_only or tool.read_only, 'plan violates explicit restriction')
-            steps.append({**check, 'step_id': f'step-{index+1}', 'requires_approval': tool.requires_approval or not tool.read_only,
+            steps.append({**check, 'step_id': check.get('step_id', f'step-{index+1}'),
+                          'depends_on': check.get('depends_on', [] if not steps else [steps[-1]['step_id']]),
+                          'requires_approval': tool.requires_approval or not tool.read_only,
                           'read_only': tool.read_only})
+        if steps:
+            validate_plan(steps, self.registry)
         plan = {'plan_id': f'plan-{uuid4()}', 'revision': 1, 'schema_version': '1',
                 'plan_type': 'execution' if execution else 'diagnostic',
                 'intent_ref': request['intent_ref'], 'objective': request['objective'],

@@ -1,0 +1,80 @@
+{
+  "pass": true,
+  "scope": "real_local_process_exit_no_model_calls",
+  "child_exitcodes": {
+    "read": 7,
+    "write": 7
+  },
+  "counters": {
+    "read_a": 1,
+    "read_b": 2,
+    "write_a": 1,
+    "write_b": 1
+  },
+  "cross_process_lock_exclusive": true,
+  "read": {
+    "binding": "012daae8138e3ef4fa63b9fd4aad15fa35c180ffd827361ebd3072267704641f",
+    "graph_hash": "558aeaf2c22df6c6cfc46affccdb0f7204554606f3bcc22dcfe54ee9735ac83a",
+    "nodes": {
+      "a": {
+        "attempts": 1,
+        "error": null,
+        "evidences": [],
+        "read_only": true,
+        "result": {
+          "ok": "a"
+        },
+        "status": "succeeded",
+        "summary": "{'ok': 'a'}"
+      },
+      "b": {
+        "attempts": 2,
+        "error": null,
+        "evidences": [],
+        "read_only": true,
+        "result": {
+          "ok": "b"
+        },
+        "status": "succeeded",
+        "summary": "{'ok': 'b'}"
+      }
+    },
+    "plan_hash": "d0538a6b35b490012f1c4a54965cb660272713d7f52d1f7a6310d73b8d173776",
+    "plan_id": "p",
+    "run_id": "run",
+    "schema_version": 1,
+    "status": "completed"
+  },
+  "write": {
+    "binding": "f84332d9da2cf1709392f9fecd678fb8c97372ada5056ab02cd6a7130a95b2e7",
+    "graph_hash": "558aeaf2c22df6c6cfc46affccdb0f7204554606f3bcc22dcfe54ee9735ac83a",
+    "nodes": {
+      "a": {
+        "attempts": 1,
+        "error": null,
+        "evidences": [],
+        "read_only": true,
+        "result": {
+          "ok": "a"
+        },
+        "status": "succeeded",
+        "summary": "{'ok': 'a'}"
+      },
+      "b": {
+        "attempts": 1,
+        "error": {
+          "code": "interrupted_write_requires_review"
+        },
+        "evidences": [],
+        "read_only": false,
+        "result": null,
+        "status": "uncertain"
+      }
+    },
+    "plan_hash": "d0538a6b35b490012f1c4a54965cb660272713d7f52d1f7a6310d73b8d173776",
+    "plan_id": "p",
+    "run_id": "run",
+    "schema_version": 1,
+    "status": "needs_review"
+  }
+}

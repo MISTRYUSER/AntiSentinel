@@ -377,10 +377,10 @@ class DiagnosisApplicationService:
                     operator_id=session.participant_ids[0],
                     user_input=f"{incident.title} {incident.summary or ''}",
                 )
-            self.results[session_id] = result
             if self.application_store is not None:
                 self.application_store.save_session(session.to_dict())
                 self.application_store.save_result(session_id, _result_view(result, session))
+            self.results[session_id] = result
             terminal_type = 'runtime.cancelled' if result.status == 'cancelled' else "diagnosis.completed" if result.status == "completed" else "runtime.failed"
             self.event_bus.publish(session_id, _lifecycle_event(terminal_type, incident, session, result.error))
             self._finished_runs.add(session_id)

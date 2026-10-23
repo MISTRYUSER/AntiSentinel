@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-23T04:02:51.202173+00:00",
+  "source_fingerprint": "ca9974615f58dc8444f2bb447fc7fd1852bf497bc2ef2fa9c149d438889545b4",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39"
+  },
+  "groups": {
+    "runtime": {
+      "passed": true,
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitcode": 0,
+      "unsuccessful_cases": [],
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_checkpoint.py",
+        "tests/test_runtime_loop.py",
+        "tests/test_working_set.py",
+        "tests/test_context_pack_budget.py",
+        "tests/test_prd002b_phase_b_stress.py",
+        "tests/test_source_window.py",
+        "tests/test_runtime_cancel.py",
+        "tests/test_application_persistence.py",
+        "-q",
+        "-m",
+        "not integration",
+        "--junitxml=runtime.xml"
+      ],
+      "duration_seconds": 2.727601496000716,
+      "junit_path": "runtime.xml",
+      "log_path": "runtime.log"
+    },
+    "memory": {
+      "passed": true,
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitcode": 0,
+      "unsuccessful_cases": [],
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_memory_pipeline.py",
+        "tests/test_memory_jobs.py",
+        "tests/test_memory_resolution.py",
+        "tests/test_memory_namespace_isolation.py",
+        "tests/test_memory_isolation_e2e.py",
+        "tests/test_memory_candidate_retrieval.py",
+        "tests/test_hybrid_ranker.py",
+        "tests/test_trusted_memory_recall.py",
+        "tests/test_operator_graph.py",
+        "-q",
+        "-m",
+        "not integration",
+        "--junitxml=memory.xml"
+      ],
+      "duration_seconds": 3.4265017099987745,
+      "junit_path": "memory.xml",
+      "log_path": "memory.log"
+    },
+    "skill": {
+      "passed": true,
+      "tests": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitcode": 0,
+      "unsuccessful_cases": [],
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_skill_catalog.py",
+        "tests/test_skill_loader.py",
+        "tests/test_skill_release.py",
+        "tests/test_skill_runtime.py",
+        "tests/test_skill_activation.py",
+        "tests/test_tracing_metrics.py",
+        "tests/test_cross_process_tracing.py",
+        "-q",
+        "-m",
+        "not integration",
+        "--junitxml=skill.xml"
+      ],
+      "duration_seconds": 3.992680848999953,
+      "junit_path": "skill.xml",
+      "log_path": "skill.log"
+    },
+    "rag": {
+      "passed": true,
+      "tests": 55,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitcode": 0,
+      "unsuccessful_cases": [],
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_code_map_incremental.py",
+        "tests/test_code_map_source_context.py",
+        "tests/test_code_keyword_retrieval.py",
+        "tests/test_code_retrieval_hybrid.py",
+        "tests/test_code_retrieval_evaluation.py",
+        "tests/test_ragas_evaluation.py",
+        "tests/test_retrieval_source_consistency.py",
+        "tests/test_retrieval_recovery.py",
+        "-q",
+        "-m",
+        "not integration",
+        "--junitxml=rag.xml"
+      ],
+      "duration_seconds": 5.9429145569993125,
+      "junit_path": "rag.xml",
+      "log_path": "rag.log"
+    },
+    "dag": {
+      "passed": true,
+      "tests": 99,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitcode": 0,
+      "unsuccessful_cases": [],
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_plan_dag.py",
+        "tests/test_dag_runtime.py",
+        "tests/test_plan_execution_api.py",
+        "tests/test_plan_recovery_case.py",
+        "tests/test_intent_contract.py",
+        "tests/test_intent_dispatch.py",
+        "tests/test_live_intent_http.py",
+        "-q",
+        "-m",
+        "not integration",
+        "--junitxml=dag.xml"
+      ],
+      "duration_seconds": 5.501882705999378,
+      "junit_path": "dag.xml",
+      "log_path": "dag.log"
+    }
+  },
+  "regression_pass": true,
+  "acceptance_pass": false,
+  "effectiveness": {
+    "runtime": {
+      "status": "not_evaluated",
+      "target": {
+        "max_context_tokens": 32000,
+        "overflow_count": 0
+      },
+      "measured": null
+    },
+    "memory": {
+      "status": "not_evaluated",
+      "target": {
+        "evaluated_cases": 470,
+        "recall_at_5": 0.9148,
+        "mrr_at_5": 0.9156,
+        "p95_ms": 4.28
+      },
+      "measured": null
+    },
+    "skill": {
+      "status": "not_evaluated",
+      "target": {
+        "cold_start_and_first_plan_seconds": 15
+      },
+      "measured": null
+    },
+    "rag": {
+      "status": "not_evaluated",
+      "target": {
+        "human_labeled_queries": 24,
+        "recall_at_5": 0.925,
+        "mrr": 0.82
+      },
+      "measured": null
+    },
+    "dag": {
+      "status": "not_evaluated",
+      "target": {
+        "composite_queries": 50,
+        "p90_seconds": 8.6,
+        "macro_f1": 0.966,
+        "unsafe_releases": 0
+      },
+      "measured": null
+    }
+  },
+  "limitations": [
+    "Component tests do not establish real-model quality or production latency.",
+    "Historical reports retain their original dataset/model/host scope; they are not rerun results.",
+    "Real-model paired evaluation, reviewed labels and full LongMemEval-S input are still required."
+  ]
+}

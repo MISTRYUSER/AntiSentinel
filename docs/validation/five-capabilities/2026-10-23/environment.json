@@ -1,0 +1,19 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "dependencies": {
+    "pytest": "9.1.1",
+    "fastapi": "0.161.1",
+    "httpx": "0.28.1",
+    "redis": "8.1.0",
+    "opentelemetry-api": "1.45.1",
+    "opentelemetry-sdk": "1.45.1",
+    "tree-sitter": "0.25.2",
+    "tree-sitter-language-pack": "0.10.0",
+    "pymilvus": "3.0.1",
+    "milvus-lite": "3.2.1",
+    "ragas": "0.4.3"
+  },
+  "model_calls": 0,
+  "test_trace_sampler": "always_on"
+}
